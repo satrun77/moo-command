@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./start "run  --rm -w /var/www/html/public/themes/$1 frontend npm run build"

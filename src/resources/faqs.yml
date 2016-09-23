@@ -1,0 +1,17 @@
+questions:
+  - "How to connect to database from Sequel Pro?"
+
+answers:
+  - |
+      Execute the following command to find out the ip address of the db container:
+      docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
+      Values for SSH Connection:
+      MySQL host:    the ip address of the db container
+      Username:      database username from db.env
+      Password:      database password from db.env
+      Database:      database name from db.env
+      Port:          leave empty
+      SSH Host:      docker machine ip [moo ws ip]
+      SSH User:      docker
+      SSH Password:  tcuser
+      SSH Port:      leave empty

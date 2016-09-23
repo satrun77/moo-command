@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export DOCKER_MACHINE_IP=$(docker-machine ip default) &&
+docker-compose ${1:-up -d}

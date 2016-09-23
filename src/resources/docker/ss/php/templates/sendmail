@@ -1,0 +1,10 @@
+#!/usr/local/bin/php
+<?php
+
+# Create a filename
+list($ms, $time) = explode(' ', microtime());
+$logfile = '/var/www/mail/' . date('Y-m-d h.i.s,', $time) . substr($ms, 2, 3) . '.eml';
+
+# Write the email contents to the file
+$emailContent = fopen('php://stdin', 'r');
+file_put_contents($logfile, $emailContent);

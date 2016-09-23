@@ -1,0 +1,33 @@
+{
+  "name": "satrun77/moocommand",
+  "type": "library",
+  "description": "Moo Console Component",
+  "keywords": [],
+  "homepage": "https://my.geek.nz",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mohamed Alsharaf",
+      "email": "mohamed.alsharaf@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6",
+    "symfony/console": "~2.8",
+    "symfony/finder": "~2.8",
+    "symfony/yaml": "~2.8",
+    "symfony/process": "^3.0"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "MooCommand\\": "src/MooCommand"
+    }
+  },
+  "config": {
+    "vendor-dir": "src/vendor"
+  },
+  "minimum-stability": "stable"
+}

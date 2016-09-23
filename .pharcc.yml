@@ -1,0 +1,9 @@
+name: moo.phar
+main: src/app.php
+include:
+  - src/
+exclude:
+  - "/[Tt]ests?/"
+  - "Test\.php$"
+  - "/docs?/"
+  - "^vendor/phpunit"
