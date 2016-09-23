@@ -1,7 +1,7 @@
-# Moo Development Console
+# Moo Development Console (Development in progress)
 =========================
 
-Moo command contains several helpful command lines that are useful
+Commands to help you manage local development environment.
 
 Installation
 --------------------
