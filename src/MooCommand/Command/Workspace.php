@@ -234,7 +234,7 @@ abstract class Workspace extends Command
     protected function siteDirectoryMustExists($name)
     {
         $siteRoot = $this->getConfigHelper()->getSiteRoot($name);
-        if (!$siteRoot) {
+        if (is_null($siteRoot)) {
             throw new \Exception(sprintf("Unable to find the site with the name '%s'", $this->argument($name)));
         }
 
