@@ -333,7 +333,7 @@ class CodeQuality extends Command
      */
     protected function installCommandLine($name, $url)
     {
-        $this->stdErrInfo($name . ' not installed in your machine. Start attempt to install it...');
+        $this->getOutputStyle()->info($name . ' not installed in your machine. Start attempt to install it...');
 
         // Check for wget or curl to use for downloading the command
         $wget = $this->getShellHelper()->isCommandInstall('wget');
