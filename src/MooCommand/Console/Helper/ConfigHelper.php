@@ -135,32 +135,56 @@ class ConfigHelper extends Helper
     }
 
     /**
-     * Get a value from the .moo.yml file.
-     *
-     * @param $name
-     *
-     * @return null
+     * @return string
      */
-    public function getConfig($name)
+    protected function getConfigFilePath()
     {
         $username = $this->getShellHelper()->exec('whoami');
         $path     = '/Users/' . trim($username->getOutput()) . '/.moo.yml';
         $this->getCommand()->debug('Config path: ' . $path);
 
-        if (null === $this->config) {
-            $yml          = new Parser();
-            $this->config = $yml->parse(
-                file_get_contents($path),
-                true,
-                true
-            );
+        return $path;
+    }
+
+    protected function loadConfig()
+    {
+        if (!is_null($this->config)) {
+            return;
         }
+
+        $yml          = new Parser();
+        $this->config = $yml->parse(
+            file_get_contents($this->getConfigFilePath()),
+            true,
+            true
+        );
+    }
+
+    /**
+     * Get a value from the .moo.yml file.
+     *
+     * @param $name
+     *
+     * @return array|mixed|null
+     */
+    public function getConfig($name)
+    {
+        $this->loadConfig();
 
         if (array_key_exists($name, $this->config)) {
             return $this->config[$name];
         }
 
-        return null;
+        $array = $this->config;
+        foreach (explode('.', $name) as $segment) {
+            if (array_key_exists($segment, $array)) {
+                $array = $array[$segment];
+            } else {
+                return null;
+            }
+        }
+
+        return $array;
     }
 
     /**
