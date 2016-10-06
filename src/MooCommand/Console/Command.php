@@ -203,6 +203,9 @@ class Command extends SymfonyCommand
         $this->input  = $input;
         $this->output = $output;
 
+        // Pass this command to the helper set
+        $this->getHelperSet()->setCommand($this);
+
         // Default $stdErr variable to output
         $this->errorOutput = $this->getOutput();
 
@@ -227,9 +230,6 @@ class Command extends SymfonyCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            // Pass this command to the helper set
-            $this->getHelperSet()->setCommand($this);
-
             $this->fire();
         } catch (\Exception $e) {
             $this->stdErrError($e->getMessage());
