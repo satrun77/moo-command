@@ -96,7 +96,7 @@ class Commit extends Command
     public function getTypes()
     {
         if (null === $this->types) {
-            $this->types = $this->getConfigHelper()->getResource('commit-words.yml');
+            $this->types = $this->getConfigHelper()->getConfig('commit.words');
             sort($this->types, SORT_NATURAL);
         }
 

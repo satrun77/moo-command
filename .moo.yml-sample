@@ -1,7 +1,48 @@
 workspace: /Users/moo/workspace/
-github_token: e22b9502d334da1fb1f0a1
-git_user_email: mohamed.alsharaf@gmail.com
-git_user_name: "Mohamed Alsharaf"
+
+commit:
+  words:
+    - Change
+    - Add
+    - Create
+    - Update
+    - Build
+    - Remove
+    - Set
+    - Temporarily
+    - Rename
+    - Implement
+    - Reduce
+    - Combine
+    - Move
+    - Configure
+    - Limit
+    - Exclude
+    - Place
+    - Use
+    - Reset
+    - Fix
+    - Hide
+    - Clean
+    - Init
+    - Make
+    - Integrate
+    - Enable
+    - Disable
+    - Reinstate
+    - Populate
+    - Replace
+    - Ensure
+    - Adjust
+    - Override
+    - Improve
+    - Apply
+    - Allow
+    - Convert
+    - Show
+    - Revert
+    - Extend
+
 csfixes:
     - psr0
     - encoding
