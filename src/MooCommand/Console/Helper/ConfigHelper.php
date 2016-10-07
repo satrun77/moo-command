@@ -88,23 +88,23 @@ class ConfigHelper extends Helper
     {
         $directory = __APP_DIR__ . '/resources/' . $source;
 
-        $iterator = new \RecursiveDirectoryIterator($directory);
-        foreach (new \RecursiveIteratorIterator($iterator) as $file) {
-            /* @var \SplFileInfo $file */
-            $filePath     = $destination . str_replace($directory, '', $file->getPathname());
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $file) {
             $relativePath = str_replace($directory, '', $file->getPath());
-            $path         = $destination . $relativePath;
+            $filePath     = $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
 
-            // Create directory structure
-            if (!is_dir($path)) {
-                mkdir($path, 0755, true);
-            }
-
-            if (!in_array($relativePath, $excludeData)) {
-                $this->getCommand()->debug('Copy: ' . $file->getPathname() . ' to ' . $filePath);
+            if ($file->isDir()) {
+                mkdir($filePath, 0755, true);
+                $this->getCommand()->debug('Make dir: ' . $filePath);
+            } elseif (!in_array($relativePath, $excludeData)) {
+                $this->getCommand()->debug('Copy:     ' . $file->getPathname() . ' to ' . $filePath);
 
                 // Copy file
-                if (!copy($file->getPathname(), $filePath)) {
+                if (!copy($file, $filePath)) {
                     $this->getCommand()->getOutputStyle()->error(sprintf('Failed to copy: %s', $file->getPathname()));
                 }
 
