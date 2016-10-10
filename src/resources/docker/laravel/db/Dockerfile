@@ -1,4 +1,4 @@
-FROM mariadb
+FROM mariadb:10.1
 
 MAINTAINER Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
 

@@ -38,6 +38,15 @@ services:
           - ./env/db.env
           - ./env/web.env
 
+  composer:
+      build: ./composer/
+      volumes:
+          - ~/.composer:/composer
+          - ~/.ssh:/root/.ssh
+          - ~/.netrc:/root/.netrc
+      volumes_from:
+          - app
+
   app:
       image: php:5.6-fpm
       volumes:
@@ -47,7 +56,7 @@ services:
       tty: true
 
   data:
-      image: mariadb
+      image: mariadb:10.1
       volumes:
           - /var/lib/mysql
       command: "true"

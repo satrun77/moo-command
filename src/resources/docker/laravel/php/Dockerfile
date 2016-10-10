@@ -10,6 +10,7 @@ RUN apt-get install -y libtidy-dev
 RUN apt-get install -y libpng12-dev
 RUN apt-get install -y libjpeg-dev
 RUN apt-get install -y libfreetype6-dev
+RUN apt-get install -y git-core
 
 # configure extensions
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
@@ -27,11 +28,8 @@ RUN docker-php-ext-install zip
 # PHP configs
 RUN echo "date.timezone = Pacific/Auckland" > /usr/local/etc/php/conf.d/timezone.ini
 RUN echo "display_startup_errors=on\nerror_reporting=ALL\ndisplay_errors =on" > /usr/local/etc/php/conf.d/error_reporting.ini
-
-# Install composer
-RUN curl https://getcomposer.org/composer.phar -o composer
-RUN chmod a+x composer
-RUN mv composer /usr/local/bin/composer
+RUN echo "upload_max_filesize = 5M\n" > /usr/local/etc/php/conf.d/max-upload.ini
+RUN echo "memory_limit = 1G\n" > /usr/local/etc/php/conf.d/memory-limit.ini
 
 # Tell PHP to log emails
 COPY templates/sendmail /var/www/sendmail
@@ -42,4 +40,4 @@ RUN mkdir /var/www/mail
 # To grant permissions to www-data
 RUN usermod -u 1000 www-data
 
-WORKDIR /var/www/html
+WORKDIR /var/www/html/public
