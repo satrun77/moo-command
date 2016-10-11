@@ -40,7 +40,7 @@ class CloneProject extends WorkspaceAbstract
             'description' => 'Repository to clone',
         ],
         'branch'     => [
-            'mode'        => InputArgument::REQUIRED,
+            'mode'        => InputArgument::OPTIONAL,
             'description' => 'The branch name to fetch. Default to "develop"',
             'default'     => 'develop',
         ],
