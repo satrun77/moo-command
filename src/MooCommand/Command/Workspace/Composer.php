@@ -33,7 +33,7 @@ class Composer extends WorkspaceAbstract
      */
     protected $arguments = [
         'name'     => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'argument' => [

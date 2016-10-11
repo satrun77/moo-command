@@ -33,11 +33,11 @@ class Cp extends WorkspaceAbstract
      */
     protected $arguments = [
         'name'      => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'container' => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the container to upload file to or download file from',
         ],
     ];
