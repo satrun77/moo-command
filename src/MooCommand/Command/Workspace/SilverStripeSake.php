@@ -32,6 +32,10 @@ class SilverStripeSake extends WorkspaceAbstract
      * @var array
      */
     protected $arguments = [
+        'name' => [
+            'mode'        => InputArgument::REQUIRED,
+            'description' => 'Name of the directory containing the docker/site files',
+        ],
         'argument' => [
             'mode'        => InputArgument::OPTIONAL,
             'description' => 'Argument to pass to SilverStripe Sake command',
