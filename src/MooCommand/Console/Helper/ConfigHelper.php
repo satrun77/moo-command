@@ -98,7 +98,9 @@ class ConfigHelper extends Helper
             $filePath     = $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
 
             if ($file->isDir()) {
-                mkdir($filePath, 0755, true);
+                if (!is_dir($filePath)) {
+                    @mkdir($filePath, 0755, true);
+                }
                 $this->getCommand()->debug('Make dir: ' . $filePath);
             } elseif (!in_array($relativePath, $excludeData)) {
                 $this->getCommand()->debug('Copy:     ' . $file->getPathname() . ' to ' . $filePath);
