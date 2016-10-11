@@ -106,6 +106,9 @@ class ConfigHelper extends Helper
                 $this->getCommand()->debug('Copy:     ' . $file->getPathname() . ' to ' . $filePath);
 
                 // Copy file
+                if ($filePath) {
+                    unlink($filePath);
+                }
                 if (!copy($file, $filePath)) {
                     $this->getCommand()->getOutputStyle()->error(sprintf('Failed to copy: %s', $file->getPathname()));
                 }
