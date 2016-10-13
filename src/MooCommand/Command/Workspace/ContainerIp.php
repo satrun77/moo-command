@@ -23,7 +23,7 @@ class ContainerIp extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Display containers ip addresses.';
+    protected $description = 'Display the IP addresses selected for each of the active docker containers.';
     /**
      * @var string
      */

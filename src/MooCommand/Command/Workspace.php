@@ -26,7 +26,7 @@ abstract class Workspace extends Command
     /**
      * @var string
      */
-    protected $description = 'Manage workspace';
+    protected $description = 'Manage local workspace with docker containers.';
     /**
      * @var string
      */

@@ -22,7 +22,7 @@ class Hosts extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Update the host file in user machine (/etc/hosts).';
+    protected $description = 'Update the host file in user machine (/etc/hosts) with the docker IP address and the host names setup for all of the sites in workspace.';
     /**
      * @var string
      */

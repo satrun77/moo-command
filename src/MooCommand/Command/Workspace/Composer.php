@@ -23,7 +23,7 @@ class Composer extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Execute composer command inside composer container container.';
+    protected $description = 'Execute PHP composer command inside the composer container.';
     /**
      * @var string
      */

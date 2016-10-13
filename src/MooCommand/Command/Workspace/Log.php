@@ -23,7 +23,7 @@ class Log extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Display the logs of a container or all containers. A wrapper for docker-compose logs.';
+    protected $description = 'View output from container or containers. A wrapper for docker-compose logs.';
     /**
      * @var string
      */

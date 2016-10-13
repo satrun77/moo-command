@@ -23,7 +23,7 @@ class Cp extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Copy a file from host machine to a docker container or download from docker container.';
+    protected $description = 'Copy a file from host machine to a docker container or download from a docker container. A wrapper to docker cp command.';
     /**
      * @var string
      */

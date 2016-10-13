@@ -23,7 +23,7 @@ class Ssh extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'SSH into a container.';
+    protected $description = 'SSH into a container for a site within the workspace.';
     /**
      * @var string
      */

@@ -22,7 +22,7 @@ class ListSites extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Display list of available sites and their exposed port.';
+    protected $description = 'Display list of available sites and their statuses.';
     /**
      * @var string
      */

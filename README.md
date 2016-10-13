@@ -20,26 +20,26 @@ Name | Details
   csfixer      |Execute php-cs-fixer on selected paths.
   help         |Displays help for a command
   list         |Lists commands
-  qcode        |Code quality report.
-  ws:build     |Build a container or all of the containers within a site. A wrapper to docker-compose build command.
+  qcode        |Check source code using tool such as, Mess Detector, Copy/Paste Detector, PHP Parallel Lint, & Security Advisories.
+  ws:build     |Build or rebuild services for a site within the workspace. A wrapper to docker-compose build command.
   ws:clean     |Execute specific commands to free up unwanted space such as, removing old containers, or dangling images.
-  ws:clone     |Clone repository and setup docker environment.
-  ws:composer  |Execute composer command inside composer container container.
-  ws:cp        |Copy a file from host machine to a docker container or download from docker container.
+  ws:clone     |Setup local development from a single YAML file within a repository (.env.yml)
+  ws:composer  |Execute PHP composer command inside the composer container.
+  ws:cp        |Copy a file from host machine to a docker container or download from a docker container. A wrapper to docker cp command.
   ws:faq       |Display FAQs.
-  ws:hosts     |Update the host file in user machine (/etc/hosts).
-  ws:ip        |Display the docker machine ip address.
-  ws:ips       |Display containers ip addresses.
-  ws:log       |Display the logs of a container or all containers. A wrapper for docker-compose logs.
+  ws:hosts     |Update the host file in user machine (/etc/hosts) with the docker IP address and the host names setup for all of the sites in workspace.
+  ws:ip        |Display the docker machine IP address.
+  ws:ips       |Display the IP addresses selected for each of the active docker containers.
+  ws:log       |View output from container or containers. A wrapper for docker-compose logs.
   ws:new       |Create a new site. Create all of the files needed for the docker containers.
-  ws:proxy     |Build if not exists or start the proxy container.
-  ws:rm        |Remove all of the containers with a site. A wrapper for docker-compose rm.
+  ws:proxy     |Build the proxy container if not exists or start the container.
+  ws:rm        |Remove stopped containers for a site within the workspace. A wrapper for docker-compose rm.
   ws:sake      |Execute SilverStripe Sake command inside the php container.
-  ws:sites     |Display list of available sites and their exposed port.
-  ws:ssh       |SSH into a container.
-  ws:start     |Start a site. A wrapper to docker-compose up.
-  ws:stop      |Stop a container or all of the containers within a site. A wrapper to docker stop command.
-  ws:update    |Update site containers except for the directories site, env, solr/myindex.
+  ws:sites     |Display list of available sites and their statuses.
+  ws:ssh       |SSH into a container for a site within the workspace.
+  ws:start     |Create and start containers for a site within the workspace. A wrapper to docker-compose up.
+  ws:stop      |Stop services for a site within the workspace. A wrapper to docker stop command.
+  ws:update    |Re-create local development site by updating the containers files, except for the directories site, env, solr/myindex.
 
 License
 -------

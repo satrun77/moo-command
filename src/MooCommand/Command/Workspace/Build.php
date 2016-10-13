@@ -23,7 +23,7 @@ class Build extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Build a container or all of the containers within a site. A wrapper to docker-compose build command.';
+    protected $description = 'Build or rebuild services for a site within the workspace. A wrapper to docker-compose build command.';
     /**
      * @var string
      */

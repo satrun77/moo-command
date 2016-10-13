@@ -23,7 +23,7 @@ class Remove extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Remove all of the containers with a site. A wrapper for docker-compose rm.';
+    protected $description = 'Remove stopped containers for a site within the workspace. A wrapper for docker-compose rm.';
     /**
      * @var string
      */

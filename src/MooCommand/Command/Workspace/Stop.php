@@ -23,7 +23,7 @@ class Stop extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Stop a container or all of the containers within a site. A wrapper to docker stop command.';
+    protected $description = 'Stop services for a site within the workspace. A wrapper to docker stop command.';
     /**
      * @var string
      */

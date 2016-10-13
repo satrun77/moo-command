@@ -23,7 +23,7 @@ class Start extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Start a site. A wrapper to docker-compose up.';
+    protected $description = 'Create and start containers for a site within the workspace. A wrapper to docker-compose up.';
     /**
      * @var string
      */

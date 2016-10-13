@@ -22,7 +22,7 @@ class Proxy extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Build if not exists or start the proxy container.';
+    protected $description = 'Build the proxy container if not exists or start the container.';
     /**
      * @var string
      */

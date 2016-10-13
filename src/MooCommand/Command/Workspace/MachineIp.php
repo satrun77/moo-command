@@ -22,7 +22,7 @@ class MachineIp extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Display the docker machine ip address.';
+    protected $description = 'Display the docker machine IP address.';
     /**
      * @var string
      */

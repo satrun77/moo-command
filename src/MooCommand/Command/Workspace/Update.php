@@ -23,7 +23,7 @@ class Update extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Update site containers except for the directories site, env, solr/myindex.';
+    protected $description = 'Re-create local development site by updating the containers files, except for the directories site, env, solr/myindex.';
     /**
      * @var string
      */

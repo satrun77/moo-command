@@ -26,7 +26,7 @@ class CloneProject extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $description = 'Clone repository and setup docker environment.';
+    protected $description = 'Setup local development from a single YAML file within a repository (.env.yml)';
     /**
      * @var string
      */

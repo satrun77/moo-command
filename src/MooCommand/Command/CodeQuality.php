@@ -28,7 +28,7 @@ class CodeQuality extends Command
     /**
      * @var string
      */
-    protected $description = 'Code quality report.';
+    protected $description = 'Check source code using tool such as, Mess Detector, Copy/Paste Detector, PHP Parallel Lint, & Security Advisories.';
     /**
      * @var string
      */
