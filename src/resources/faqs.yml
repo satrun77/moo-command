@@ -1,5 +1,6 @@
 questions:
   - "How to connect to database from Sequel Pro?"
+  - "Composer container displays error message related to Bad owner or permissions on /root/.ssh files"
 
 answers:
   - |
@@ -15,3 +16,7 @@ answers:
       SSH User:      docker
       SSH Password:  tcuser
       SSH Port:      leave empty
+
+  - |
+      Make sure the permission in your machine is set to aleast the following:
+      chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
