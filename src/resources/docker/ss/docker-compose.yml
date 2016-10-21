@@ -47,11 +47,10 @@ services:
   composer:
       build: ./composer/
       volumes:
-          - ~/.composer:/composer
-          - ~/.ssh:/root/.ssh
+          - ~/.composer:/var/www/composer
+          - ~/.ssh:/var/www/.ssh
           - ~/.netrc:/root/.netrc
-      volumes_from:
-          - app
+          - ./site:/var/www/html
 
   solr:
       build: ./solr/
