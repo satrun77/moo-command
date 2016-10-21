@@ -1,5 +1,23 @@
 workspace: /Users/moo/workspace/
 
+#faqs:
+#  source: local
+#  data:
+#    questions:
+#      - "A Question one?"
+#      - "A Question two?"
+#
+#    answers:
+#      - |
+#          Details of the answer for question:
+#          A Question one?
+#      - |
+#          Details of the answer for question:
+#          A Question two?
+#OR
+#  source: url
+#  data: http://domain.com/api.json
+
 commit:
   words:
     - Change

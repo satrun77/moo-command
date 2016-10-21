@@ -19,6 +19,8 @@ use MooCommand\Command\Workspace as WorkspaceAbstract;
  */
 class Faq extends WorkspaceAbstract
 {
+    const DATA_SOURCE_LOCAL = 'local';
+    const DATA_SOURCE_REMOTE = 'url';
     /**
      * @var string
      */
@@ -38,7 +40,7 @@ class Faq extends WorkspaceAbstract
     protected function fire()
     {
         // FAQ data
-        $faqs = $this->getConfigHelper()->getResource('faqs.yml');
+        $faqs = $this->getData();
 
         // Ask user for a question to answer
         $question = $this->getHelper('dialog')->select(
@@ -51,5 +53,41 @@ class Faq extends WorkspaceAbstract
         // Display the question and the answer
         $this->getOutputStyle()->title($faqs['questions'][$question]);
         $this->getOutputStyle()->info($faqs['answers'][$question]);
+    }
+
+    /**
+     * Collect FAQ questions from app, remote URL or config file.
+     *
+     * @return array
+     */
+    protected function getData()
+    {
+        // Core data
+        $faqs = $this->getConfigHelper()->getResource('faqs.yml');
+        $userQuestions = $userAnswers = [];
+
+        // Type of use question source
+        $source = $this->getConfigHelper()->getConfig('faqs.source');
+
+        // Load questions/answers from local config
+        if ($source === self::DATA_SOURCE_LOCAL) {
+            $userQuestions = $this->getConfigHelper()->getConfig('faqs.data.questions');
+            $userAnswers = $this->getConfigHelper()->getConfig('faqs.data.answers');
+        }
+
+        // Load question/answers from a URL
+        if ($source === self::DATA_SOURCE_REMOTE) {
+            $remoteQuestions = json_decode(file_get_contents($this->getConfigHelper()->getConfig('faqs.data')));
+            $userQuestions = $remoteQuestions->questions;
+            $userAnswers = $remoteQuestions->answers;
+        }
+
+        // Merge questions and answers
+        foreach ($userQuestions as $index => $question) {
+            $faqs['questions'][] = $question;
+            $faqs['answers'][] = $userAnswers[$index];
+        }
+
+        return $faqs;
     }
 }
