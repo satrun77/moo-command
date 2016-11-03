@@ -1,11 +1,24 @@
-# Moo Development Console (Development in progress)
+# Moo Development Console
 
 Commands to help you manage local development environment.
+
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat-square)](https://php.net/)
 
 Installation
 --------------------
 
-- Download the source code.
+```bash
+$ wget https://github.com/satrun77/moo-command/releases/download/untagged-7b1e29d433732f62d39f/moo.phar
+
+$ chmod +x moo.phar
+
+$ mv moo.phar /usr/local/bin/moo
+```
+
+Development
+--------------------
+
+- Clone the source code.
 - Run the installer from the root directory of the source code `./install.sh`
 
 > Note: the installer is going to install [pharcc](https://github.com/cbednarski/pharcc/releases/download/v0.2.3/pharcc.phar), if it does not exists.
@@ -45,3 +58,4 @@ License
 -------
 
 Moo Command is licensed under the [MIT License](LICENSE.md).
+
