@@ -106,7 +106,7 @@ class ConfigHelper extends Helper
                 $this->getCommand()->debug('Copy:     ' . $file->getPathname() . ' to ' . $filePath);
 
                 // Copy file
-                if ($filePath) {
+                if (file_exists($filePath)) {
                     unlink($filePath);
                 }
                 if (!copy($file, $filePath)) {
