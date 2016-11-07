@@ -46,6 +46,4 @@ RUN mkdir /var/www/mail
 # To grant permissions to www-data
 RUN usermod -u 1000 www-data
 
-COPY templates/netrc.tmpl /root/.netrc
-
 WORKDIR /var/www/html/public
