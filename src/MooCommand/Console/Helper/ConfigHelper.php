@@ -99,7 +99,7 @@ class ConfigHelper extends Helper
 
             if ($file->isDir()) {
                 if (!is_dir($filePath)) {
-                    @mkdir($filePath, 0755, true);
+                    mkdir($filePath, 0755, true);
                 }
                 $this->getCommand()->debug('Make dir: ' . $filePath);
             } elseif (!in_array($relativePath, $excludeData)) {
