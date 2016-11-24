@@ -104,6 +104,7 @@ class Create extends WorkspaceAbstract
     {
         // Highest port plus 1 && site name
         $port = max($this->getUsedPorts()) + 1;
+        $solrPort = max($this->getUsedPorts('SOLR_PORT')) + 1;
         $name = $this->argument('name');
 
         // Open file for reading & replace host & port
@@ -112,6 +113,7 @@ class Create extends WorkspaceAbstract
         $contents = strtr($contents, [
             'site1' => $name,
             '1000'  => $port,
+            '8983'  => $solrPort,
         ]);
         $envFile = null;
 
