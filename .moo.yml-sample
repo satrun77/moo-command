@@ -19,6 +19,10 @@ workspace: /Users/moo/workspace/
 #  data: http://domain.com/api.json
 
 commit:
+  style: CategorisedStyle # options: ImperativeMoodStyle, CategorisedStyle
+  categories:
+    One: One
+    Bug: Bug
   words:
     - Change
     - Add
@@ -138,4 +142,3 @@ csfixes:
     - align_equals
     - short_array_syntax
     - unused_use
-

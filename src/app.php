@@ -30,7 +30,7 @@ $application->getHelperSet()->set(new ShellHelper());
 $application->getHelperSet()->set(new QuestionHelper());
 
 // Console command lines
-$application->add(new Command\Commit());
+$application->add(new Command\Commit('commit', $application));
 $application->add(new Command\CsFixer());
 $application->add(new Command\CodeQuality());
 $application->add(new Command\Workspace\CloneProject());

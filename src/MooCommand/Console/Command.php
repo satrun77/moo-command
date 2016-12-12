@@ -13,6 +13,7 @@ namespace MooCommand\Console;
 
 use MooCommand\Console\Helper\ConfigHelper;
 use MooCommand\Console\Helper\ShellHelper;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -56,19 +57,27 @@ class Command extends SymfonyCommand
      * @var string
      */
     protected $signature = '';
+
+    /**
+     * The description of the console command.
+     *
+     * @var string
+     */
     protected $description;
 
     /**
+     * List of arguments of the console command.
+     *
      * @var array
      */
     protected $arguments = [];
 
     /**
+     * List of options of the console command.
+     *
      * @var array
      */
-    protected $options = [
-
-    ];
+    protected $options = [];
 
     /**
      * @return void
@@ -146,11 +155,15 @@ class Command extends SymfonyCommand
      */
     public function option($key = null)
     {
-        if (is_null($key)) {
-            return $this->input->getOptions();
+        if ($this->input instanceof InputInterface) {
+            if (is_null($key)) {
+                return $this->input->getOptions();
+            }
+
+            return $this->input->getOption($key);
         }
 
-        return $this->input->getOption($key);
+        return false;
     }
 
     /**
@@ -225,7 +238,7 @@ class Command extends SymfonyCommand
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return void
+     * @return int 0 on successful, 1 on error.
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

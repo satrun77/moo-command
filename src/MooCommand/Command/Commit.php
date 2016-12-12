@@ -10,8 +10,9 @@
 
 namespace MooCommand\Command;
 
+use MooCommand\Command\Commit\CommitStyleInterface;
 use MooCommand\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,6 +24,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Commit extends Command
 {
+    const SHORTCUT_DEPENDENCIES = 'dependencies';
+    const SHORTCUT_GITIGNORE    = 'gitignore';
+    const SHORTCUT_CSFIXES      = 'csfixes';
+
     /**
      * @var bool
      */
@@ -30,57 +35,42 @@ class Commit extends Command
     /**
      * @var string
      */
-    protected $description = 'Git Commit wrapper to standardise the commit messages.';
+    protected $description = 'Git Commit wrapper to standardise the commit messages ( %s ).';
     /**
      * @var string
      */
     protected $signature = 'commit';
-    /**
-     * @var array
-     */
-    protected $arguments = [
-        'message' => [
-            'mode'        => InputArgument::REQUIRED,
-            'description' => 'Short of message about the change limit to 60 characters.',
-        ],
-        // Wrap the body at 72 characters
-        'details' => [
-            'mode'        => InputArgument::OPTIONAL,
-            'description' => 'Details description about the change if the message is not clear.',
-        ],
-    ];
 
     /**
-     * Holds commit details entered by the user.
+     * Hold data related to commit.
      *
      * @var array
      */
     protected $commit = [];
 
     /**
-     * If applied, this commit will "update getting started documentation".
-     *
-     * @var array
-     */
-    protected $types;
-
-    /**
      * @var array
      */
     protected $options = [
-        'dependencies' => [
+        'oneline'                   => [
+            'shortcut'    => 'o',
+            'mode'        => InputOption::VALUE_NONE,
+            'description' => 'Option to skip asking for the optional details.',
+            'default'     => null,
+        ],
+        self::SHORTCUT_DEPENDENCIES => [
             'shortcut'    => 'd',
             'mode'        => InputOption::VALUE_NONE,
             'description' => 'Shortcut commit changes with default message about updating composer.json & composer.lock',
             'default'     => null,
         ],
-        'gitignore'    => [
+        self::SHORTCUT_GITIGNORE    => [
             'shortcut'    => 'i',
             'mode'        => InputOption::VALUE_NONE,
             'description' => 'Shortcut commit changes with default message about updating .gitignore',
             'default'     => null,
         ],
-        'csfixes'      => [
+        self::SHORTCUT_CSFIXES      => [
             'shortcut'    => 'c',
             'mode'        => InputOption::VALUE_NONE,
             'description' => 'Shortcut commit changes with default message about CS fixes',
@@ -89,86 +79,26 @@ class Commit extends Command
     ];
 
     /**
-     * Get an array of allowed commit words.
-     *
-     * @return array
+     * @var CommitStyleInterface
      */
-    public function getTypes()
-    {
-        if (null === $this->types) {
-            $this->types = $this->getConfigHelper()->getConfig('commit.words');
-            sort($this->types, SORT_NATURAL);
-        }
-
-        return $this->types;
-    }
+    protected $style;
 
     /**
-     * Interactive input to be executed by parent method
-     * Ask & validate the commit type.
+     * Commit constructor.
      *
-     * @param string $value
-     * @param array  $argument
-     *
-     * @return mixed
+     * @param null|string $name
+     * @param Application $application
      */
-    protected function interactInputMessage($value, array $argument)
+    public function __construct($name, Application $application)
     {
-        $this->getOutputStyle()->info('Acceptable words to start commit with: ');
-        $this->getOutputStyle()->line('If applied, this commit will ....your commit....', 'comment');
+        $this->setHelperSet($application->getHelperSet());
+        $this->getHelperSet()->setCommand($this);
 
-        $rows = array_chunk($this->getTypes(), 7);
-        $this->getOutputStyle()->table([], $rows);
+        // Merge style configurations with commit default
+        $this->description = sprintf($this->description, $this->getStyle()->getDisplayName());
+        $this->options     = array_merge($this->getStyle()->getOptions(), $this->options);
 
-        $question = $this->getOutputStyle()->question('Enter Commit Message: ');
-
-        return $this->getHelper('dialog')->askAndValidate($this->getOutput(), $question, function ($value) {
-            if (strlen($value) > 60) {
-                $validLength = substr($value, 0, 60);
-                $extraLength = substr($value, 60);
-                $this->getOutputStyle()->warning($validLength . '<fg=red>' . $extraLength . '</>');
-                throw new \InvalidArgumentException('Commit message must not be more than 60 characters.');
-            }
-
-            if (empty($value)) {
-                throw new \InvalidArgumentException('Commit message must not be empty.');
-            }
-
-            $imperativeMood = false;
-            foreach ($this->types as $type) {
-                if (stripos($value, $type . ' ') === 0) {
-                    $imperativeMood = true;
-                    break;
-                }
-            }
-            if (!$imperativeMood) {
-                $this->getOutputStyle()->error([
-                    'Commit message should start with an imperative mood.',
-                    'It should be able to complete the following sentence:',
-                    'If applied, this commit will <fg=green;bg=red>' . $value . '</fg=green;bg=red>',
-                ]);
-                $this->getOutputStyle()->note('If you think you are correct, then ask the developer to fix it.');
-                throw new \InvalidArgumentException('Please try again');
-            }
-
-            return $value;
-        });
-    }
-
-    /**
-     * Interactive input to be executed by parent method
-     * Ask for the commit message details.
-     *
-     * @param string $value
-     * @param array  $argument
-     *
-     * @return mixed
-     */
-    protected function interactInputDetails($value, array $argument)
-    {
-        $question = $this->getOutputStyle()->question('Enter Commit Details (optional): ');
-
-        return $this->getHelper('dialog')->ask($this->getOutput(), $question);
+        parent::__construct($name);
     }
 
     /**
@@ -180,37 +110,45 @@ class Commit extends Command
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $isGitIgnore    = $this->option('gitignore');
-        $isDependencies = $this->option('dependencies');
-        $isCsFixes      = $this->option('csfixes');
+        $this->input->setInteractive(true);
 
-        // Disable interactive we have a default message
-        if ($isGitIgnore || $isDependencies || $isCsFixes) {
-            $extraDetails = $this->argument('message');
-            $this->input->setArgument('details', $extraDetails);
+        if ($shortcutOption = $this->hasShortcutOption()) {
+            // Message to print in console
+            $this->callStyleOptionalAction('beforeShortcut', $shortcutOption);
 
+            // Disable interactive, message configured
             $this->input->setInteractive(false);
-        }
+            $this->setArgument('message', $this->getStyle()->getShortcutMessage($shortcutOption));
+            $this->setArgument('details', $this->getStyle()->getShortcutDetails($shortcutOption));
 
-        // Set commit .gitignore file
-        if ($isGitIgnore) {
-            $this->input->setArgument('message', 'Update .gitignore');
+            // Output the predefined message
+            $this->getOutputStyle()->separator('_', 'info2');
+            $this->getOutputStyle()->line(
+                $this->argument('message') . "\n\n" . $this->argument('details'),
+                'info2',
+                'Commit'
+            );
+            $this->getOutputStyle()->separator('_', 'info2');
         }
+    }
 
-        // Set commit composer.json and/or composer.lock
-        if ($isDependencies) {
-            $this->input->setArgument('message', 'Update Composer dependencies');
-        }
-
-        // Set commit CS fixes
-        if ($isCsFixes) {
-            $this->input->setArgument('message', 'Apply CS fixes');
-        }
-
-        // Output the predefined message
-        $message = $this->argument('message');
-        if (!empty($message)) {
-            $this->getOutputStyle()->info($message);
+    /**
+     * Starts console interactive.
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return void
+     */
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        $arguments = $this->getStyle()->getArguments();
+        foreach ($arguments as $argument) {
+            $method = 'interactInput' . $argument;
+            $caller = method_exists($this->getStyle(), $method) ? $this->getStyle() : $this;
+            $this->callStyleOptionalAction('beforeInput' . $argument);
+            $value = $caller->$method();
+            $this->setArgument(strtolower($argument), $value);
         }
     }
 
@@ -233,11 +171,13 @@ class Commit extends Command
         $details = wordwrap($this->argument('details'), 70);
 
         // Execute git commit
-        $this->getShellHelper()->exec(
-            "git commit -m \"%s\n\n%s\"",
-            ucfirst($message),
-            $details
-        );
+        $commit  = $this->getStyle()->getCommitCommand($message, $details);
+        $command = $this->getShellHelper()->exec(...$commit);
+        if (!$command->isSuccessful()) {
+            $this->getOutputStyle()->error('Failed to commit!');
+
+            return;
+        }
 
         // Success message
         $this->getOutputStyle()->success('Changes committed!');
@@ -245,6 +185,83 @@ class Commit extends Command
         // Show git status
         $status = $this->getShellHelper()->exec('git status');
         $this->getOutputStyle()->comment($status->getOutput());
+    }
+
+    /**
+     * Get an instance of the commit style class.
+     *
+     * @return CommitStyleInterface
+     */
+    protected function getStyle()
+    {
+        if (is_null($this->style)) {
+            $class       = __NAMESPACE__ . '\\Commit\\' . $this->getConfigHelper()->getConfig('commit.style');
+            $this->style = new $class($this);
+        }
+
+        return $this->style;
+    }
+
+    /**
+     * Return list of short cut options.
+     *
+     * @return array
+     */
+    protected function getShortcutOptions()
+    {
+        return array_merge([
+            self::SHORTCUT_CSFIXES,
+            self::SHORTCUT_DEPENDENCIES,
+            self::SHORTCUT_GITIGNORE,
+        ], $this->getStyle()->getShortcutOptions());
+    }
+
+    /**
+     * Whether we have a short cut option to execute or not.
+     *
+     * @return bool|string
+     */
+    protected function hasShortcutOption()
+    {
+        foreach ($this->getShortcutOptions() as $shortcut) {
+            // Disable interactive we have a default message
+            if ($this->option($shortcut)) {
+                return $shortcut;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Set an argument value.
+     *
+     * @param string $name
+     * @param string $value
+     *
+     * @return $this
+     */
+    protected function setArgument($name, $value)
+    {
+        $this->commit[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get an argument value by its name.
+     *
+     * @param string $key
+     *
+     * @return string|null
+     */
+    public function argument($key = null)
+    {
+        if (array_key_exists($key, $this->commit)) {
+            return $this->commit[$key];
+        }
+
+        return null;
     }
 
     /**
@@ -269,9 +286,117 @@ class Commit extends Command
         ];
         $status = $this->getQuestionHelper()->confirmAsk($question);
         if (!$status) {
-            throw new \Exception('Invalid staged files. Commit aborted by user.');
+            throw new \Exception('Commit aborted by user.');
         }
 
         return $command;
+    }
+
+    /**
+     * Interactive input to be executed by parent method
+     * Ask & validate the commit type.
+     *
+     * @return mixed
+     */
+    protected function interactInputMessage()
+    {
+        $question = $this->getOutputStyle()->question('Enter Commit Message: ');
+
+        return $this->validator($question, 'Message');
+    }
+
+    /**
+     * Interactive input to be executed by parent method
+     * Ask for the commit message details.
+     *
+     * @return mixed
+     */
+    protected function interactInputDetails()
+    {
+        if (!$this->option('oneline')) {
+            $question = $this->getOutputStyle()->question('Enter Commit Details (optional): ');
+
+            return $this->validator($question, 'Details');
+        }
+
+        return null;
+    }
+
+    /**
+     * Get an array of all of the input validators.
+     *
+     * @return array
+     */
+    protected function getValidators()
+    {
+        return array_merge([
+            'Message.Length' => $this,
+        ], $this->getStyle()->getValidators());
+    }
+
+    /**
+     * Execute ask and validate on all validators for a question.
+     *
+     * @param string $question
+     * @param string $type
+     *
+     * @return mixed
+     */
+    public function validator($question, $type)
+    {
+        return $this->getHelper('dialog')->askAndValidate($this->getOutput(), $question, function ($value) use ($type) {
+            foreach ($this->getValidators() as $name => $validator) {
+                if (strpos($name, $type . '.') === 0) {
+                    $method = 'validate' . str_replace('.', '', $name);
+                    $value = $validator->{$method}($value);
+                }
+            }
+
+            return $value;
+        });
+    }
+
+    /**
+     * Validate the message length. It must not be more than 60 chars.
+     *
+     * @param string $value
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return string
+     */
+    protected function validateMessageLength($value)
+    {
+        // Check the message size
+        if (strlen($value) > 60) {
+            $validLength = substr($value, 0, 60);
+            $extraLength = substr($value, 60);
+            $this->getOutputStyle()->warning($validLength . '<fg=red>' . $extraLength . '</>');
+            throw new \InvalidArgumentException('Commit message must not be more than 60 characters.');
+        }
+
+        // Must not be empty
+        if (empty($value)) {
+            throw new \InvalidArgumentException('Commit message must not be empty.');
+        }
+
+        return $value;
+    }
+
+    /**
+     * Call an optional method from the commit style class.
+     *
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return mixed
+     */
+    protected function callStyleOptionalAction($method, array $arguments = [])
+    {
+        if (method_exists($this->getStyle(), $method)) {
+            return $this->getStyle()->$method(...$arguments);
+        }
+
+        return false;
     }
 }
