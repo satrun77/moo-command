@@ -27,12 +27,24 @@ class StyledOutput extends SymfonyStyle
     protected $outputMinWidth = 120;
 
     /**
+     * @var array
+     */
+    protected $customStyles = [
+        'success' => ['default', 'green', ['bold']],
+        'debug'   => ['yellow', 'black', ['bold']],
+        'info2'   => ['cyan', 'default'],
+        'warning' => ['black', 'yellow'],
+    ];
+
+    /**
      * @param InputInterface         $input
      * @param Output\OutputInterface $output
      */
     public function __construct(InputInterface $input, Output\OutputInterface $output)
     {
         parent::__construct($input, $output);
+
+        $this->loadCustomStyles();
 
         // Windows cmd wraps lines as soon as the terminal width is reached, whether there are following chars or not.
         $this->outputMinWidth = min($this->getTerminalWidth() - (int) (DIRECTORY_SEPARATOR === '\\'), self::MAX_LINE_LENGTH);
@@ -46,7 +58,6 @@ class StyledOutput extends SymfonyStyle
      */
     public function success($string, $verbosity = null)
     {
-        $this->loadStyle('success', ['default', 'green', ['bold']]);
         $this->line($string, 'success', 'SUCCESS', $verbosity);
     }
 
@@ -58,7 +69,6 @@ class StyledOutput extends SymfonyStyle
      */
     public function debug($string, $verbosity = null)
     {
-        $this->loadStyle('debug', ['yellow', 'black', ['bold']]);
         $this->line($string, 'debug', 'DEBUG', $verbosity);
     }
 
@@ -88,7 +98,6 @@ class StyledOutput extends SymfonyStyle
      */
     public function info($string)
     {
-        $this->loadStyle('info2', ['cyan', 'default']);
         $this->line($string, 'info2', 'INFO');
     }
 
@@ -141,7 +150,6 @@ class StyledOutput extends SymfonyStyle
      */
     public function warning($string, $verbosity = null)
     {
-        $this->loadStyle('warning', ['black', 'yellow']);
         $this->line($string, 'warning', 'WARNING', $verbosity);
     }
 
@@ -151,7 +159,7 @@ class StyledOutput extends SymfonyStyle
      * @param string $character
      * @param string $style
      */
-    public function separator($character = '_', $style = 'default')
+    public function separator($character = '_', $style = '')
     {
         $text = str_pad('', $this->outputMinWidth, $character);
 
@@ -260,6 +268,20 @@ class StyledOutput extends SymfonyStyle
         if (!$this->getFormatter()->hasStyle($name)) {
             $style = new OutputFormatterStyle(...$formatterStyle);
             $this->getFormatter()->setStyle($name, $style);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Load custom styles.
+     *
+     * @return $this
+     */
+    protected function loadCustomStyles()
+    {
+        foreach ($this->customStyles as $name => $formatterStyle) {
+            $this->loadStyle($name, $formatterStyle);
         }
 
         return $this;
