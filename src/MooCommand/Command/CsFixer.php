@@ -81,7 +81,7 @@ class CsFixer extends Command
             // Execute and display progress
             if (file_exists($path)) {
                 $this->getShellHelper()->execRealTime(
-                    'php-cs-fixer fix %s --rules=%s %s %s',
+                    'php-cs-fixer fix %s --fixers=%s %s %s',
                     $path, $this->getFixes(), $verbose, $dryrun
                 );
             }
