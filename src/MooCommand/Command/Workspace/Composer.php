@@ -52,13 +52,9 @@ class Composer extends WorkspaceAbstract
      */
     protected function fire()
     {
-        $argument = $this->argument('argument');
-
         // Site root directory
-        $siteRoot = $this->getConfigHelper()->getSiteRoot('name');
-
-        // Change current directory to the container root directory
-        chdir($siteRoot);
+        $this->changeToSiteDirectory();
+        $argument = $this->argument('argument');
 
         $this->getShellHelper()->execRealTime('./start "run --rm composer %s"', $argument);
     }
