@@ -52,6 +52,7 @@ $application->add(new Command\Workspace\Update());
 $application->add(new Command\Workspace\SilverStripeSake());
 $application->add(new Command\Workspace\Composer());
 $application->add(new Command\Workspace\Cp());
+$application->add(new Command\Workspace\Stat());
 
 // Start console app
 $application->run();
