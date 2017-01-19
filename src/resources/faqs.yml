@@ -1,6 +1,8 @@
 questions:
   - "How to connect to database from Sequel Pro?"
   - "Composer container displays error message related to Bad owner or permissions on /root/.ssh files"
+  - "How to increase a container memory limit with docker-compose.yml?"
+  - "Docker is unable to pull image configuration or connecting to external server?"
 
 answers:
   - |
@@ -20,3 +22,28 @@ answers:
   - |
       Make sure the permission in your machine is set to aleast the following:
       chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
+
+  - |
+      Within the container section you can add the following:
+      mem_limit: [number of bytes]
+
+      Example,
+      ----------------------
+
+      version: "2"
+
+      services:
+       ....
+        php:
+             build: ./php/
+            mem_limit: 4096m
+            expose:
+                - 9000
+        ....
+
+  - |
+      If you are seeing an error similar to "...error pulling image configuration: i/o timeout...", it is possible
+      you have a stale network. You can resolve this issue by removing the network.
+
+      List networks:    docker network ls
+      Remove network:   docker network rm [the name of the network]
