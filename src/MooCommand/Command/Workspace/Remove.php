@@ -60,6 +60,10 @@ class Remove extends WorkspaceAbstract
             $this->getOutputStyle()->error('Unable to remove the containers.');
         }
 
+        // Remove network
+        $networkName = $this->argument('name') . '_default';
+        $this->getShellHelper()->exec('docker network rm %s', $networkName);
+
         // Success message
         $successMessage = 'The site removed successfully.';
         $this->getOutputStyle()->success($successMessage);
