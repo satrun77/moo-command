@@ -11,6 +11,7 @@
 namespace MooCommand\Command\Workspace;
 
 use MooCommand\Command\Workspace as WorkspaceAbstract;
+use Symfony\Component\Yaml\Parser;
 
 /**
  * ListSites.
@@ -37,9 +38,12 @@ class ListSites extends WorkspaceAbstract
      */
     protected function fire()
     {
+        $yml              = new Parser();
+        $this->containers = [];
+        $workspace        = $this->getConfigHelper()->getWorkspace();
+
         $this->getOutputStyle()->title('Available sites:');
 
-        $workspace = $this->getConfigHelper()->getWorkspace();
         try {
             $iterator = new \DirectoryIterator($workspace);
             $rows     = [];
@@ -66,33 +70,63 @@ class ListSites extends WorkspaceAbstract
                     // Sort columns & add to rows
                     ksort($row);
                     $rows[$file->getFilename()] = $row;
+
+                    // Extract & add containers to table headers
+                    $services = $yml->parse(
+                        file_get_contents($file->getPathname() . '/docker-compose.yml'),
+                        true,
+                        true
+                    );
+
+                    // Get containers grouped per site
+                    $this->containers[$file->getFilename()] = array_diff(array_keys($services['services']), ['app', 'data']);
                 }
             }
 
+            // Unique value of containers for table headers
+            $containers = array_unique(array_reduce($this->containers, function ($result, $item) {
+                if (!is_array($result)) {
+                    $result = [];
+                }
+
+                return array_merge($result, array_values($item));
+            }, []));
+
+            // Construct table rows
             foreach ($rows as $key => $row) {
                 // Check if port is unique
                 $container = array_search($row[2], $ports);
                 if ($container !== false && $container !== $key) {
-                    $rows[$key][2] .= ' <fg=red>×</fg=red>';
+                    $rows[$key][2] .= ' ❌';
                 }
 
                 // Check if site is active (running)
-                $containerStatus = [];
-                foreach ($this->containers as $container) {
+                foreach ($containers as $container) {
+
+                    // If the container is not part of the site
+                    if (!in_array($container, $this->containers[$key])) {
+                        $rows[$key][] = '⚪';
+                        continue;
+                    }
+
+                    // Check status of the container
                     $status = $this->getShellHelper()->exec('docker inspect -f \'{{.State.Running}}\' %s_%s_1', str_replace('.', '', $key), $container);
                     if (trim($status->getOutput()) === 'true') {
-                        $containerStatus[$container] = '<fg=green>✓ ' . $container . '</fg=green>';
+                        $rows[$key][] = '✅';
                     } else {
-                        $containerStatus[$container] = '<fg=red>× ' . $container . '</fg=red>';
+                        $rows[$key][] = '❌';
                     }
                 }
-
-                $rows[$key][3] = implode(' | ', $containerStatus);
             }
 
-            // Display table of data
-            $headers = ['Container', 'VIRTUAL_HOST', 'VIRTUAL_PORT', 'Running'];
+            // Add containers to headersDisplay table of data
+            $headers = array_merge(['Container', 'VIRTUAL_HOST', 'VIRTUAL_PORT'], $containers);
             $this->getOutputStyle()->table($headers, $rows);
+            $this->getOutputStyle()->listing([
+                '⚪  Container is not used.',
+                '✅  Container is running.',
+                '❌  Container is not running.',
+            ]);
         } catch (\Exception $e) {
             $this->debug($e->getMessage());
         }
