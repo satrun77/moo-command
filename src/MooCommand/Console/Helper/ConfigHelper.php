@@ -43,20 +43,21 @@ class ConfigHelper extends Helper
      */
     public function getCurrentSiteName()
     {
-        $path  = realpath(trim($this->getShellHelper()->exec('pwd')->getOutput()));
-        $value = basename($path);
+        // Current path & convert into an array
+        $path     = realpath(trim($this->getShellHelper()->exec('pwd')->getOutput()));
+        $segments = explode('/', $path);
+        // Workspace path without trailing "/"
+        $workspace = trim($this->getWorkspace(), '/');
 
-        if ($value === 'public') {
-            $path  = realpath($path . '/../../');
-            $value = basename($path);
-        }
+        // Loop over the path segments until we found a path that matched the workspace,
+        // then the previous item is the site name
+        $siteName = end($segments);
+        do {
+            $path         = trim(dirname($path), '/');
+            $pathNotFound = $workspace == $path;
+        } while (!$pathNotFound && $siteName = prev($segments));
 
-        if ($value === 'site') {
-            $path  = realpath($path . '/../');
-            $value = basename($path);
-        }
-
-        return $value;
+        return $siteName;
     }
 
     /**
