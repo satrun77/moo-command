@@ -8,16 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace MooCommand\Command\Workspace;
+namespace MooCommand\Command;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Console\Command;
 
 /**
  * Faq.
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Faq extends WorkspaceAbstract
+class Faq extends Command
 {
     const DATA_SOURCE_LOCAL = 'local';
     const DATA_SOURCE_REMOTE = 'url';
@@ -28,7 +28,11 @@ class Faq extends WorkspaceAbstract
     /**
      * @var string
      */
-    protected $childSignature = 'faq';
+    protected $signature = 'faq';
+    /**
+     * @var bool
+     */
+    protected $runRoot = false;
 
     /**
      * Main method to execute the command script.

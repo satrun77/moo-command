@@ -34,12 +34,12 @@ Name | Details
   help         |Displays help for a command
   list         |Lists commands
   qcode        |Check source code using tool such as, Mess Detector, Copy/Paste Detector, PHP Parallel Lint, & Security Advisories.
+  faq          |Display FAQs.
   ws:build     |Build or rebuild services for a site within the workspace. A wrapper to docker-compose build command.
   ws:clean     |Execute specific commands to free up unwanted space such as, removing old containers, or dangling images.
   ws:clone     |Setup local development from a single YAML file within a repository (.env.yml)
   ws:composer  |Execute PHP composer command inside the composer container.
   ws:cp        |Copy a file from host machine to a docker container or download from a docker container. A wrapper to docker cp command.
-  ws:faq       |Display FAQs.
   ws:hosts     |Update the host file in user machine (/etc/hosts) with the docker IP address and the host names setup for all of the sites in workspace.
   ws:ip        |Display the docker machine IP address.
   ws:ips       |Display the IP addresses selected for each of the active docker containers.
