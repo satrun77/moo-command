@@ -141,29 +141,79 @@ class ConfigHelper extends Helper
     }
 
     /**
+     * Get path to user config file.
+     *
      * @return string
      */
-    protected function getConfigFilePath()
+    protected function getUserConfigFilePath()
     {
         $username = $this->getShellHelper()->exec('whoami');
         $path     = '/Users/' . trim($username->getOutput()) . '/.moo.yml';
-        $this->getCommand()->debug('Config path: ' . $path);
+        $this->getCommand()->debug('User config: ' . $path);
 
         return $path;
     }
 
+    /**
+     * Get path to core config file.
+     *
+     * @return string
+     */
+    protected function getCoreConfigFilePath()
+    {
+        return __APP_DIR__ . '/resources/core_config.yml';
+    }
+
+    /**
+     * Load and merge configuration files.
+     *
+     * @return void
+     */
     protected function loadConfig()
     {
         if (!is_null($this->config)) {
             return;
         }
 
-        $yml          = new Parser();
-        $this->config = $yml->parse(
-            file_get_contents($this->getConfigFilePath()),
+        // Load user configurations
+        $this->config = (new Parser())->parse(
+            file_get_contents($this->getUserConfigFilePath()),
             true,
             true
         );
+
+        // Override user configurations with core ones, if exists
+        $this->loadCoreConfigIfNeeded();
+    }
+
+    /**
+     * Load core config to override user configs from .moo.yml.
+     *
+     * @return void
+     */
+    protected function loadCoreConfigIfNeeded()
+    {
+        // Only load core config if file exists
+        $configFile = $this->getCoreConfigFilePath();
+        if (!file_exists($configFile)) {
+            return;
+        }
+
+        // Get core configs
+        $coreConfig = (new Parser())->parse(
+            file_get_contents($this->getCoreConfigFilePath()),
+            true,
+            true
+        );
+        if (!$coreConfig) {
+            return;
+        }
+
+        // Core config should not override workspace path, or faqs
+        unset($coreConfig['workspace'], $coreConfig['faqs']);
+
+        // Merge core config to override user config
+        $this->config = array_merge($this->config, $coreConfig);
     }
 
     /**
