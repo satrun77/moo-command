@@ -13,8 +13,6 @@ namespace MooCommand\Command\Commit;
 
 /**
  * Interface CommitStyleInterface.
- *
- * @package MooCommand\Command\Commit
  */
 interface CommitStyleInterface
 {

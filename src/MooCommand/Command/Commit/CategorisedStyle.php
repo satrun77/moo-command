@@ -15,8 +15,6 @@ use MooCommand\Command\Commit;
 
 /**
  * Class CategorisedStyle.
- *
- * @package MooCommand\Command\Commit
  */
 class CategorisedStyle implements CommitStyleInterface
 {

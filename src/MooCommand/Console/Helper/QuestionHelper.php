@@ -18,8 +18,6 @@ use Symfony\Component\Console\Question\Question;
 
 /**
  * Class QuestionHelper.
- *
- * @package MooCommand\Console\Helper
  */
 class QuestionHelper extends Helper
 {
@@ -54,7 +52,7 @@ class QuestionHelper extends Helper
         $command = $this->getCommand();
         $command->getOutputStyle()->question($question);
         $yesNoString = $command->getOutputStyle()->formatLine('[yes/no]', 'fg=green');
-        $question    = new ConfirmationQuestion($yesNoString . "\n> ", (boolean) $default);
+        $question    = new ConfirmationQuestion($yesNoString . "\n> ", (bool) $default);
 
         return $this->getHelper()->ask($command->getInput(), $command->getOutput(), $question);
     }

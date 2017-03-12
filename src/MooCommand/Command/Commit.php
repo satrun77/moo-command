@@ -391,7 +391,7 @@ class Commit extends Command
      *
      * @return mixed
      */
-    protected function callStyleOptionalAction($method, ... $arguments)
+    protected function callStyleOptionalAction($method, ...$arguments)
     {
         if (method_exists($this->getStyle(), $method)) {
             return $this->getStyle()->$method(...$arguments);

@@ -103,9 +103,9 @@ class Create extends WorkspaceAbstract
     protected function updateWebEnvFile($sitePath)
     {
         // Highest port plus 1 && site name
-        $port = max($this->getUsedPorts()) + 1;
+        $port     = max($this->getUsedPorts()) + 1;
         $solrPort = max($this->getUsedPorts('SOLR_PORT')) + 1;
-        $name = $this->argument('name');
+        $name     = $this->argument('name');
 
         // Open file for reading & replace host & port
         $envFile  = new \SplFileObject($sitePath . '/env/web.env', 'r');

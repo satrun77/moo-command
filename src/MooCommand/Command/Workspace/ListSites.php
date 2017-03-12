@@ -102,7 +102,6 @@ class ListSites extends WorkspaceAbstract
 
                 // Check if site is active (running)
                 foreach ($containers as $container) {
-
                     // If the container is not part of the site
                     if (!in_array($container, $this->containers[$key])) {
                         $rows[$key][] = '⚪';

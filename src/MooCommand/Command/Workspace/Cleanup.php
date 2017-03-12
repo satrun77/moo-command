@@ -95,7 +95,7 @@ class Cleanup extends WorkspaceAbstract
         chdir($workspace);
 
         // Shell & output helpers
-        $shell = $this->getShellHelper();
+        $shell  = $this->getShellHelper();
         $output = $this->getOutputStyle();
 
         // Execute clean up commands
@@ -111,9 +111,9 @@ class Cleanup extends WorkspaceAbstract
     /**
      * Execute a callback method to preform a clean up task.
      *
-     * @param array $command
+     * @param array        $command
      * @param StyledOutput $output
-     * @param ShellHelper $shell
+     * @param ShellHelper  $shell
      */
     protected function executeMethodCallback(array $command, StyledOutput $output, ShellHelper $shell)
     {
@@ -132,9 +132,9 @@ class Cleanup extends WorkspaceAbstract
     /**
      * Execute shell command to preform a clean up task.
      *
-     * @param array $command
+     * @param array        $command
      * @param StyledOutput $output
-     * @param ShellHelper $shell
+     * @param ShellHelper  $shell
      */
     protected function executeShellCommand(array $command, StyledOutput $output, ShellHelper $shell)
     {
@@ -149,7 +149,7 @@ class Cleanup extends WorkspaceAbstract
 
         // Execute command & display error if not successful
         $status = $shell->exec($shellCommand);
-        $error = $this->getCommandValue('error', $command);
+        $error  = $this->getCommandValue('error', $command);
         if (!$status->isSuccessful() && !empty($error)) {
             $output->error($error);
         }
@@ -159,17 +159,17 @@ class Cleanup extends WorkspaceAbstract
      * Clean up task to remove stale networks.
      *
      * @param StyledOutput $output
-     * @param ShellHelper $shell
+     * @param ShellHelper  $shell
      */
     protected function removeStaleNetworks(StyledOutput $output, ShellHelper $shell)
     {
-        $networkCommand = $shell->exec("docker network ls -q");
+        $networkCommand = $shell->exec('docker network ls -q');
         if (!$networkCommand->isSuccessful()) {
             return;
         }
 
         $skipNetworks = ['host', 'bridge', 'none', 'proxy_default'];
-        $networks = explode("\n", $networkCommand->getOutput());
+        $networks     = explode("\n", $networkCommand->getOutput());
         foreach ($networks as $network) {
             // Skip empty lines
             if (empty($network)) {
@@ -194,6 +194,7 @@ class Cleanup extends WorkspaceAbstract
      * Whether or no the command string is a callback method.
      *
      * @param string $command
+     *
      * @return bool
      */
     protected function isMethodCallback($command)
@@ -205,7 +206,8 @@ class Cleanup extends WorkspaceAbstract
      * Get value from an array based on key, or empty for not found.
      *
      * @param string $name
-     * @param array $source
+     * @param array  $source
+     *
      * @return string
      */
     protected function getCommandValue($name, array $source)

@@ -13,7 +13,6 @@ namespace MooCommand\Console;
 
 use MooCommand\Console\Helper\ConfigHelper;
 use MooCommand\Console\Helper\ShellHelper;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,8 +21,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class Command.
- *
- * @package MooCommand\Console
  */
 class Command extends SymfonyCommand
 {
@@ -238,7 +235,7 @@ class Command extends SymfonyCommand
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
-     * @return int 0 on successful, 1 on error.
+     * @return int 0 on successful, 1 on error
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

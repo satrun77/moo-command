@@ -19,8 +19,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class StyledOutput.
- *
- * @package MooCommand\Console
  */
 class StyledOutput extends SymfonyStyle
 {

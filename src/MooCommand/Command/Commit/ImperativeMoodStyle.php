@@ -15,8 +15,6 @@ use MooCommand\Command\Commit;
 
 /**
  * Class ImperativeMoodStyle.
- *
- * @package MooCommand\Command\Commit
  */
 class ImperativeMoodStyle implements CommitStyleInterface
 {

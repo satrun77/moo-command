@@ -19,7 +19,7 @@ use MooCommand\Console\Command;
  */
 class Faq extends Command
 {
-    const DATA_SOURCE_LOCAL = 'local';
+    const DATA_SOURCE_LOCAL  = 'local';
     const DATA_SOURCE_REMOTE = 'url';
     /**
      * @var string
@@ -67,7 +67,7 @@ class Faq extends Command
     protected function getData()
     {
         // Core data
-        $faqs = $this->getConfigHelper()->getResource('faqs.yml');
+        $faqs          = $this->getConfigHelper()->getResource('faqs.yml');
         $userQuestions = $userAnswers = [];
 
         // Type of use question source
@@ -76,20 +76,20 @@ class Faq extends Command
         // Load questions/answers from local config
         if ($source === self::DATA_SOURCE_LOCAL) {
             $userQuestions = $this->getConfigHelper()->getConfig('faqs.data.questions');
-            $userAnswers = $this->getConfigHelper()->getConfig('faqs.data.answers');
+            $userAnswers   = $this->getConfigHelper()->getConfig('faqs.data.answers');
         }
 
         // Load question/answers from a URL
         if ($source === self::DATA_SOURCE_REMOTE) {
             $remoteQuestions = json_decode(file_get_contents($this->getConfigHelper()->getConfig('faqs.data')));
-            $userQuestions = $remoteQuestions->questions;
-            $userAnswers = $remoteQuestions->answers;
+            $userQuestions   = $remoteQuestions->questions;
+            $userAnswers     = $remoteQuestions->answers;
         }
 
         // Merge questions and answers
         foreach ($userQuestions as $index => $question) {
             $faqs['questions'][] = $question;
-            $faqs['answers'][] = $userAnswers[$index];
+            $faqs['answers'][]   = $userAnswers[$index];
         }
 
         return $faqs;

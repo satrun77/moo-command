@@ -17,8 +17,6 @@ use Symfony\Component\Process\Process;
 
 /**
  * Class ShellHelper.
- *
- * @package MooCommand\Console\Helper
  */
 class ShellHelper extends Helper
 {

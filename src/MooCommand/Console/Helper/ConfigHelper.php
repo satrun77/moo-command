@@ -16,8 +16,6 @@ use Symfony\Component\Yaml\Parser;
 
 /**
  * Class ConfigHelper.
- *
- * @package MooCommand\Console\Helper
  */
 class ConfigHelper extends Helper
 {
