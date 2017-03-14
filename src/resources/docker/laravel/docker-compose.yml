@@ -34,6 +34,8 @@ services:
           - mysql
       volumes_from:
           - app
+      environment:
+          - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
       env_file:
           - ./env/db.env
           - ./env/web.env
