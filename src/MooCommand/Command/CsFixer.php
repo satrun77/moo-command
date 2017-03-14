@@ -70,6 +70,12 @@ class CsFixer extends Command
             $this->installCsFixer();
         }
 
+        // Check the version of CS fixer - support 2.x
+        $version = $this->getShellHelper()->exec('php-cs-fixer --version')->getOutput();
+        if (strpos(trim($version), 'PHP CS Fixer 2.') !== 0) {
+            return $this->getOutputStyle()->error('This command require CS Fixer version 2.x');
+        }
+
         // Fix php code
         foreach ($paths as $path) {
             $this->getOutputStyle()->section('Fixing: ' . $path);
