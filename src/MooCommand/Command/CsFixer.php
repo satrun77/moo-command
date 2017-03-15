@@ -72,7 +72,7 @@ class CsFixer extends Command
 
         // Check the version of CS fixer - support 2.x
         $version = $this->getShellHelper()->exec('php-cs-fixer --version')->getOutput();
-        if (strpos(trim($version), 'PHP CS Fixer 2.') !== 0) {
+        if (strpos(trim($version), 'PHP CS Fixer version 2.') !== 0) {
             return $this->getOutputStyle()->error('This command require CS Fixer version 2.x');
         }
 
