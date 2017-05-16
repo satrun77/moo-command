@@ -110,25 +110,9 @@ class Commit extends Command
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $this->input->setInteractive(true);
-
         if ($shortcutOption = $this->hasShortcutOption()) {
             // Message to print in console
             $this->callStyleOptionalAction('beforeShortcut', $shortcutOption);
-
-            // Disable interactive, message configured
-            $this->input->setInteractive(false);
-            $this->setArgument('message', $this->getStyle()->getShortcutMessage($shortcutOption));
-            $this->setArgument('details', $this->getStyle()->getShortcutDetails($shortcutOption));
-
-            // Output the predefined message
-            $this->getOutputStyle()->separator('_', 'info2');
-            $this->getOutputStyle()->line(
-                $this->argument('message') . "\n\n" . $this->argument('details'),
-                'info2',
-                'Commit'
-            );
-            $this->getOutputStyle()->separator('_', 'info2');
         }
     }
 
@@ -142,13 +126,27 @@ class Commit extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        $shortcutOption = $this->hasShortcutOption();
         $arguments = $this->getStyle()->getArguments();
         foreach ($arguments as $argument) {
-            $method = 'interactInput' . $argument;
-            $caller = method_exists($this->getStyle(), $method) ? $this->getStyle() : $this;
-            $this->callStyleOptionalAction('beforeInput' . $argument);
-            $value = $caller->$method();
-            $this->setArgument(strtolower($argument), $value);
+            // If we are editing a message and we have a shortcut enabled, then skip interaction and display message
+            // else interaction enabled if shortcut is disabled or editing details
+            if ($argument === 'Message' && $shortcutOption) {
+                $value = $this->getStyle()->getShortcutMessage($shortcutOption);
+                $this->getOutputStyle()->separator('_', 'comment');
+                $this->getOutputStyle()->line($value, 'comment', 'Commit');
+                $this->getOutputStyle()->separator('_', 'comment');
+            } elseif ($argument === 'Details' || !$shortcutOption) {
+                $method = 'interactInput' . $argument;
+                $this->callStyleOptionalAction('beforeInput' . $argument);
+                $caller = method_exists($this->getStyle(), $method) ? $this->getStyle() : $this;
+                $value = $caller->$method();
+            }
+
+            // Set argument value if we have one
+            if (!empty($value)) {
+                $this->setArgument(strtolower($argument), $value);
+            }
         }
     }
 
@@ -161,9 +159,6 @@ class Commit extends Command
      */
     protected function fire()
     {
-        // Make sure interactive enabled. This may get disabled in self::initialize
-        $this->input->setInteractive(true);
-
         $this->confirmStagedFiles();
 
         // Commit message details
