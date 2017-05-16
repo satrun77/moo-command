@@ -12,10 +12,13 @@ RUN apt-get install -y libpng12-dev
 RUN apt-get install -y libjpeg62-turbo-dev
 RUN apt-get install -y libfreetype6-dev
 RUN apt-get install -y git-core
+RUN apt-get install -y zlib1g-dev libicu-dev g++
 
 # PHP extensions
 RUN docker-php-ext-install mbstring
 RUN docker-php-ext-install mysqli
+RUN docker-php-ext-configure intl
+RUN docker-php-ext-install intl
 RUN docker-php-ext-install tidy
 RUN docker-php-ext-install pdo
 RUN docker-php-ext-install pdo_mysql
