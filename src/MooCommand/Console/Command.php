@@ -11,6 +11,8 @@
 
 namespace MooCommand\Console;
 
+use Joli\JoliNotif\Notification;
+use Joli\JoliNotif\NotifierFactory;
 use MooCommand\Console\Helper\ConfigHelper;
 use MooCommand\Console\Helper\ShellHelper;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
@@ -295,6 +297,27 @@ class Command extends SymfonyCommand
                 $this->input->setArgument($name, $value);
             }
         }
+    }
+
+    /**
+     * @param string      $text
+     * @param string      $body
+     *
+     * @return void
+     */
+    protected function notify($text, $body)
+    {
+        // Create a Notifier
+        $notifier = NotifierFactory::create();
+
+        // Create notification - Sound only works on macOS (AppleScriptNotifier)
+        $notification = (new Notification())
+            ->setTitle($text)
+            ->setBody($body)
+            ->addOption('sound', 'Frog');
+
+        // Send it
+        $notifier->send($notification);
     }
 
     /**

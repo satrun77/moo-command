@@ -16,7 +16,8 @@
     "symfony/console": "~2.8",
     "symfony/finder": "~2.8",
     "symfony/yaml": "~2.8",
-    "symfony/process": "^3.0"
+    "symfony/process": "^3.0",
+    "jolicode/jolinotif": "^1.2"
   },
   "require-dev": {
     "symfony/var-dumper": "^3.0"
