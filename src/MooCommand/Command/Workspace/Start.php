@@ -58,5 +58,6 @@ class Start extends WorkspaceAbstract
         // Success message
         $successMessage = 'The site started successfully.';
         $this->getOutputStyle()->success($successMessage);
+        $this->notify('Start environment ' . $this->getConfigHelper()->getCurrentSiteName(), $successMessage);
     }
 }
