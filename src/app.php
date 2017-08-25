@@ -26,7 +26,7 @@ use MooCommand\Console\Helper\QuestionHelper;
 use MooCommand\Console\Helper\ShellHelper;
 use Symfony\Component\Console\Application;
 
-$application = new Application('Moo Development Console', '1.0.0-alpha1');
+$application = new Application('Moo Development Console', '1.0.0-alpha4');
 
 // Console helpers
 $application->getHelperSet()->set(new ConfigHelper());
