@@ -67,5 +67,6 @@ class Remove extends WorkspaceAbstract
         // Success message
         $successMessage = 'The site removed successfully.';
         $this->getOutputStyle()->success($successMessage);
+        $this->notify('Remove environment ' . $this->getConfigHelper()->getCurrentSiteName(), $successMessage);
     }
 }

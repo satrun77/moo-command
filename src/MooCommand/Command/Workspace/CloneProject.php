@@ -222,6 +222,9 @@ class CloneProject extends WorkspaceAbstract
         // Fix files permission (ie. make executable)
         $this->fixFilesPermissions($setup);
 
+        // Display desktop notification
+        $this->notify('Clone environment', 'Repository cloned, you like to start the new environment?');
+
         // Ask to start container
         if ($this->getQuestionHelper()->confirmAsk('Would you like to start the new environment?', false)) {
             $this->getShellHelper()->execRealTime('./start');

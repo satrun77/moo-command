@@ -58,6 +58,7 @@ class Build extends WorkspaceAbstract
         // Display success message
         $successMessage = 'The site build completed successfully.';
         $this->getOutputStyle()->success($successMessage);
+        $this->notify('Build environment ' . $this->getConfigHelper()->getCurrentSiteName(), $successMessage);
 
         // Ask to start container
         if ($this->getQuestionHelper()->confirmAsk('Would you like to start the new container?', false)) {

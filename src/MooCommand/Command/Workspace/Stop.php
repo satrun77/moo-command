@@ -70,6 +70,8 @@ class Stop extends WorkspaceAbstract
         $stop = $this->getShellHelper()->exec('docker stop $(docker ps -a -q)');
         if (!$stop->isSuccessful()) {
             $this->getOutputStyle()->error('Unable to stop containers');
+        } else {
+            $this->notify('Stop all environment', 'All containers are stopped.');
         }
     }
 
@@ -87,5 +89,6 @@ class Stop extends WorkspaceAbstract
         // Success message
         $successMessage = 'The site stopped successfully.';
         $this->getOutputStyle()->success($successMessage);
+        $this->notify('Stop environment ' . $this->getConfigHelper()->getCurrentSiteName(), $successMessage);
     }
 }

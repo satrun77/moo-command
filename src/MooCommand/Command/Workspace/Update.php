@@ -61,6 +61,7 @@ class Update extends WorkspaceAbstract
         // Display success message
         $successMessage = 'The container files updated successfully.';
         $this->getOutputStyle()->success($successMessage);
+        $this->notify('Update environment ' . $this->getConfigHelper()->getCurrentSiteName(), $successMessage);
 
         // Build the container
         $this->getShellHelper()->execApplicationCommand('ws:build', [
