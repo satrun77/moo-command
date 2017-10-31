@@ -1,0 +1,80 @@
+version: "2"
+
+services:
+  site:
+      build: ./apache/
+      ports:
+        - "${VIRTUAL_PORT}:80"
+      links:
+          - php
+      external_links:
+          - proxy:dockergen
+      volumes_from:
+          - app
+      volumes:
+          - ./apache/logs:/var/log/apache2
+      environment:
+          - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
+      env_file:
+          - ./env/web.env
+          - ./env/db.env
+
+  mysql:
+      build: ./db/
+      volumes_from:
+          - data
+      env_file:
+          - ./env/db.env
+
+  frontend:
+      build: ./frontend/
+      volumes_from:
+          - app
+
+  php:
+      build: ./php/
+      expose:
+          - 9000
+      links:
+          - mysql
+      volumes_from:
+          - app
+      environment:
+          - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
+      env_file:
+          - ./env/db.env
+          - ./env/ss.env
+          - ./env/web.env
+
+  composer:
+      build: ./composer/
+      volumes:
+          - ~/.composer:/var/www/composer
+          - ~/.ssh:/var/www/.ssh
+          - ~/.netrc:/root/.netrc
+          - ./site:/var/www/html
+
+  solr:
+      build: ./solr/
+      ports:
+          - "${SOLR_PORT}:8983"
+      volumes_from:
+          - app
+
+  app:
+      image: php:5.6-fpm
+      volumes:
+          - {{volume-name}}:/var/www/html
+          - ./php/mail:/var/www/mail
+          - ./solr/myindex:/var/www/solr
+      command: "true"
+      tty: true
+
+  data:
+      image: mariadb:10.1
+      volumes:
+          - /var/lib/mysql
+      command: "true"
+volumes:
+  {{volume-name}}:
+    external: true

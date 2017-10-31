@@ -68,6 +68,9 @@ class Create extends WorkspaceAbstract
         // Update web.env file
         $this->updateWebEnvFile($sitePath);
 
+        // Set docker-sync settings
+        $this->setDockerSyncSettings($sitePath);
+
         $shell = $this->getShellHelper();
         $shell->exec('sudo chmod +x %s/start', $sitePath);
         $shell->exec('sudo chmod +x %s/frontend/build', $sitePath);
@@ -121,6 +124,39 @@ class Create extends WorkspaceAbstract
         $envFile = new \SplFileObject($sitePath . '/env/web.env', 'w+');
         $envFile->fwrite($contents);
         $envFile = null;
+
+        return true;
+    }
+
+    /**
+     * Update docker-sync settings
+     *
+     * @param string $sitePath
+     *
+     * @return bool
+     */
+    protected function setDockerSyncSettings($sitePath)
+    {
+        $siteName   = str_replace('.', '', $this->argument('name'));
+        $volumeName = $siteName . '-rsync-sync';
+        $files      = [
+            'docker-compose-dev.yml',
+            'docker-sync.yml',
+            'start',
+        ];
+
+        foreach ($files as $file) {
+            $envFile  = new \SplFileObject($sitePath . '/' . $file, 'r');
+            $contents = $envFile->fread($envFile->getSize());
+            $contents = strtr($contents, [
+                '{{volume-name}}' => $volumeName,
+            ]);
+            $envFile = null;
+
+            $envFile = new \SplFileObject($sitePath . '/' . $file, 'w+');
+            $envFile->fwrite($contents);
+            $envFile = null;
+        }
 
         return true;
     }

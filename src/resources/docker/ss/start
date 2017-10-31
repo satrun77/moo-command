@@ -2,4 +2,20 @@
 
 export DOCKER_MACHINE_IP=$(docker-machine ip default) &&
 export $(grep "^[^#]" env/web.env | xargs) &&
-docker-compose ${1:-up -d}
+
+PARAM=${1:-up -d}
+DOCKER_VOLUME="{{volume-name}}"
+TYPE=${1:-up -d}
+
+if [ "$TYPE" = "up -d" ]
+then
+   docker volume create --name=$DOCKER_VOLUME
+   docker-compose -f docker-compose-dev.yml up -d
+   docker-sync start
+elif [ "$TYPE" = "stop" ]
+then
+   docker-sync stop
+   docker-compose stop
+else
+  docker-compose ${1:-up -d}
+fi

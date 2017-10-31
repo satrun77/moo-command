@@ -1,0 +1,17 @@
+version: "2"
+options:
+  verbose: true
+  compose-dev-file-path: './docker-compose-dev.yml'
+  rsync_image: 'eugenmayer/rsync'
+  cli_mode: 'auto'
+syncs:
+  {{volume-name}}:
+    src: './site/'
+    watch_in_container: true
+    sync_host_port: 10873
+    sync_strategy: 'rsync'
+    watch_strategy: 'fswatch'
+    notify_terminal: true
+    sync_args: '-v --copy-links --hard-links'
+    sync_excludes: ['Gemfile.lock', 'Gemfile', 'config.rb', '.sass-cache/', 'sass/', 'sass-cache/', 'package.json', 'node_modules/', '.gitignore', '.git/', '*.scss', '*.sass']
+    watch_excludes: ['.*/.git', '.*/node_modules', '.*/assets', '.*/sass-cache', '.*/.sass-cache', '.*/.sass-cache', '.scss', '.sass', '.gitignore']
