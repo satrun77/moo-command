@@ -300,8 +300,8 @@ class Command extends SymfonyCommand
     }
 
     /**
-     * @param string      $text
-     * @param string      $body
+     * @param string $text
+     * @param string $body
      *
      * @return void
      */

@@ -127,7 +127,7 @@ class Commit extends Command
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         $shortcutOption = $this->hasShortcutOption();
-        $arguments = $this->getStyle()->getArguments();
+        $arguments      = $this->getStyle()->getArguments();
         foreach ($arguments as $argument) {
             // If we are editing a message and we have a shortcut enabled, then skip interaction and display message
             // else interaction enabled if shortcut is disabled or editing details
@@ -140,7 +140,7 @@ class Commit extends Command
                 $method = 'interactInput' . $argument;
                 $this->callStyleOptionalAction('beforeInput' . $argument);
                 $caller = method_exists($this->getStyle(), $method) ? $this->getStyle() : $this;
-                $value = $caller->$method();
+                $value  = $caller->$method();
             }
 
             // Set argument value if we have one
