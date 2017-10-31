@@ -150,6 +150,7 @@ class Create extends WorkspaceAbstract
             $contents = $envFile->fread($envFile->getSize());
             $contents = strtr($contents, [
                 '{{volume-name}}' => $volumeName,
+                '{{root_path}}'   => $sitePath,
             ]);
             $envFile = null;
 
