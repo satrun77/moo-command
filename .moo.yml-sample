@@ -24,6 +24,9 @@ commit:
     One: One
     Bug: Bug
   words:
+    - Invert
+    - Increase
+    - Refactor
     - Change
     - Add
     - Create
