@@ -156,6 +156,39 @@ abstract class Workspace extends Command
     }
 
     /**
+     * Get value of an environment file (web.env) option
+     *
+     * @param $field
+     * @param  string $default
+     * @return string
+     */
+    protected function getEnvFileValue($field, $default = '')
+    {
+        $file = $this->getConfigHelper()->getSiteRoot('name') . '/env/web.env';
+
+        try {
+            if (file_exists($file)) {
+                $envFile = new \SplFileObject($file, 'r');
+
+                foreach ($envFile as $line) {
+                    if (empty($line)) {
+                        continue;
+                    }
+
+                    $line = explode('=', trim($line));
+                    if ($line[0] === $field) {
+                        return $line[1];
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            $this->debug($e->getMessage());
+        }
+
+        return $default;
+    }
+
+    /**
      * Returns path to workspace.
      *
      * @return string

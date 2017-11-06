@@ -56,7 +56,10 @@ class Start extends WorkspaceAbstract
         }
 
         // Success message
-        $successMessage = 'The site started successfully.';
+        $protocol       = 'http://';
+        $ip             = $this->getMachineIp();
+        $port           = ':' . $this->getEnvFileValue('VIRTUAL_PORT');
+        $successMessage = sprintf("The site started successfully.\nWebsite: %s%s%s", $protocol, $ip, $port);
         $this->getOutputStyle()->success($successMessage);
         $this->notify('Start environment ' . $this->getConfigHelper()->getCurrentSiteName(), $successMessage);
     }
