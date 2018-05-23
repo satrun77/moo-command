@@ -58,6 +58,9 @@ class Update extends WorkspaceAbstract
             '/solr/myindex',
         ]);
 
+        // Set docker-sync settings
+        $this->setDockerSyncSettings($sitePath);
+
         // Display success message
         $successMessage = 'The container files updated successfully.';
         $this->getOutputStyle()->success($successMessage);

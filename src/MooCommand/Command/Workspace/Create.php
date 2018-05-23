@@ -127,38 +127,4 @@ class Create extends WorkspaceAbstract
 
         return true;
     }
-
-    /**
-     * Update docker-sync settings
-     *
-     * @param string $sitePath
-     *
-     * @return bool
-     */
-    protected function setDockerSyncSettings($sitePath)
-    {
-        $siteName   = str_replace('.', '', $this->argument('name'));
-        $volumeName = $siteName . '-rsync-sync';
-        $files      = [
-            'docker-compose-dev.yml',
-            'docker-sync.yml',
-            'start',
-        ];
-
-        foreach ($files as $file) {
-            $envFile  = new \SplFileObject($sitePath . '/' . $file, 'r');
-            $contents = $envFile->fread($envFile->getSize());
-            $contents = strtr($contents, [
-                '{{volume-name}}' => $volumeName,
-                '{{root_path}}'   => $sitePath,
-            ]);
-            $envFile = null;
-
-            $envFile = new \SplFileObject($sitePath . '/' . $file, 'w+');
-            $envFile->fwrite($contents);
-            $envFile = null;
-        }
-
-        return true;
-    }
 }
