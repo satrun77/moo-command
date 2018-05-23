@@ -9,7 +9,6 @@ TYPE=${1:-up -d}
 
 if [ "$TYPE" = "up -d" ]
 then
-   docker volume create --name=$DOCKER_VOLUME
    docker-compose -f docker-compose-dev.yml up -d
    docker-sync start
 elif [ "$TYPE" = "stop" ]
