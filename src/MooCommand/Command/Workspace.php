@@ -367,7 +367,7 @@ abstract class Workspace extends Command
     protected function setDockerSyncSettings($sitePath)
     {
         $siteName   = str_replace('.', '', $this->argument('name'));
-        $volumeName = $siteName . '-rsync-sync';
+        $volumeName = $siteName . '_dockersync_1';
         $files      = [
             'docker-compose-dev.yml',
             'docker-sync.yml',
