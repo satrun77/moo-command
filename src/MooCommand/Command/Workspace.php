@@ -73,13 +73,16 @@ abstract class Workspace extends Command
      */
     protected function getMachineIp()
     {
-        $ip = $this->getShellHelper()->exec('docker-machine ip default');
+        $ip = $this->getShellHelper()->exec('ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk \'{print $2}\'');
 
-        if (!$ip->isSuccessful()) {
-            return false;
+        if ($ip->isSuccessful()) {
+            $potentialIds = explode("\n", trim($ip->getOutput()));
+            if (!empty($potentialIds[0])) {
+                return $potentialIds[0];
+            }
         }
 
-        return trim($ip->getOutput());
+        return 'localhost';
     }
 
     /**
