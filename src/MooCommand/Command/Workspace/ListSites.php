@@ -38,10 +38,16 @@ class ListSites extends WorkspaceAbstract
      */
     protected function fire()
     {
+        // YML file parser
         $yml              = new Parser();
+        // Reset collection of containers
         $this->containers = [];
+        // Get path to workspace
         $workspace        = $this->getConfigHelper()->getWorkspace();
+        // Get instance of shell helper
+        $shell            = $this->getShellHelper();
 
+        // Output heading
         $this->getOutputStyle()->title('Available sites:');
 
         try {
@@ -49,6 +55,7 @@ class ListSites extends WorkspaceAbstract
             $rows     = [];
             $ports    = [];
             foreach ($iterator as $file) {
+                // Get data from web.env file about port & host
                 $env = $file->getPathname() . '/env/web.env';
                 if ($file->isDir() && file_exists($env)) {
                     $envFile = new \SplFileObject($env, 'r');
@@ -79,7 +86,11 @@ class ListSites extends WorkspaceAbstract
                     );
 
                     // Get containers grouped per site
-                    $this->containers[$file->getFilename()] = array_diff(array_keys($services['services']), ['app', 'data']);
+                    // Exclude app, data, & composer from docker YML
+                    // Add padding on both side for each container to have equal width columns
+                    $this->containers[$file->getFilename()] = array_map(function($container) {
+                        return str_pad($container, 10, ' ', STR_PAD_BOTH);
+                    }, array_diff(array_keys($services['services']), ['app', 'data', 'composer']));
                 }
             }
 
@@ -109,7 +120,7 @@ class ListSites extends WorkspaceAbstract
                     }
 
                     // Check status of the container
-                    $status = $this->getShellHelper()->exec('docker inspect -f \'{{.State.Running}}\' %s_%s_1', str_replace('.', '', $key), $container);
+                    $status = $shell->exec('docker inspect -f \'{{.State.Running}}\' %s_%s_1', str_replace('.', '', $key), $container);
                     if (trim($status->getOutput()) === 'true') {
                         $rows[$key][] = '✅';
                     } else {
