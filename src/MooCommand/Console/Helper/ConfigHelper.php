@@ -113,7 +113,7 @@ class ConfigHelper extends Helper
                 }
 
                 // Temporary hack for now
-                if ($file->getFilename() == 'start' && !chmod($filePath, 0750)) {
+                if ('start' == $file->getFilename() && !chmod($filePath, 0750)) {
                     $this->getCommand()->getOutputStyle()->error(sprintf('Failed to set permission: %s', $file->getPathname()));
                 }
             }

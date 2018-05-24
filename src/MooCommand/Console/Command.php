@@ -226,7 +226,7 @@ class Command extends SymfonyCommand
             $this->errorOutput = $this->getOutput()->getErrorOutput();
         }
 
-        if ($this->runRoot && posix_getuid() != 0) {
+        if ($this->runRoot && 0 != posix_getuid()) {
             throw new \Exception("Execute the moo command with sudo\nsudo " . implode(' ', $argv));
         }
 

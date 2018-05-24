@@ -196,7 +196,7 @@ class StyledOutput extends SymfonyStyle
         }
 
         // Split string into an array of lines & then print reach line, if the string contains \n
-        if (strpos($string, "\n") !== false) {
+        if (false !== strpos($string, "\n")) {
             return $this->line(explode("\n", $string), $style, $label, $verbosity);
         }
 

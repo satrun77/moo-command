@@ -85,7 +85,7 @@ class CloneProject extends WorkspaceAbstract
         foreach ($setup['containers'] as $folder => $structure) {
             $this->createDirectory($folder);
             foreach ($structure as $file => $content) {
-                if ($content === '~folder~') {
+                if ('~folder~' === $content) {
                     $this->createDirectory($folder . '/' . $file);
                 } else {
                     $content = $this->populateDefaultValues($content);
@@ -99,7 +99,7 @@ class CloneProject extends WorkspaceAbstract
     {
         $data = [];
         // Update repository details
-        if (strpos($content, '{repository}') !== false || strpos($content, '{branch}') !== false) {
+        if (false !== strpos($content, '{repository}') || false !== strpos($content, '{branch}')) {
             $data = [
                 '{repository}' => $this->argument('repository'),
                 '{branch}'     => $this->argument('branch'),
@@ -107,7 +107,7 @@ class CloneProject extends WorkspaceAbstract
         }
 
         // Set site details
-        if (strpos($content, '{virtual_host}') !== false) {
+        if (false !== strpos($content, '{virtual_host}')) {
             while (!($host = $this->getQuestionHelper()->ask('Please enter your host name?'))) {
                 $this->getOutputStyle()->error('Please enter a value for your host name.');
             }
@@ -115,10 +115,10 @@ class CloneProject extends WorkspaceAbstract
         }
 
         // Set site & solr ports
-        if (strpos($content, '{virtual_port}') !== false) {
+        if (false !== strpos($content, '{virtual_port}')) {
             $data['{virtual_port}'] = $this->chooseSitePort();
         }
-        if (strpos($content, '{solr_port}') !== false) {
+        if (false !== strpos($content, '{solr_port}')) {
             $data['{solr_port}'] = $this->chooseSolrPort();
         }
 

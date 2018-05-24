@@ -66,7 +66,7 @@ class Cp extends WorkspaceAbstract
             ['Upload', 'Download'],
             0
         );
-        $action = $isUpload == 0 ? 'upload' : 'download';
+        $action = 0 == $isUpload ? 'upload' : 'download';
 
         // Ask what is the path of the file you want to copy.
         $copyFrom = $this->getQuestionHelper()->ask('Enter the path of the file you want to copy: ');
@@ -75,7 +75,7 @@ class Cp extends WorkspaceAbstract
         $copyTo = $this->getQuestionHelper()->ask('Enter the path to where you want to copy the file to: ');
 
         $params = ['docker cp %s_%s_1:%s %s', $site, $container, $copyFrom, $copyTo];
-        if ($isUpload == 0) {
+        if (0 == $isUpload) {
             $params = ['docker cp %s %s_%s_1:%s', $copyFrom, $site, $container, $copyTo];
         }
         $copy = $this->getShellHelper()->execRealTime(...$params);

@@ -88,7 +88,7 @@ class ShellHelper extends Helper
         passthru($command, $return);
         $this->getCommand()->getOutputStyle()->block('Process complete', null, 'bg=cyan;fg=black');
 
-        return (int) $return === 0;
+        return 0 === (int) $return;
     }
 
     /**

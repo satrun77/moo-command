@@ -67,7 +67,7 @@ class ListSites extends WorkspaceAbstract
                             continue;
                         }
 
-                        $key       = $line[0] === 'VIRTUAL_HOST' ? 1 : 2;
+                        $key       = 'VIRTUAL_HOST' === $line[0] ? 1 : 2;
                         $row[$key] = !empty($line[1]) ? $line[1] : '';
                     }
 
@@ -88,7 +88,7 @@ class ListSites extends WorkspaceAbstract
                     // Get containers grouped per site
                     // Exclude app, data, & composer from docker YML
                     // Add padding on both side for each container to have equal width columns
-                    $this->containers[$file->getFilename()] = array_map(function($container) {
+                    $this->containers[$file->getFilename()] = array_map(function ($container) {
                         return str_pad($container, 10, ' ', STR_PAD_BOTH);
                     }, array_diff(array_keys($services['services']), ['app', 'data', 'composer']));
                 }
@@ -107,7 +107,7 @@ class ListSites extends WorkspaceAbstract
             foreach ($rows as $key => $row) {
                 // Check if port is unique
                 $container = array_search($row[2], $ports);
-                if ($container !== false && $container !== $key) {
+                if (false !== $container && $container !== $key) {
                     $rows[$key][2] .= ' ❌';
                 }
 
@@ -121,7 +121,7 @@ class ListSites extends WorkspaceAbstract
 
                     // Check status of the container
                     $status = $shell->exec('docker inspect -f \'{{.State.Running}}\' %s_%s_1', str_replace('.', '', $key), $container);
-                    if (trim($status->getOutput()) === 'true') {
+                    if ('true' === trim($status->getOutput())) {
                         $rows[$key][] = '✅';
                     } else {
                         $rows[$key][] = '❌';

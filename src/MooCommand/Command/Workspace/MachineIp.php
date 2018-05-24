@@ -39,7 +39,7 @@ class MachineIp extends WorkspaceAbstract
     {
         $ip = $this->getMachineIp();
 
-        if ($ip === false) {
+        if (false === $ip) {
             return $this->getOutputStyle()->error('Unable to get docker ip');
         }
 

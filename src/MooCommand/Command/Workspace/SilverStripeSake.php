@@ -52,7 +52,7 @@ class SilverStripeSake extends WorkspaceAbstract
     protected function fire()
     {
         $argument = $this->argument('argument');
-        if (empty($argument) || $argument === 'dev') {
+        if (empty($argument) || 'dev' === $argument) {
             $argument = 'dev/build "flush=1"';
         }
 

@@ -57,7 +57,7 @@ class Ssh extends WorkspaceAbstract
         $container = $this->argument('container');
 
         $containerName = $container;
-        if ($siteName !== 'proxy') {
+        if ('proxy' !== $siteName) {
             $containerName = sprintf('%s_%s_1', $siteName, $container);
         }
 

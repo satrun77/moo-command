@@ -131,12 +131,12 @@ class Commit extends Command
         foreach ($arguments as $argument) {
             // If we are editing a message and we have a shortcut enabled, then skip interaction and display message
             // else interaction enabled if shortcut is disabled or editing details
-            if ($argument === 'Message' && $shortcutOption) {
+            if ('Message' === $argument && $shortcutOption) {
                 $value = $this->getStyle()->getShortcutMessage($shortcutOption);
                 $this->getOutputStyle()->separator('_', 'comment');
                 $this->getOutputStyle()->line($value, 'comment', 'Commit');
                 $this->getOutputStyle()->separator('_', 'comment');
-            } elseif ($argument === 'Details' || !$shortcutOption) {
+            } elseif ('Details' === $argument || !$shortcutOption) {
                 $method = 'interactInput' . $argument;
                 $this->callStyleOptionalAction('beforeInput' . $argument);
                 $caller = method_exists($this->getStyle(), $method) ? $this->getStyle() : $this;
@@ -341,7 +341,7 @@ class Commit extends Command
     {
         return $this->getHelper('dialog')->askAndValidate($this->getOutput(), $question, function ($value) use ($type) {
             foreach ($this->getValidators() as $name => $validator) {
-                if (strpos($name, $type . '.') === 0) {
+                if (0 === strpos($name, $type . '.')) {
                     $method = 'validate' . str_replace('.', '', $name);
                     $value = $validator->{$method}($value);
                 }

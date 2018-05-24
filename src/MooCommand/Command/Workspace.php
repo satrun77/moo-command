@@ -106,17 +106,17 @@ abstract class Workspace extends Command
     protected function getTemplate($variable)
     {
         // SilverStripe template
-        if ($variable === 'ss' || file_exists($variable . '/env/ss.env')) {
+        if ('ss' === $variable || file_exists($variable . '/env/ss.env')) {
             return 'ss';
         }
 
         // Laravel template
-        if ($variable === 'laravel' || file_exists($variable . '/site/.env')) {
+        if ('laravel' === $variable || file_exists($variable . '/site/.env')) {
             return 'laravel';
         }
 
         // Proxy template
-        if ($variable === 'proxy' || is_dir($variable . '/proxy')) {
+        if ('proxy' === $variable || is_dir($variable . '/proxy')) {
             return 'proxy';
         }
 
@@ -224,7 +224,7 @@ abstract class Workspace extends Command
         $value = parent::argument($key);
 
         // Hack solution but works for now
-        if ($key === 'name' && $value === '.') {
+        if ('name' === $key && '.' === $value) {
             $value = $this->getConfigHelper()->getCurrentSiteName();
         }
 
@@ -262,7 +262,7 @@ abstract class Workspace extends Command
     protected function siteNameMustNotEqualToProxy($name)
     {
         $param = $this->argument($name);
-        if ($param === 'proxy') {
+        if ('proxy' === $param) {
             throw new \Exception('The site name cannot be empty or named \'proxy\'.');
         }
 
@@ -348,7 +348,7 @@ abstract class Workspace extends Command
         }
 
         $containerName = $container;
-        if ($siteName !== 'proxy') {
+        if ('proxy' !== $siteName) {
             $containerName = sprintf('%s_%s_1', $siteName, $container);
         }
 

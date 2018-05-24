@@ -117,7 +117,7 @@ class Create extends WorkspaceAbstract
      * Update any placeholders within the docker files.
      *
      * @param string $directory
-     * @param array $placeholders
+     * @param array  $placeholders
      *
      * @return void
      */
@@ -141,7 +141,7 @@ class Create extends WorkspaceAbstract
      * Update the content of a file by replacing a placeholders with their values.
      *
      * @param string $filePath
-     * @param array $changes
+     * @param array  $changes
      */
     protected function updateFileContent($filePath, array $changes)
     {
@@ -155,7 +155,7 @@ class Create extends WorkspaceAbstract
             // Read the content of the file, replace placeholder
             $contents = $envFile->fread($envFile->getSize());
             $contents = strtr($contents, $changes);
-            $envFile = null;
+            $envFile  = null;
 
             // Write new content of file replacing existing data
             $envFile = new \SplFileObject($filePath, 'w+');

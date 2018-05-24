@@ -74,13 +74,13 @@ class Faq extends Command
         $source = $this->getConfigHelper()->getConfig('faqs.source');
 
         // Load questions/answers from local config
-        if ($source === self::DATA_SOURCE_LOCAL) {
+        if (self::DATA_SOURCE_LOCAL === $source) {
             $userQuestions = $this->getConfigHelper()->getConfig('faqs.data.questions');
             $userAnswers   = $this->getConfigHelper()->getConfig('faqs.data.answers');
         }
 
         // Load question/answers from a URL
-        if ($source === self::DATA_SOURCE_REMOTE) {
+        if (self::DATA_SOURCE_REMOTE === $source) {
             $remoteQuestions = json_decode(file_get_contents($this->getConfigHelper()->getConfig('faqs.data')));
             $userQuestions   = $remoteQuestions->questions;
             $userAnswers     = $remoteQuestions->answers;

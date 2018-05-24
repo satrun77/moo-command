@@ -176,7 +176,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
     {
         $imperativeMood = false;
         foreach ($this->types as $type) {
-            if (stripos($value, $type . ' ') === 0) {
+            if (0 === stripos($value, $type . ' ')) {
                 $imperativeMood = true;
                 break;
             }

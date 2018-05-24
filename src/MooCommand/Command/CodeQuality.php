@@ -163,9 +163,9 @@ class CodeQuality extends Command
 
             // Skip analyseSecurityChecker if path is not for composer.lock
             // else, Skip all other analysers if the path if for composer.lock
-            if ($callback === 'analyseSecurityChecker' && $isComposerLock === false && $hasComposerLock === false) {
+            if ('analyseSecurityChecker' === $callback && false === $isComposerLock && false === $hasComposerLock) {
                 continue;
-            } elseif ($callback !== 'analyseSecurityChecker' && $isComposerLock !== false) {
+            } elseif ('analyseSecurityChecker' !== $callback && false !== $isComposerLock) {
                 continue;
             }
 
@@ -241,7 +241,7 @@ class CodeQuality extends Command
         }
 
         // If composer.lock is in the root level of the directory $path
-        if (strpos($path, 'composer.lock') === false) {
+        if (false === strpos($path, 'composer.lock')) {
             $path = rtrim($path, '/') . '/composer.lock';
         }
 

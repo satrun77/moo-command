@@ -50,7 +50,7 @@ class Stop extends WorkspaceAbstract
         $this->changeToSiteDirectory();
 
         // Should we stop all containers
-        if ($this->argument('name') === 'all') {
+        if ('all' === $this->argument('name')) {
             return $this->stopAllContainers();
         }
 
