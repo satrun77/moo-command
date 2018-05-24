@@ -53,7 +53,6 @@ Name | Details
   ws:start     |Create and start containers for a site within the workspace. A wrapper to docker-compose up.
   ws:stat      |Display a live stream of container(s) resource usage statistics.
   ws:stop      |Stop services for a site within the workspace. A wrapper to docker stop command.
-  ws:update    |Re-create local development site by updating the containers files, except for the directories site, env, solr/myindex.
 
 License
 -------
