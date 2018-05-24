@@ -108,7 +108,7 @@ class ListSites extends WorkspaceAbstract
                 // Check if port is unique
                 $container = array_search($row[2], $ports);
                 if (false !== $container && $container !== $key) {
-                    $rows[$key][2] .= ' ❌';
+                    $rows[$key][2] = sprintf('<error>%s</error>', $rows[$key][2]);
                 }
 
                 // Check if site is active (running)
