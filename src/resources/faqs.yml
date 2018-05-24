@@ -6,19 +6,21 @@ questions:
 
 answers:
   - |
-      Execute the following command to find out the ip address of the db container:
-      docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
-      Values for SSH Connection:
-      MySQL host:    the ip address of the db container
+      Edit your docker-compose YML file and export mysql port.
+
+      .... your docker-compose.yml or docker-compose-dev.yml ...
+      mysql:
+          ports:
+            - "[replace with valid port]:3306"
+      build: ./db/
+      .....
+
+      Use Standard connection in Sequel Pro:
+      MySQL host:    the ip address of your computer or localhost
       Username:      database username from db.env
       Password:      database password from db.env
       Database:      database name from db.env
-      Port:          leave empty
-      SSH Host:      docker machine ip [moo ws ip]
-      SSH User:      docker
-      SSH Password:  tcuser
-      SSH Port:      leave empty
-
+      Port:          The port number you have chosen to place in [replace with valid port]
   - |
       Make sure the permission in your machine is set to aleast the following:
       chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
