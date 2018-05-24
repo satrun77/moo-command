@@ -62,7 +62,7 @@ services:
           - app
 
   app:
-      image: php:5.6-fpm
+      image: php:{{php}}-fpm
       volumes:
           - ./site:/var/www/html
           - ./php/mail:/var/www/mail

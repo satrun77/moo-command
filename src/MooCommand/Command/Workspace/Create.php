@@ -59,17 +59,34 @@ class Create extends WorkspaceAbstract
             1
         );
 
+        // Select PHP version
+        $phpVersion = $this->getHelper('dialog')->select(
+            $this->getOutput(),
+            $this->getOutputStyle()->formatLine('Which PHP version would you like to use', 'question', 'QUESTION'),
+            $this->phpVersions,
+            key($this->phpVersions)
+        );
+
         // Site root directory
         $sitePath = $this->getConfigHelper()->getWorkspace() . $this->argument('name');
+
+        // Collection of used hosts ports by other environments
+        $usedPorts = $this->getUsedPorts();
+        // Collection of used solr ports by other environments
+        $usedSolrPorts = $this->getUsedPorts('SOLR_PORT');
 
         // Copy container files
         $this->getConfigHelper()->copyResource('docker/' . $template, $sitePath);
 
-        // Update web.env file
-        $this->updateWebEnvFile($sitePath);
-
-        // Set docker-sync settings
-        $this->setDockerSyncSettings($sitePath);
+        // Update other placeholders such as, PHP version to use, values in web.env file, or docker-sync settings
+        $this->updatePlaceholders($sitePath, [
+            '{{php}}'         => $phpVersion,
+            '{{host}}'        => $this->argument('name'),
+            '{{host_port}}'   => (max($usedPorts) + 1),
+            '{{solr_port}}'   => (max($usedSolrPorts) + 1),
+            '{{volume-name}}' => str_replace('.', '', $this->argument('name')) . '_dockersync_1',
+            '{{root_path}}'   => $sitePath,
+        ]);
 
         $shell = $this->getShellHelper();
         $shell->exec('sudo chmod +x %s/start', $sitePath);
@@ -97,34 +114,54 @@ class Create extends WorkspaceAbstract
     }
 
     /**
-     * Update host and port in web.env file.
+     * Update any placeholders within the docker files.
      *
-     * @param string $sitePath
+     * @param string $directory
+     * @param array $placeholders
      *
-     * @return bool
+     * @return void
      */
-    protected function updateWebEnvFile($sitePath)
+    protected function updatePlaceholders($directory, array $placeholders = [])
     {
-        // Highest port plus 1 && site name
-        $port     = max($this->getUsedPorts()) + 1;
-        $solrPort = max($this->getUsedPorts('SOLR_PORT')) + 1;
-        $name     = $this->argument('name');
+        // Get iterator of all files within the site containers structure
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
 
-        // Open file for reading & replace host & port
-        $envFile  = new \SplFileObject($sitePath . '/env/web.env', 'r');
-        $contents = $envFile->fread($envFile->getSize());
-        $contents = strtr($contents, [
-            'site1' => $name,
-            '1000'  => $port,
-            '8983'  => $solrPort,
-        ]);
+        // Update the placeholder within each file in the structure
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $this->updateFileContent($file->getPathname(), $placeholders);
+            }
+        }
+    }
+
+    /**
+     * Update the content of a file by replacing a placeholders with their values.
+     *
+     * @param string $filePath
+     * @param array $changes
+     */
+    protected function updateFileContent($filePath, array $changes)
+    {
+        // Get instance of SPL file
+        $envFile  = new \SplFileObject($filePath, 'r');
+        // Get the file size
+        $size = $envFile->getSize();
+
+        // Execute update only if the file size greater than zero
+        if ($size > 0) {
+            // Read the content of the file, replace placeholder
+            $contents = $envFile->fread($envFile->getSize());
+            $contents = strtr($contents, $changes);
+            $envFile = null;
+
+            // Write new content of file replacing existing data
+            $envFile = new \SplFileObject($filePath, 'w+');
+            $envFile->fwrite($contents);
+        }
+
         $envFile = null;
-
-        // Write new content of file replacing existing data
-        $envFile = new \SplFileObject($sitePath . '/env/web.env', 'w+');
-        $envFile->fwrite($contents);
-        $envFile = null;
-
-        return true;
     }
 }

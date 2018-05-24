@@ -1,5 +1,5 @@
 
-FROM php:5.6-fpm
+FROM php:{{php}}-fpm
 
 MAINTAINER Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
 

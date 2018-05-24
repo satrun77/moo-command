@@ -59,6 +59,17 @@ abstract class Workspace extends Command
         'laravel' => 'Laravel Framework',
     ];
 
+    /**
+     * List of supported php versions.
+     *
+     * @var array
+     */
+    protected $phpVersions = [
+        '7.2' => 'PHP 7.2',
+        '7.1' => 'PHP 7.1',
+        '5.6' => 'PHP 5.6',
+    ];
+
     protected function configure()
     {
         $this->signature = $this->signature . $this->childSignature;
@@ -355,39 +366,5 @@ abstract class Workspace extends Command
         }
 
         return $this;
-    }
-
-    /**
-     * Update docker-sync settings
-     *
-     * @param string $sitePath
-     *
-     * @return bool
-     */
-    protected function setDockerSyncSettings($sitePath)
-    {
-        $siteName   = str_replace('.', '', $this->argument('name'));
-        $volumeName = $siteName . '_dockersync_1';
-        $files      = [
-            'docker-compose-dev.yml',
-            'docker-sync.yml',
-            'start',
-        ];
-
-        foreach ($files as $file) {
-            $envFile  = new \SplFileObject($sitePath . '/' . $file, 'r');
-            $contents = $envFile->fread($envFile->getSize());
-            $contents = strtr($contents, [
-                '{{volume-name}}' => $volumeName,
-                '{{root_path}}'   => $sitePath,
-            ]);
-            $envFile = null;
-
-            $envFile = new \SplFileObject($sitePath . '/' . $file, 'w+');
-            $envFile->fwrite($contents);
-            $envFile = null;
-        }
-
-        return true;
     }
 }
