@@ -367,4 +367,45 @@ abstract class Workspace extends Command
 
         return $this;
     }
+
+    /**
+     * Display information about docker-sync commands.
+     *
+     * @param string $volume
+     * @param string $start
+     * @param string $stop
+     * @return void
+     */
+    protected function showDockerSyncInfo($volume, $start = '', $stop = '')
+    {
+
+        $this->getOutputStyle()->title('Docker Sync commands:');
+
+        // Message about docker-sync
+        if ($volume) {
+            $volume = str_replace('.', '', $this->argument('name')) . '_dockersync_1';
+            $this->getOutputStyle()->warning([
+                'You need to create docker volume, if does not exists!',
+                'Volumne name should be: ' . $volume
+            ]);
+            $this->getOutputStyle()->info([
+                'Command to create the volumne:',
+                'docker volume create --name=' . $volume,
+            ]);
+        }
+
+        if ($start) {
+            $this->getOutputStyle()->info([
+                'Command to start docker-sync:',
+                'docker-sync start',
+            ]);
+        }
+
+        if ($stop) {
+            $this->getOutputStyle()->info([
+                'Command to stop docker-sync:',
+                'docker-sync stop',
+            ]);
+        }
+    }
 }

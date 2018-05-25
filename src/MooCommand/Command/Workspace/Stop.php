@@ -90,5 +90,6 @@ class Stop extends WorkspaceAbstract
         $successMessage = 'The site stopped successfully.';
         $this->getOutputStyle()->success($successMessage);
         $this->notify('Stop environment ' . $this->getConfigHelper()->getCurrentSiteName(), $successMessage);
+        $this->showDockerSyncInfo('', '', 'stop');
     }
 }

@@ -65,6 +65,8 @@ class Build extends WorkspaceAbstract
             $this->getShellHelper()->execApplicationCommand('ws:start', [
                 'name' => $this->argument('name'),
             ]);
+        } else {
+            $this->showDockerSyncInfo('volume', 'start', 'stop');
         }
     }
 }
