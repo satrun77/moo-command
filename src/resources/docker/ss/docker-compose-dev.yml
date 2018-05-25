@@ -48,6 +48,7 @@ services:
 
   composer:
       build: ./composer/
+      command: "true"
       volumes:
           - ~/.composer:/var/www/composer
           - ~/.ssh:/var/www/.ssh
