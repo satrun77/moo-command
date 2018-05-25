@@ -88,9 +88,7 @@ class ListSites extends WorkspaceAbstract
                     // Get containers grouped per site
                     // Exclude app, data, & composer from docker YML
                     // Add padding on both side for each container to have equal width columns
-                    $this->containers[$file->getFilename()] = array_map(function ($container) {
-                        return str_pad($container, 10, ' ', STR_PAD_BOTH);
-                    }, array_diff(array_keys($services['services']), ['app', 'data', 'composer']));
+                    $this->containers[$file->getFilename()] = array_diff(array_keys($services['services']), ['app', 'data', 'composer']);
                 }
             }
 
