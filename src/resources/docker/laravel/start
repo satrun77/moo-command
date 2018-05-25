@@ -10,10 +10,8 @@ TYPE=${1:-up -d}
 if [ "$TYPE" = "up -d" ]
 then
    docker-compose -f docker-compose-dev.yml up -d
-   docker-sync start
 elif [ "$TYPE" = "stop" ]
 then
-   docker-sync stop
    docker-compose stop
 else
   docker-compose ${1:-up -d}
