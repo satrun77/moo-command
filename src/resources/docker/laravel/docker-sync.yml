@@ -1,0 +1,13 @@
+version: "2"
+options:
+  verbose: true
+  compose-dev-file-path: '{{root_path}}/docker-compose-dev.yml'
+  cli_mode: 'auto'
+syncs:
+  {{volume-name}}:
+    src: '{{root_path}}/site/'
+    watch_in_container: true
+    notify_terminal: true
+    watch_strategy: 'fswatch'
+    sync_excludes: ['Gemfile.lock', 'Gemfile', 'config.rb', '.sass-cache/', 'sass/', 'sass-cache/', 'package.json', 'node_modules/', '.gitignore', '.git/', '*.scss', '*.sass']
+    watch_excludes: ['.*/.git', '.*/node_modules']
