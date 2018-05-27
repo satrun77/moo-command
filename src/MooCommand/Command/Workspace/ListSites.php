@@ -44,8 +44,8 @@ class ListSites extends WorkspaceAbstract
         $this->containers = [];
         // Get path to workspace
         $workspace        = $this->getConfigHelper()->getWorkspace();
-        // Get instance of shell helper
-        $shell            = $this->getShellHelper();
+        // Get command output for all active containers
+        $activeContainers = (string) $this->getShellHelper()->exec('docker ps')->getOutput();
 
         // Output heading
         $this->getOutputStyle()->title('Available sites:');
@@ -118,8 +118,8 @@ class ListSites extends WorkspaceAbstract
                     }
 
                     // Check status of the container
-                    $status = $shell->exec('docker inspect -f \'{{.State.Running}}\' %s_%s_1', str_replace('.', '', $key), $container);
-                    if ('true' === trim($status->getOutput())) {
+                    $containerName = sprintf('%s_%s_1', str_replace('.', '', $key), $container);
+                    if (false !== strpos($activeContainers, $containerName)) {
                         $rows[$key][] = '✅';
                     } else {
                         $rows[$key][] = '❌';
