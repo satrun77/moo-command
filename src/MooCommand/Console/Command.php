@@ -124,7 +124,7 @@ class Command extends SymfonyCommand
     /**
      * @return \MooCommand\Console\Helper\QuestionHelper
      */
-    protected function getQuestionHelper()
+    public function getQuestionHelper()
     {
         return $this->getHelper('moo_question');
     }

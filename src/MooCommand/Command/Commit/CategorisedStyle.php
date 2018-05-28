@@ -195,11 +195,8 @@ class CategorisedStyle implements CommitStyleInterface
      */
     public function interactInputType()
     {
-        $question = $this->command->getOutputStyle()->question('Please select the commit type: ');
-
-        return $this->command->getHelper('dialog')->select(
-            $this->command->getOutput(),
-            $question,
+        return $this->command->getQuestionHelper()->choices(
+            'Please select the commit type: ',
             $this->getTypes(),
             1
         );

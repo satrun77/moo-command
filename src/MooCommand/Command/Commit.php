@@ -339,7 +339,7 @@ class Commit extends Command
      */
     public function validator($question, $type)
     {
-        return $this->getHelper('dialog')->askAndValidate($this->getOutput(), $question, function ($value) use ($type) {
+        return $this->getQuestionHelper()->askAndValidate($question, function ($value) use ($type) {
             foreach ($this->getValidators() as $name => $validator) {
                 if (0 === strpos($name, $type . '.')) {
                     $method = 'validate' . str_replace('.', '', $name);

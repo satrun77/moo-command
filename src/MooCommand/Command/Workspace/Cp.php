@@ -60,9 +60,8 @@ class Cp extends WorkspaceAbstract
         $container = $this->argument('container');
 
         // Ask to Upload or download?
-        $isUpload = $this->getHelper('dialog')->select(
-            $this->getOutput(),
-            $this->getOutputStyle()->formatLine('What would you like to do?', 'question', 'QUESTION'),
+        $isUpload = $this->getQuestionHelper()->choices(
+            'What would you like to do?',
             ['Upload', 'Download'],
             0
         );

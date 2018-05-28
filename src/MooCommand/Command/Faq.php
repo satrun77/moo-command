@@ -47,9 +47,8 @@ class Faq extends Command
         $faqs = $this->getData();
 
         // Ask user for a question to answer
-        $question = $this->getHelper('dialog')->select(
-            $this->getOutput(),
-            $this->getOutputStyle()->formatLine('Please select a question', 'question', 'QUESTION'),
+        $question = $this->getQuestionHelper()->choices(
+            'Please select a question',
             $faqs['questions'],
             0
         );

@@ -371,14 +371,13 @@ abstract class Workspace extends Command
     /**
      * Display information about docker-sync commands.
      *
-     * @param string $volume
-     * @param string $start
-     * @param string $stop
+     * @param  string $volume
+     * @param  string $start
+     * @param  string $stop
      * @return void
      */
     protected function showDockerSyncInfo($volume, $start = '', $stop = '')
     {
-
         $this->getOutputStyle()->title('Docker Sync commands:');
 
         // Message about docker-sync
@@ -386,7 +385,7 @@ abstract class Workspace extends Command
             $volume = str_replace('.', '', $this->argument('name')) . '_dockersync_1';
             $this->getOutputStyle()->warning([
                 'You need to create docker volume, if does not exists!',
-                'Volumne name should be: ' . $volume
+                'Volumne name should be: ' . $volume,
             ]);
             $this->getOutputStyle()->info([
                 'Command to create the volumne:',

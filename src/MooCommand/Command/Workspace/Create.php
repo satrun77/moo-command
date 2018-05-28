@@ -52,17 +52,15 @@ class Create extends WorkspaceAbstract
         $this->siteNameMustNotEqualToProxy('name');
         $this->siteDirectoryMustNotExists('name');
 
-        $template = $this->getHelper('dialog')->select(
-            $this->getOutput(),
-            $this->getOutputStyle()->formatLine('Please select environment template', 'question', 'QUESTION'),
+        $template = $this->getQuestionHelper()->choices(
+            'Please select environment template',
             $this->templates,
             1
         );
 
         // Select PHP version
-        $phpVersion = $this->getHelper('dialog')->select(
-            $this->getOutput(),
-            $this->getOutputStyle()->formatLine('Which PHP version would you like to use', 'question', 'QUESTION'),
+        $phpVersion = $this->getQuestionHelper()->choices(
+            'Which PHP version would you like to use',
             $this->phpVersions,
             key($this->phpVersions)
         );
