@@ -210,9 +210,13 @@ class CategorisedStyle implements CommitStyleInterface
      */
     public function interactInputIssue()
     {
-        $question = $this->command->getOutputStyle()->question('Enter Commit Issue No.:  ');
+        if (!$this->command->option('oneline')) {
+            $question = $this->command->getOutputStyle()->question('Enter Commit Issue No.:  ');
 
-        return $this->command->validator($question, 'Issue');
+            return $this->command->validator($question, 'Issue');
+        }
+
+        return null;
     }
 
     /**
