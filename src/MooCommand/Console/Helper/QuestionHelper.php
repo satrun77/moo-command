@@ -93,8 +93,13 @@ class QuestionHelper extends Helper
         // Ask the question
         $answer = $this->getHelper()->ask($command->getInput(), $command->getOutput(), $question);
 
-        // Return the index of selected answer
-        return array_search($answer, $choices);
+        // Return the index of selected answer or the answer if index can't be found
+        $index = array_search($answer, $choices);
+        if ($index !== false) {
+            $answer = $index;
+        }
+
+        return $answer;
     }
 
     /**
