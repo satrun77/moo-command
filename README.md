@@ -47,7 +47,6 @@ Name | Details
   ws:new       |Create a new site. Create all of the files needed for the docker containers.
   ws:proxy     |Build the proxy container if not exists or start the container.
   ws:rm        |Remove stopped containers for a site within the workspace. A wrapper for docker-compose rm.
-  ws:sake      |Execute SilverStripe Sake command inside the php container.
   ws:sites     |Display list of available sites and their statuses.
   ws:ssh       |SSH into a container for a site within the workspace.
   ws:start     |Create and start containers for a site within the workspace. A wrapper to docker-compose up.

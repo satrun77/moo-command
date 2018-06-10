@@ -52,7 +52,6 @@ $application->add(new Command\Workspace\Proxy());
 $application->add(new Command\Workspace\Ssh());
 $application->add(new Command\Workspace\Log());
 $application->add(new Command\Workspace\Create());
-$application->add(new Command\Workspace\SilverStripeSake());
 $application->add(new Command\Workspace\Composer());
 $application->add(new Command\Workspace\Cp());
 $application->add(new Command\Workspace\Stat());
