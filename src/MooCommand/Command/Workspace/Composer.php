@@ -56,6 +56,6 @@ class Composer extends WorkspaceAbstract
         $this->changeToSiteDirectory();
         $argument = $this->argument('argument');
 
-        $this->getShellHelper()->execRealTime('./start "run --rm composer %s"', $argument);
+        $this->execCommandInContainer('composer', $argument, 'php');
     }
 }

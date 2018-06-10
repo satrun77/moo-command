@@ -46,6 +46,9 @@ RUN echo 'sendmail_path = /usr/local/bin/php /var/www/sendmail' > /usr/local/etc
 RUN chmod +x /var/www/sendmail
 RUN mkdir /var/www/mail
 
+# Copy composer from composer container
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 # To grant permissions to www-data
 RUN usermod -u 1000 www-data
 

@@ -42,4 +42,7 @@ RUN mkdir /var/www/mail
 # To grant permissions to www-data
 RUN usermod -u 1000 www-data
 
+# Copy composer from composer container
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
