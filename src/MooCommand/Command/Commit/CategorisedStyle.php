@@ -237,7 +237,7 @@ class CategorisedStyle implements CommitStyleInterface
 
         if (empty($segments[1])) {
             throw new \InvalidArgumentException('Issue number is in incorrect format.');
-        } // s
+        }
 
         return $value;
     }
