@@ -8,7 +8,7 @@ Installation
 --------------------
 
 ```bash
-$ wget https://github.com/satrun77/moo-command/releases/download/v1.0.0-alpha5/moo.phar
+$ wget https://github.com/satrun77/moo-command/releases/download/v1.0.0-alpha6/moo.phar
 
 $ chmod +x moo.phar
 
