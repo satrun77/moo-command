@@ -68,6 +68,8 @@ services:
           - {{volume-name}}:/var/www/html
           - ./php/mail:/var/www/mail
           - ./solr/myindex:/var/www/solr
+          - ~/.ssh:/var/www/.ssh
+          - ~/.netrc:/root/.netrc
       command: "true"
       tty: true
 
