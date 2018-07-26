@@ -12,7 +12,7 @@ then
    docker-compose -f docker-compose-dev.yml up -d
 elif [ "$TYPE" = "stop" ]
 then
-   docker-compose stop
+   docker-compose -f docker-compose-dev.yml stop
 else
-  docker-compose ${1:-up -d}
+  docker-compose -f docker-compose-dev.yml ${1:-up -d}
 fi
