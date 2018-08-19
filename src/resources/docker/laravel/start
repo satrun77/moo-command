@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DOCKER_MACHINE_IP=$(docker-machine ip default) &&
+export DOCKER_MACHINE_IP=$(ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{print $2}'  | grep -m1 "") &&
 export $(grep "^[^#]" env/web.env | xargs) &&
 
 PARAM=${1:-up -d}
