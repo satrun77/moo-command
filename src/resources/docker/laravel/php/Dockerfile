@@ -37,7 +37,7 @@ RUN echo "memory_limit = 1G\n" > /usr/local/etc/php/conf.d/memory-limit.ini
 COPY templates/sendmail /var/www/sendmail
 RUN echo 'sendmail_path = /usr/local/bin/php /var/www/sendmail' > /usr/local/etc/php/conf.d/mailcatcher.ini
 RUN chmod +x /var/www/sendmail
-RUN mkdir /var/www/mail
+RUN if [ ! -d /var/www/mail ]; then mkdir /var/www/mail; fi
 
 # To grant permissions to www-data
 RUN usermod -u 1000 www-data

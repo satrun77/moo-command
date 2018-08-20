@@ -1,4 +1,3 @@
-
 FROM php:{{php}}-fpm
 
 MAINTAINER Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
@@ -34,17 +33,11 @@ RUN echo "display_startup_errors=on\nerror_reporting=ALL\ndisplay_errors =on" > 
 RUN echo "upload_max_filesize = 5M\n" > /usr/local/etc/php/conf.d/max-upload.ini
 RUN echo "memory_limit = 1G\n" > /usr/local/etc/php/conf.d/memory-limit.ini
 
-# Install wkhtmltopdf
-#RUN apt-get install -y gdebi
-#RUN curl -O http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-jessie-amd64.deb
-#RUN gdebi --n wkhtmltox-0.12.2.1_linux-jessie-amd64.deb
-#RUN rm wkhtmltox-0.12.2.1_linux-jessie-amd64.deb
-
 # Tell PHP to log emails
 COPY templates/sendmail /var/www/sendmail
 RUN echo 'sendmail_path = /usr/local/bin/php /var/www/sendmail' > /usr/local/etc/php/conf.d/mailcatcher.ini
 RUN chmod +x /var/www/sendmail
-RUN mkdir /var/www/mail
+RUN if [ ! -d /var/www/mail ]; then mkdir /var/www/mail; fi
 
 # Copy composer from composer container
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
