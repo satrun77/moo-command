@@ -121,6 +121,9 @@ class CloneProject extends WorkspaceAbstract
         if (false !== strpos($content, '{solr_port}')) {
             $data['{solr_port}'] = $this->chooseSolrPort();
         }
+        if (false !== strpos($content, '{mysql_port}')) {
+            $data['{mysql_port}'] = $this->chooseMysqlPort();
+        }
 
         return strtr($content, $data);
     }
@@ -178,6 +181,15 @@ class CloneProject extends WorkspaceAbstract
             'solr_port',
             8985,
             "docker ps | awk '/_solr_1/' | sed 's/.*0.0.0.0:\([0-9]*\)->.*/\\1/'"
+        );
+    }
+
+    protected function chooseMysqlPort()
+    {
+        return $this->choosePort(
+            'mysql_port',
+            3306,
+            "docker ps | awk '/_mysql_1/' | sed 's/.*0.0.0.0:\([0-9]*\)->.*/\\1/'"
         );
     }
 

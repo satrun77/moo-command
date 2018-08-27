@@ -1,64 +1,65 @@
-version: "2"
+version: "3"
 
 services:
   site:
-      build: ./nginx/
-      ports:
-        - "${VIRTUAL_PORT}:80"
-      links:
-          - php
-      external_links:
-          - proxy:dockergen
-      volumes_from:
-          - app
-      volumes:
-          - ./nginx/logs:/var/log/nginx
-      environment:
-          - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
-      env_file:
-          - ./env/web.env
-          - ./env/db.env
+    build: ./nginx/
+    image: mo_apache
+    ports:
+      - "${VIRTUAL_PORT}:80"
+    links:
+      - php
+    external_links:
+      - proxy:dockergen
+    volumes:
+      - {{volume-name}}:/var/www/html:nocopy
+      - ./nginx/logs:/var/log/nginx
+    environment:
+      - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
+    env_file:
+      - ./env/web.env
+      - ./env/db.env
 
   mysql:
-      build: ./db/
-      volumes_from:
-          - data
-      env_file:
-          - ./env/db.env
-
-  php:
-      build: ./php/
-      expose:
-          - 9000
-      links:
-          - mysql
-      volumes_from:
-          - app
-      environment:
-          - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
-      env_file:
-          - ./env/db.env
-          - ./env/web.env
+    build: ./db/
+    image: mo_db
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - ./database:/var/lib/mysql:consistent
+    env_file:
+      - ./env/web.env
+      - ./env/db.env
 
   composer:
-      build: ./composer/
-      command: "true"
-      volumes:
-          - ~/.composer:/var/www/composer
-          - ~/.ssh:/var/www/.ssh
-          - ~/.netrc:/root/.netrc
-          - ./site:/var/www/html
+    image: mo_composer
+    build: ./composer/
+    volumes:
+      - {{volume-name}}:/var/www/html:nocopy
+      - ~/.composer:/var/www/composer:cached
+      - ~/.ssh:/root/.ssh:cached
+      - ~/.netrc:/root/.netrc:cached
 
-  app:
-      image: php:{{php}}-fpm
-      volumes:
-          - ./site:/var/www/html
-          - ./php/mail:/var/www/mail
-      command: "true"
-      tty: true
+  php:
+    build: ./php/
+    image: mo_php
+    expose:
+      - 9000
+    links:
+      - mysql
+    volumes:
+      - {{volume-name}}:/var/www/html:nocopy
+      - ~/.composer:/var/www/composer:cached
+      - ~/.ssh:/root/.ssh:cached
+      - ~/.netrc:/root/.netrc:cached
+      - ./php/mail:/var/www/mail
+      - ../solr/myindex:/var/www/solr:consistent
+    environment:
+      - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
+    env_file:
+      - ./env/db.env
+      - ./env/ss.env
+      - ./env/web.env
+    tty: true
 
-  data:
-      image: mariadb:10.1
-      volumes:
-          - /var/lib/mysql
-      command: "true"
+volumes:
+  {{volume-name}}:

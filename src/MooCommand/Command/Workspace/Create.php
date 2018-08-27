@@ -72,6 +72,8 @@ class Create extends WorkspaceAbstract
         $usedPorts = $this->getUsedPorts();
         // Collection of used solr ports by other environments
         $usedSolrPorts = $this->getUsedPorts('SOLR_PORT');
+        // Collection of used solr ports by other environments
+        $usedMysqlPorts = $this->getUsedPorts('MYSQL_PORT');
 
         // Copy container files
         $this->getConfigHelper()->copyResource('docker/' . $template, $sitePath);
@@ -82,6 +84,7 @@ class Create extends WorkspaceAbstract
             '{{host}}'        => $this->argument('name'),
             '{{host_port}}'   => (max($usedPorts) + 1),
             '{{solr_port}}'   => (max($usedSolrPorts) + 1),
+            '{{mysql_port}}'   => (max($usedMysqlPorts) + 1),
             '{{volume-name}}' => str_replace('.', '', $this->argument('name')) . '_dockersync_1',
             '{{root_path}}'   => $sitePath,
         ]);
