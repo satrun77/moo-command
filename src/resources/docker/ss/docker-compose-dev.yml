@@ -25,7 +25,7 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
-      - ./database:/var/lib/mysql:consistent
+      - ./db/database:/var/lib/mysql:consistent
     env_file:
       - ./env/web.env
       - ./env/db.env
