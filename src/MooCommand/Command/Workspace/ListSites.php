@@ -79,6 +79,7 @@ class ListSites extends WorkspaceAbstract
                     $rows[$file->getFilename()] = $row;
 
                     // Extract & add containers to table headers
+                    $this->debug('Docker Compose: ' . $file->getPathname() . '/docker-compose.yml');
                     $services = $yml->parse(
                         file_get_contents($file->getPathname() . '/docker-compose.yml'),
                         true,

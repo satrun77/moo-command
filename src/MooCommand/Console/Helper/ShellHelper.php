@@ -61,6 +61,7 @@ class ShellHelper extends Helper
         $process = new Process($command);
         $process->setTimeout(null);
 
+        $this->getCommand()->debug('PWD: ' . $process->getWorkingDirectory());
         $this->getCommand()->debug('Command executed: ' . $command);
 
         $process->run();
