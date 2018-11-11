@@ -28,10 +28,8 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
 RUN docker-php-ext-install -j$(nproc) gd
 
 # PHP configs
-RUN echo "date.timezone = Pacific/Auckland" > /usr/local/etc/php/conf.d/timezone.ini
-RUN echo "display_startup_errors=on\nerror_reporting=ALL\ndisplay_errors =on" > /usr/local/etc/php/conf.d/error_reporting.ini
-RUN echo "upload_max_filesize = 5M\n" > /usr/local/etc/php/conf.d/max-upload.ini
-RUN echo "memory_limit = 1G\n" > /usr/local/etc/php/conf.d/memory-limit.ini
+COPY templates/php.ini /usr/local/etc/php/php.ini
+COPY templates/php-fpm.conf /usr/local/etc/
 
 # Tell PHP to log emails
 COPY templates/sendmail /var/www/sendmail
@@ -41,6 +39,12 @@ RUN if [ ! -d /var/www/mail ]; then mkdir /var/www/mail; fi
 
 # Copy composer from composer container
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Shrink image
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Make sure the volume mount point is empty
+RUN rm -rf /var/www/html/*
 
 # To grant permissions to www-data
 RUN usermod -u 1000 www-data

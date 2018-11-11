@@ -25,7 +25,7 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
-      - ./database:/var/lib/mysql:consistent
+      - ./db/database:/var/lib/mysql:consistent
     env_file:
       - ./env/web.env
       - ./env/db.env
@@ -52,7 +52,6 @@ services:
       - ~/.ssh:/root/.ssh:cached
       - ~/.netrc:/root/.netrc:cached
       - ./php/mail:/var/www/mail
-      - ../solr/myindex:/var/www/solr:consistent
     environment:
       - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
     env_file:
@@ -62,4 +61,5 @@ services:
     tty: true
 
 volumes:
-  {{volume-name}}:
+    {{volume-name}}:
+      external: true

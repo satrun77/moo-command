@@ -8,4 +8,7 @@ RUN mkdir -p /var/www/html/public
 
 ENV LANG en_US.UTF-8
 
+# Shrink image
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 WORKDIR /var/www/html/public

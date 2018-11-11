@@ -39,14 +39,6 @@ services:
       - ~/.ssh:/root/.ssh:cached
       - ~/.netrc:/root/.netrc:cached
 
-  solr:
-    image: mo_solr
-    build: ./solr/
-    ports:
-      - "${SOLR_PORT}:8983"
-    volumes:
-       - ./solr/myindex:/var/www/solr:consistent
-
   php:
     build: ./php/
     image: mo_php
@@ -69,5 +61,14 @@ services:
       - ./env/web.env
     tty: true
 
+  solr:
+    image: mo_solr
+    build: ./solr/
+    ports:
+      - "${SOLR_PORT}:8983"
+    volumes:
+      - ./solr/myindex:/var/www/solr:consistent
+
 volumes:
     {{volume-name}}:
+      external: true

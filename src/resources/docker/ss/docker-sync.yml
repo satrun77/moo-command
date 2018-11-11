@@ -6,11 +6,9 @@ options:
 syncs:
   {{volume-name}}:
     src: '{{root_path}}/site/'
-    watch_in_container: true
     notify_terminal: true
-    watch_strategy: 'fswatch'
-    sync_excludes: ['.git', '.gitignore', 'node_modules', '.bower_components', 'sass-cache', '.sass-cache',  '.editorconfig', 'bitbucket-pipelines.yml', '*.scss', '*.sass']
-    watch_excludes: ['.git', '.gitignore', 'node_modules', '.bower_components', 'sass-cache', '.sass-cache',  '.editorconfig', 'bitbucket-pipelines.yml', '*.scss', '*.sass']
+    sync_excludes: ['.git', '.gitignore', 'node_modules', '.bower_components', 'sass-cache', '.sass-cache', './vendor/', '.editorconfig', 'bitbucket-pipelines.yml']
+    watch_excludes: ['.git', '.gitignore', 'node_modules', '.bower_components', 'sass-cache', '.sass-cache', './vendor/', '.editorconfig', 'bitbucket-pipelines.yml']
     monit_enable: true
     monit_interval: 10
     monit_high_cpu_cycles: 6
