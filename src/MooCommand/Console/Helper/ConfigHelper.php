@@ -86,6 +86,12 @@ class ConfigHelper extends Helper
     public function copyResource($source, $destination, $excludeData = [])
     {
         $directory = __APP_DIR__ . '/resources/' . $source;
+        // Collection of dot files that should be converted to correct name
+        $dotFiles = [
+            'gitkeep',
+            'env',
+            'dockerignore',
+        ];
 
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
@@ -94,7 +100,13 @@ class ConfigHelper extends Helper
 
         foreach ($iterator as $file) {
             $relativePath = str_replace($directory, '', $file->getPath());
-            $filePath     = $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
+            // get file name
+            $fileName = $iterator->getSubPathName();
+            // If file is dot file, then correct name
+            if (in_array($fileName, $dotFiles) && !$file->isDir()) {
+                $fileName .= '.' . $fileName;
+            }
+            $filePath     = $destination . DIRECTORY_SEPARATOR . $fileName;
 
             if ($file->isDir()) {
                 if (!is_dir($filePath)) {
