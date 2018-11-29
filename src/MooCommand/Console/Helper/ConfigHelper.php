@@ -88,9 +88,9 @@ class ConfigHelper extends Helper
         $directory = __APP_DIR__ . '/resources/' . $source;
         // Collection of dot files that should be converted to correct name
         $dotFiles = [
-            'gitkeep',
-            'env',
-            'dockerignore',
+            'gitkeep'      => '.gitkeep',
+            'site/env'     => 'site/.env',
+            'dockerignore' => '.dockerignore',
         ];
 
         $iterator = new \RecursiveIteratorIterator(
@@ -100,12 +100,7 @@ class ConfigHelper extends Helper
 
         foreach ($iterator as $file) {
             $relativePath = str_replace($directory, '', $file->getPath());
-            // get file name
-            $fileName = $iterator->getSubPathName();
-            // If file is dot file, then correct name
-            if (in_array($fileName, $dotFiles) && !$file->isDir()) {
-                $fileName .= '.' . $fileName;
-            }
+            $fileName     = strtr($iterator->getSubPathName(), $dotFiles);
             $filePath     = $destination . DIRECTORY_SEPARATOR . $fileName;
 
             if ($file->isDir()) {
