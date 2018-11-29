@@ -2,6 +2,7 @@ version: "3"
 
 services:
   site:
+    container_name: {{name}}_site_1
     build: ./apache/
     image: mo_apache
     ports:
@@ -20,6 +21,7 @@ services:
       - ./env/db.env
 
   mysql:
+    container_name: {{name}}_mysql_1
     build: ./db/
     image: mo_db
     ports:
@@ -31,6 +33,7 @@ services:
       - ./env/db.env
 
   composer:
+    container_name: {{name}}_composer_1
     image: mo_composer
     build: ./composer/
     volumes:
@@ -40,6 +43,7 @@ services:
       - ~/.netrc:/root/.netrc:cached
 
   php:
+    container_name: {{name}}_php_1
     build: ./php/
     image: mo_php
     expose:
@@ -62,6 +66,7 @@ services:
     tty: true
 
   solr:
+    container_name: {{name}}_solr_1
     image: mo_solr
     build: ./solr/
     ports:

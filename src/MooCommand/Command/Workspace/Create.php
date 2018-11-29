@@ -87,6 +87,7 @@ class Create extends WorkspaceAbstract
             '{{mysql_port}}'   => (max($usedMysqlPorts) + 1),
             '{{volume-name}}' => str_replace('.', '', $this->argument('name')) . '_dockersync_1',
             '{{root_path}}'   => $sitePath,
+            '{{name}}'        => str_replace('.', '', $this->argument('name')),
         ]);
 
         $shell = $this->getShellHelper();
