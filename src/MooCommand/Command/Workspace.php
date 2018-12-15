@@ -70,6 +70,16 @@ abstract class Workspace extends Command
         '5.6' => 'PHP 5.6',
     ];
 
+    /**'
+     * List of supported work directories
+     *
+     * @var array
+     */
+    protected $workDirectories = [
+        '/var/www/html',
+        '/var/www/html/public',
+    ];
+
     protected function configure()
     {
         $this->signature = $this->signature . $this->childSignature;

@@ -49,4 +49,4 @@ RUN rm -rf /var/www/html/*
 # To grant permissions to www-data
 RUN usermod -u 1000 www-data
 
-WORKDIR /var/www/html/public
+WORKDIR {{work_dir}}

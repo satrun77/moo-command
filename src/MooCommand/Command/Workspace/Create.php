@@ -65,6 +65,15 @@ class Create extends WorkspaceAbstract
             key($this->phpVersions)
         );
 
+        // Select SilverStripe file structure
+        if ($template === 'ss') {
+            $workDirectory = $this->getQuestionHelper()->choices(
+                'Select work directory to use',
+                $this->workDirectories,
+                key($this->workDirectories)
+            );
+        }
+
         // Site root directory
         $sitePath = $this->getConfigHelper()->getWorkspace() . $this->argument('name');
 
@@ -80,14 +89,15 @@ class Create extends WorkspaceAbstract
 
         // Update other placeholders such as, PHP version to use, values in web.env file, or docker-sync settings
         $this->updatePlaceholders($sitePath, [
-            '{{php}}'         => $phpVersion,
-            '{{host}}'        => $this->argument('name'),
-            '{{host_port}}'   => (max($usedPorts) + 1),
-            '{{solr_port}}'   => (max($usedSolrPorts) + 1),
+            '{{php}}'          => $phpVersion,
+            '{{host}}'         => $this->argument('name'),
+            '{{host_port}}'    => (max($usedPorts) + 1),
+            '{{solr_port}}'    => (max($usedSolrPorts) + 1),
             '{{mysql_port}}'   => (max($usedMysqlPorts) + 1),
-            '{{volume-name}}' => str_replace('.', '', $this->argument('name')) . '_dockersync_1',
-            '{{root_path}}'   => $sitePath,
-            '{{name}}'        => str_replace('.', '', $this->argument('name')),
+            '{{volume-name}}'  => str_replace('.', '', $this->argument('name')) . '_dockersync_1',
+            '{{root_path}}'    => $sitePath,
+            '{{name}}'         => str_replace('.', '', $this->argument('name')),
+            '{{work_dir}}'     => !empty($workDirectory) ? $workDirectory : current($this->workDirectories),
         ]);
 
         $shell = $this->getShellHelper();
