@@ -8,3 +8,7 @@ ENV SOLR_HEAP=512m
 
 # To be able to access index folder
 USER root
+
+# copy in custom config with different cores folder, delete example folder
+COPY solr.xml /opt/solr/example/solr/solr.xml
+RUN rm -rf  /opt/solr/example/solr/collection1
