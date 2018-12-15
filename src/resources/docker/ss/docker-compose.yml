@@ -61,7 +61,6 @@ services:
       - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
     env_file:
       - ./env/db.env
-      - ./env/ss.env
       - ./env/web.env
     tty: true
 
