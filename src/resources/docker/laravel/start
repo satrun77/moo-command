@@ -6,7 +6,6 @@ export DOCKER_MACHINE_IP=$(ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{
 export $(grep "^[^#]" env/web.env | xargs) &&
 
 PARAM=${1:-up -d}
-DOCKER_VOLUME="{{volume-name}}"
 TYPE=${1:-up -d}
 
 if [ "$TYPE" = "up -d" ]
