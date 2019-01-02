@@ -1,7 +1,6 @@
 version: "2"
 options:
   verbose: true
-  compose-dev-file-path: '{{root_path}}/docker-compose-dev.yml'
   cli_mode: 'thor'
 syncs:
     {{volume-name}}:
