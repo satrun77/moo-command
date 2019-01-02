@@ -65,6 +65,7 @@ abstract class Workspace extends Command
      * @var array
      */
     protected $phpVersions = [
+        '7.3' => 'PHP 7.3',
         '7.2' => 'PHP 7.2',
         '7.1' => 'PHP 7.1',
         '5.6' => 'PHP 5.6',
