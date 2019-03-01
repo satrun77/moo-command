@@ -2,6 +2,15 @@ FROM php:{{php}}-fpm
 
 MAINTAINER Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
 
+ENV DEBIAN_FRONTEND noninteractive
+
+# Fix stdin is not a tty
+RUN echo 'tty -s && mesg n' > /root/.profile
+
+# Add extra config
+RUN echo "alias ll='ls -lap --color=auto'\nexport TERM=xterm" >> ~/.bashrc
+RUN echo "[url \"git@github.com:\"]\n\tinsteadOf = https://github.com/" >> ~/.gitconfig
+
 # Install needed libraries
 RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 RUN apt-get update
@@ -48,5 +57,15 @@ RUN rm -rf /var/www/html/*
 
 # To grant permissions to www-data
 RUN usermod -u 1000 www-data
+
+# Create a directory composer may use and ensure assets directory readable by apache
+RUN if [ ! -d /var/www/.composer ]; then mkdir /var/www/.composer; fi
+RUN chown -R www-data:www-data /var/www/.composer
+RUN if [ ! -d {{work_dir}}/assets ]; then mkdir -p {{work_dir}}/assets; fi
+RUN chown -R www-data:www-data {{work_dir}}/assets
+
+# Solr directory
+RUN if [ ! -d /var/www/solr ]; then mkdir /var/www/solr; fi
+RUN chown -R www-data:www-data /var/www/solr
 
 WORKDIR {{work_dir}}

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <solr>
-    <dataDir>/solr_data/</dataDir>
-    <str name="coreRootDirectory">/solr_data/</str>
+    <dataDir>/var/www/solr/</dataDir>
+    <str name="coreRootDirectory">/var/www/solr/</str>
 
     <solrcloud>
         <str name="host">solr</str>
