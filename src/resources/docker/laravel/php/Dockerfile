@@ -2,6 +2,15 @@ FROM php:{{php}}-fpm
 
 MAINTAINER Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
 
+ENV DEBIAN_FRONTEND noninteractive
+
+# Fix stdin is not a tty
+RUN echo 'tty -s && mesg n' > /root/.profile
+
+# Add extra config
+RUN echo "alias ll='ls -lap --color=auto'\nexport TERM=xterm" >> ~/.bashrc
+RUN echo "[url \"git@github.com:\"]\n\tinsteadOf = https://github.com/" >> ~/.gitconfig
+
 # Install needed libraries
 RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 RUN apt-get update
@@ -45,5 +54,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Shrink image
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Create a directory composer may use
+RUN if [ ! -d /var/www/.composer ]; then mkdir /var/www/.composer; fi
+RUN chown -R www-data:www-data /var/www/.composer
 
 WORKDIR /var/www/html
