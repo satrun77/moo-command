@@ -8,7 +8,7 @@ Installation
 --------------------
 
 ```bash
-$ wget https://github.com/satrun77/moo-command/releases/download/v1.0.0-alpha7/moo.phar
+$ wget https://github.com/satrun77/moo-command/releases/download/v1.0.0-alpha8/moo.phar
 
 $ chmod +x moo.phar
 
@@ -49,6 +49,7 @@ Name | Details
   ws:rm        |Remove stopped containers for a site within the workspace. A wrapper for docker-compose rm.
   ws:sites     |Display list of available sites and their statuses.
   ws:ssh       |SSH into a container for a site within the workspace.
+  ws:sh        |Execute a command inside a container for a site within the workspace.
   ws:start     |Create and start containers for a site within the workspace. A wrapper to docker-compose up.
   ws:stat      |Display a live stream of container(s) resource usage statistics.
   ws:stop      |Stop services for a site within the workspace. A wrapper to docker stop command.
