@@ -72,6 +72,7 @@ class Create extends WorkspaceAbstract
                 $this->workDirectories,
                 key($this->workDirectories)
             );
+            $themeDirectory = $this->getQuestionHelper()->ask('Enter path to theme directory from site root directory');
         }
 
         // Site root directory
@@ -98,6 +99,7 @@ class Create extends WorkspaceAbstract
             '{{root_path}}'    => $sitePath,
             '{{name}}'         => str_replace('.', '', $this->argument('name')),
             '{{work_dir}}'     => !empty($workDirectory) ? $workDirectory : current($this->workDirectories),
+            '{{theme_dir}}'    => !empty($themeDirectory) ? $themeDirectory : '',
         ]);
 
         $shell = $this->getShellHelper();
