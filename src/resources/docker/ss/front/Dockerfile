@@ -50,8 +50,5 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Shrink image
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install local binaries wrapper (https://alligator.io/workflow/npx/)
-RUN npm install -g npx
-
 # We run supervisor so the container is kept alive so that FE tools can be run using exec
 ENTRYPOINT ["/usr/bin/supervisord", "--nodaemon", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
