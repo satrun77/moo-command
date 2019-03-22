@@ -104,7 +104,6 @@ class Create extends WorkspaceAbstract
 
         $shell = $this->getShellHelper();
         $shell->exec('sudo chmod +x %s/start', $sitePath);
-        $shell->exec('sudo chmod +x %s/frontend/build', $sitePath);
         $shell->exec('sudo chmod +x %s/php/templates/sendmail', $sitePath);
 
         // Display success message
