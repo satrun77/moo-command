@@ -37,7 +37,6 @@ Name | Details
   faq          |Display FAQs.
   ws:build     |Build or rebuild services for a site within the workspace. A wrapper to docker-compose build command.
   ws:clean     |Execute specific commands to free up unwanted space such as, removing old containers, or dangling images.
-  ws:clone     |Setup local development from a single YAML file within a repository (.env.yml) **Experiment**
   ws:composer  |Execute PHP composer command inside the composer container.
   ws:cp        |Copy a file from host machine to a docker container or download from a docker container. A wrapper to docker cp command.
   ws:hosts     |Update the host file in user machine (/etc/hosts) with the docker IP address and the host names setup for all of the sites in workspace.

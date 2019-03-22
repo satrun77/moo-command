@@ -38,7 +38,6 @@ $application->add(new Command\Commit('commit', $application));
 $application->add(new Command\CsFixer());
 $application->add(new Command\CodeQuality());
 $application->add(new Command\Faq());
-$application->add(new Command\Workspace\CloneProject());
 $application->add(new Command\Workspace\ListSites());
 $application->add(new Command\Workspace\Cleanup());
 $application->add(new Command\Workspace\MachineIp());
