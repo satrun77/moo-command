@@ -16,6 +16,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Terminal;
 
 /**
  * Class StyledOutput.
@@ -247,10 +248,10 @@ class StyledOutput extends SymfonyStyle
      */
     private function getTerminalWidth()
     {
-        $application = new Application();
-        $dimensions  = $application->getTerminalDimensions();
+        $application = new Terminal();
+        $width  = $application->getWidth();
 
-        return $dimensions[0] ?: self::MAX_LINE_LENGTH;
+        return $width ?: self::MAX_LINE_LENGTH;
     }
 
     /**
