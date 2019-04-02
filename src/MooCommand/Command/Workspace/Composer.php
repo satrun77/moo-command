@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Composer extends WorkspaceAbstract
+class Composer extends Workspace
 {
     /**
      * @var string
@@ -50,7 +50,7 @@ class Composer extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // Site root directory
         $this->changeToSiteDirectory();

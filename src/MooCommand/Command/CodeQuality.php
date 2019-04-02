@@ -11,6 +11,7 @@
 namespace MooCommand\Command;
 
 use MooCommand\Console\Command;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -102,7 +103,7 @@ class CodeQuality extends Command
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // List of directories/files to scan
         $paths = $this->argument('paths');
@@ -129,11 +130,11 @@ class CodeQuality extends Command
     /**
      * Analyse a path for code quality.
      *
-     * @param string $paths
+     * @param array $paths
      *
      * @return void
      */
-    protected function scanFiles($paths)
+    protected function scanFiles(array $paths): void
     {
         // Get current path and display section title
         $path = current($paths);
@@ -145,7 +146,7 @@ class CodeQuality extends Command
         $securityDetector  = $this->option('security');
         $lintDetector      = $this->option('lint');
         $executeAll        = (!$messDetector && !$copyPasteDetector && !$securityDetector && !$lintDetector) ||
-                      ($messDetector && $copyPasteDetector && $securityDetector && $lintDetector);
+            ($messDetector && $copyPasteDetector && $securityDetector && $lintDetector);
 
         // Analyse files within the path
         foreach ($this->analyses as $option => $analyse) {
@@ -163,9 +164,10 @@ class CodeQuality extends Command
 
             // Skip analyseSecurityChecker if path is not for composer.lock
             // else, Skip all other analysers if the path if for composer.lock
-            if ('analyseSecurityChecker' === $callback && false === $isComposerLock && false === $hasComposerLock) {
+            if ('analyseSecurityChecker' === $callback && false === $isComposerLock && !$hasComposerLock) {
                 continue;
-            } elseif ('analyseSecurityChecker' !== $callback && false !== $isComposerLock) {
+            }
+            if ('analyseSecurityChecker' !== $callback && false !== $isComposerLock) {
                 continue;
             }
 
@@ -178,7 +180,7 @@ class CodeQuality extends Command
 
         // Move to the next parameter
         if (next($paths)) {
-            return $this->scanFiles($paths);
+            $this->scanFiles($paths);
         }
     }
 
@@ -187,7 +189,7 @@ class CodeQuality extends Command
      *
      * @param string $path
      */
-    protected function analyseMessDetector($path)
+    protected function analyseMessDetector(string $path): void
     {
         $phpmd = $this->getShellHelper()->exec(
             'phpmd %s xml cleancode, codesize, controversial, design, naming, unusedcode',
@@ -197,7 +199,9 @@ class CodeQuality extends Command
         try {
             $xml = new \SimpleXMLElement((string) $phpmd->getOutput());
         } catch (\Exception $e) {
-            return $this->getOutputStyle()->error($e->getMessage());
+            $this->getOutputStyle()->error($e->getMessage());
+
+            return;
         }
 
         $rows = [];
@@ -220,7 +224,7 @@ class CodeQuality extends Command
      *
      * @param string $path
      */
-    protected function analyseCopyPasteDetector($path)
+    protected function analyseCopyPasteDetector(string $path): void
     {
         $phpcpd = $this->getShellHelper()->exec('phpcpd %s', $path);
         $output = $phpcpd->getOutput();
@@ -233,11 +237,13 @@ class CodeQuality extends Command
      *
      * @param string $path
      */
-    protected function analyseSecurityChecker($path)
+    protected function analyseSecurityChecker(string $path): void
     {
         $curl = $this->getShellHelper()->isCommandInstall('curl');
         if (!$curl) {
-            return $this->getOutputStyle()->error('curl command is required for this analyser.');
+            $this->getOutputStyle()->error('curl command is required for this analyser.');
+
+            return;
         }
 
         // If composer.lock is in the root level of the directory $path
@@ -258,7 +264,7 @@ class CodeQuality extends Command
      *
      * @param string $path
      */
-    protected function analyseLintChecker($path)
+    protected function analyseLintChecker(string $path): void
     {
         $this->getShellHelper()->execRealTime(
             'parallel-lint %s',
@@ -269,39 +275,39 @@ class CodeQuality extends Command
     /**
      * Attempt to install phpmd in user machine if it does not exists.
      *
-     * @throws \CommandNotFoundException
+     * @throws CommandNotFoundException
      */
-    protected function installMessDetector()
+    protected function installMessDetector(): void
     {
-        return $this->installCommandLine('phpmd', 'http://static.phpmd.org/php/latest/phpmd.phar');
+        $this->installCommandLine('phpmd', 'http://static.phpmd.org/php/latest/phpmd.phar');
     }
 
     /**
      * Attempt to install phpcpd in user machine if it does not exists.
      *
-     * @throws \CommandNotFoundException
+     * @throws CommandNotFoundException
      */
-    protected function installCopyPasteDetector()
+    protected function installCopyPasteDetector(): void
     {
-        return $this->installCommandLine('phpcpd', 'https://phar.phpunit.de/phpcpd.phar');
+        $this->installCommandLine('phpcpd', 'https://phar.phpunit.de/phpcpd.phar');
     }
 
     /**
      * Attempt to install composer in user machine if it does not exists.
      *
-     * @throws \CommandNotFoundException
+     * @throws CommandNotFoundException
      */
-    protected function installComposer()
+    protected function installComposer(): void
     {
-        return $this->installCommandLine('composer', 'https://getcomposer.org/composer.phar');
+        $this->installCommandLine('composer', 'https://getcomposer.org/composer.phar');
     }
 
     /**
      * Attempt to install php-parallel-lint in user machine if it does not exists.
      *
-     * @throws \CommandNotFoundException
+     * @throws CommandNotFoundException
      */
-    protected function installPhpLintDetector()
+    protected function installPhpLintDetector(): void
     {
         // Install composer if not exists
         if (!$this->getShellHelper()->isCommandInstall('composer')) {
@@ -311,7 +317,9 @@ class CodeQuality extends Command
         // Download php-parallel-lint
         $command = $this->getShellHelper()->exec('composer global require --dev jakub-onderka/php-parallel-lint');
         if (!$command->isSuccessful()) {
-            return $this->getOutputStyle()->error('Unable to make install php-parallel-lint globally.');
+            $this->getOutputStyle()->error('Unable to make install php-parallel-lint globally.');
+
+            return;
         }
 
         // Download colored output plugin. This is just nice to have
@@ -329,9 +337,9 @@ class CodeQuality extends Command
      * @param string $name
      * @param string $url
      *
-     * @throws \CommandNotFoundException
+     * @throws CommandNotFoundException
      */
-    protected function installCommandLine($name, $url)
+    protected function installCommandLine(string $name, string $url): void
     {
         $this->getOutputStyle()->info($name . ' not installed in your machine. Start attempt to install it...');
 
@@ -339,7 +347,7 @@ class CodeQuality extends Command
         $wget = $this->getShellHelper()->isCommandInstall('wget');
         $curl = $this->getShellHelper()->isCommandInstall('curl');
         if (!$wget && !$curl) {
-            throw new \CommandNotFoundException('Unable to installed ' . $name . '. You don\'t have wget or curl.');
+            throw new CommandNotFoundException('Unable to installed ' . $name . ". You don't have wget or curl.");
         }
 
         // Download the command

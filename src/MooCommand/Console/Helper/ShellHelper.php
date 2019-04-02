@@ -11,7 +11,9 @@
 
 namespace MooCommand\Console\Helper;
 
+use MooCommand\Console\Command;
 use Symfony\Component\Console\Helper\Helper;
+use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Process\Process;
 
@@ -26,9 +28,10 @@ class ShellHelper extends Helper
      * @param string $name
      * @param array  $args
      *
-     * @return mixed
+     * @return int
+     * @throws \Exception
      */
-    public function execApplicationCommand($name, array $args = [])
+    public function execApplicationCommand(string $name, array $args = []): int
     {
         $command = $this->getCommand()->getApplication()->find($name);
         $input   = new ArrayInput($args);
@@ -39,11 +42,11 @@ class ShellHelper extends Helper
     /**
      * Whether or not a command line installed in user machine.
      *
-     * @param $name
+     * @param string $name
      *
      * @return mixed
      */
-    public function isCommandInstall($name)
+    public function isCommandInstall(string $name): bool
     {
         return $this->exec('which %s', $name)->isSuccessful();
     }
@@ -55,10 +58,10 @@ class ShellHelper extends Helper
      *
      * @return Process
      */
-    public function exec(...$params)
+    public function exec(...$params): Process
     {
-        $command = $this->sprintf($params);
-        $process = new Process($command);
+        $command = $this->sprintf(...$params);
+        $process = Process::fromShellCommandline($command);
         $process->setTimeout(null);
 
         $this->getCommand()->debug('PWD: ' . $process->getWorkingDirectory());
@@ -79,9 +82,9 @@ class ShellHelper extends Helper
      *
      * @return bool
      */
-    public function execRealTime(...$params)
+    public function execRealTime(...$params): bool
     {
-        $command = $this->sprintf($params);
+        $command = $this->sprintf(...$params);
         $return  = 0;
         $this->getCommand()->debug('Command executed: ' . $command);
 
@@ -97,10 +100,10 @@ class ShellHelper extends Helper
      *
      * @return string
      */
-    protected function sprintf($args)
+    protected function sprintf(...$args): string
     {
         if (count($args) > 1) {
-            return call_user_func_array('sprintf', $args);
+            return sprintf(...$args);
         }
 
         return $args[0];
@@ -111,7 +114,7 @@ class ShellHelper extends Helper
      *
      * @return string The canonical name
      */
-    public function getName()
+    public function getName(): string
     {
         return 'shell';
     }
@@ -121,7 +124,7 @@ class ShellHelper extends Helper
      *
      * @return ShellHelper
      */
-    protected function getShellHelper()
+    protected function getShellHelper(): HelperInterface
     {
         return $this->getHelperSet()->get('shell');
     }
@@ -129,9 +132,9 @@ class ShellHelper extends Helper
     /**
      * Get instance of the current command line class.
      *
-     * @return \Symfony\Component\Console\Command\Command
+     * @return Command
      */
-    protected function getCommand()
+    protected function getCommand(): Command
     {
         return $this->getHelperSet()->getCommand();
     }

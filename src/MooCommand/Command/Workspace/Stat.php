@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Stat extends WorkspaceAbstract
+class Stat extends Workspace
 {
     /**
      * @var string
@@ -45,7 +45,7 @@ class Stat extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         $command = 'docker stats $(docker ps%s|grep -v "NAMES"|awk \'{ print $NF }\'|tr "\n" " ")';
 
@@ -54,6 +54,6 @@ class Stat extends WorkspaceAbstract
             $grepBy = '|grep "' . $grepBy . '" ';
         }
 
-        $this->getShellHelper()->execRealTime($command, $grepBy)->getOutput();
+        $this->getShellHelper()->execRealTime($command, $grepBy);
     }
 }

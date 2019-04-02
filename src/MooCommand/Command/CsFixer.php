@@ -11,6 +11,7 @@
 namespace MooCommand\Command;
 
 use MooCommand\Console\Command;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -60,7 +61,7 @@ class CsFixer extends Command
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // List of directories/files to scan
         $paths = $this->argument('paths');
@@ -73,7 +74,9 @@ class CsFixer extends Command
         // Check the version of CS fixer - support 2.x
         $version = $this->getShellHelper()->exec('php-cs-fixer --version')->getOutput();
         if (false === strpos(trim($version), '2.')) {
-            return $this->getOutputStyle()->error('This command require CS Fixer version 2.x');
+            $this->getOutputStyle()->error('This command require CS Fixer version 2.x');
+
+            return;
         }
 
         // Fix php code
@@ -87,7 +90,7 @@ class CsFixer extends Command
             // Execute and display progress
             if (file_exists($path)) {
                 $this->getShellHelper()->execRealTime(
-                    'php-cs-fixer fix %s --rules=\'%s\' %s %s',
+                    "php-cs-fixer fix %s --rules='%s' %s %s",
                     $path, $this->getFixes(), $verbose, $dryrun
                 );
             }
@@ -99,7 +102,7 @@ class CsFixer extends Command
      *
      * @return string
      */
-    protected function getFixes()
+    protected function getFixes(): string
     {
         return json_encode($this->getConfigHelper()->getConfig('csfixes'));
     }
@@ -107,9 +110,9 @@ class CsFixer extends Command
     /**
      * Attempt to install php-cs-fixer in user machine if it does not exists.
      *
-     * @throws \CommandNotFoundException
+     * @throws CommandNotFoundException
      */
-    protected function installCsFixer()
+    protected function installCsFixer(): void
     {
         $shellHelper = $this->getShellHelper();
         $this->getOutputStyle()->error('php-cs-fixer not installed in your machine. Start attempt to install it...');
@@ -118,7 +121,7 @@ class CsFixer extends Command
         $wget = $shellHelper->isCommandInstall('wget');
         $curl = $shellHelper->isCommandInstall('curl');
         if (!$wget && !$curl) {
-            throw new \CommandNotFoundException('Unable to installed php-cs-fixer. You don\'t have wget or curl.');
+            throw new CommandNotFoundException("Unable to installed php-cs-fixer. You don't have wget or curl.");
         }
 
         // Download php-cs-fixer

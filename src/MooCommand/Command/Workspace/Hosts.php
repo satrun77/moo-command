@@ -10,14 +10,14 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 
 /**
  * Hosts.
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Hosts extends WorkspaceAbstract
+class Hosts extends Workspace
 {
     /**
      * @var string
@@ -35,13 +35,13 @@ class Hosts extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         $sites   = implode(' ', array_keys($this->getUsedPorts()));
         $ip      = $this->getMachineIp();
         $domains = $ip . '    ' . $sites . ' # Moo workspace';
 
-        $this->getShellHelper()->exec('sudo sed -i.bk \'/# Moo workspace/d\' /etc/hosts');
+        $this->getShellHelper()->exec("sudo sed -i.bk '/# Moo workspace/d' /etc/hosts");
         $this->getShellHelper()->exec('sudo -- sh -c -e "echo \'%s\' >> /etc/hosts"', $domains);
 
         $this->getOutputStyle()->success('Done.');

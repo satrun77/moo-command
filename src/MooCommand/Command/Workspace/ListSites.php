@@ -10,20 +10,21 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * ListSites.
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class ListSites extends WorkspaceAbstract
+class ListSites extends Workspace
 {
     /**
      * Constants for various statuses
@@ -31,7 +32,13 @@ class ListSites extends WorkspaceAbstract
      * @var string
      */
     const STATUS_ACTIVE   = '✔';
+    /**
+     * @var string
+     */
     const STATUS_INACTIVE = '✘';
+    /**
+     * @var string
+     */
     const STATUS_NA       = '●';
 
 
@@ -89,7 +96,7 @@ class ListSites extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // Reset collection of containers & ports
         $this->containers = [];
@@ -132,7 +139,7 @@ class ListSites extends WorkspaceAbstract
     /**
      * Output title
      */
-    protected function outputTitle()
+    protected function outputTitle(): void
     {
         $title = 'Available sites:';
 
@@ -144,7 +151,12 @@ class ListSites extends WorkspaceAbstract
         $this->getOutputStyle()->title($title);
     }
 
-    protected function validateContainersStatuses($row, $key)
+    /**
+     * @param  array  $row
+     * @param  string $key
+     * @return array
+     */
+    protected function validateContainersStatuses(array $row, string $key): array
     {
         $containers = $this->uniqueContainers();
         foreach ($containers as $container) {
@@ -155,12 +167,8 @@ class ListSites extends WorkspaceAbstract
             }
 
             // Check status of the container
-            $containerName = sprintf('%s_%s_1', str_replace('.', '', $key), $container);
-            if (false !== strpos($this->activeContainers(), $containerName)) {
-                $row[$container] = static::STATUS_ACTIVE;
-            } else {
-                $row[$container] = static::STATUS_INACTIVE;
-            }
+            $containerName   = sprintf('%s_%s_1', str_replace('.', '', $key), $container);
+            $row[$container] = false !== strpos($this->activeContainers(), $containerName) ? static::STATUS_ACTIVE : static::STATUS_INACTIVE;
         }
 
         return $row;
@@ -173,7 +181,7 @@ class ListSites extends WorkspaceAbstract
      * @param  string $key
      * @return string
      */
-    protected function validatePort($port, $key)
+    protected function validatePort(int $port, string $key): string
     {
         $container = array_search($port, $this->ports(), true);
         if (false !== $container && $container !== $key) {
@@ -189,7 +197,7 @@ class ListSites extends WorkspaceAbstract
      * @param  \SplFileInfo $file
      * @return array|null
      */
-    protected function containerData(\SplFileInfo $file)
+    protected function containerData(\SplFileInfo $file): ?array
     {
         $env = $file->getPathname() . '/env/web.env';
         if (!file_exists($env)) {
@@ -212,8 +220,7 @@ class ListSites extends WorkspaceAbstract
         $this->debug('Docker Compose: ' . $file->getPathname() . '/docker-compose.yml');
         $services = $this->ymlParser()->parse(
             file_get_contents($file->getPathname() . '/docker-compose.yml'),
-            true,
-            true
+            Yaml::PARSE_OBJECT
         );
 
         // Get containers grouped per site
@@ -230,7 +237,7 @@ class ListSites extends WorkspaceAbstract
      *
      * @param array $data
      */
-    protected function outputSite(array $data)
+    protected function outputSite(array $data): void
     {
         // Container name & container filter argument
         $containerFilter = $this->argument('container');
@@ -288,7 +295,7 @@ class ListSites extends WorkspaceAbstract
      * @param  array $data
      * @return array
      */
-    protected function formatMetadataCells(array $data)
+    protected function formatMetadataCells(array $data): array
     {
         $cells = [];
         foreach ($data as $name => $value) {
@@ -304,7 +311,7 @@ class ListSites extends WorkspaceAbstract
      *
      * @return Table
      */
-    protected function tableOutput()
+    protected function tableOutput(): Table
     {
         return $this->cache('tableOutput', function () {
             $table = new Table($this->getOutputStyle());
@@ -319,7 +326,7 @@ class ListSites extends WorkspaceAbstract
      *
      * @return array
      */
-    protected function uniqueContainers()
+    protected function uniqueContainers(): array
     {
         return $this->cache('uniqueContainers', function () {
             return array_unique(array_reduce($this->containers, function ($result, $item) {
@@ -337,14 +344,14 @@ class ListSites extends WorkspaceAbstract
      *
      * @return Parser
      */
-    protected function ymlParser()
+    protected function ymlParser(): Parser
     {
         return $this->cache('ymlParser', function () {
             return new Parser();
         });
     }
 
-    protected function machineIp()
+    protected function machineIp(): string
     {
         return $this->cache('machineIp', function () {
             return $this->getMachineIp();
@@ -356,7 +363,7 @@ class ListSites extends WorkspaceAbstract
      *
      * @return string
      */
-    protected function activeContainers()
+    protected function activeContainers(): string
     {
         return $this->cache('activeContainers', function () {
             return (string) $this->getShellHelper()->exec('docker ps')->getOutput();
@@ -370,13 +377,13 @@ class ListSites extends WorkspaceAbstract
      * @param  string $port
      * @return array
      */
-    protected function ports($key = '', $port = '')
+    protected function ports(string $key = '', string $port = ''): array
     {
         if (is_null(self::$cache['ports'])) {
             self::$cache['ports'] = [];
         }
 
-        if ($port) {
+        if ($port !== '') {
             self::$cache['ports'][$key] = $port;
         }
 
@@ -390,7 +397,7 @@ class ListSites extends WorkspaceAbstract
      * @param  callable $fetch
      * @return mixed
      */
-    protected function cache($name, callable $fetch)
+    protected function cache(string $name, callable $fetch)
     {
         if (empty(self::$cache[$name])) {
             self::$cache[$name] = $fetch();

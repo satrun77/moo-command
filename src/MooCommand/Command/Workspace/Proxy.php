@@ -10,14 +10,14 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 
 /**
  * Proxy.
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Proxy extends WorkspaceAbstract
+class Proxy extends Workspace
 {
     /**
      * @var string
@@ -35,19 +35,21 @@ class Proxy extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
+        $this->changeToSiteDirectory();
+
         $proxy = $this->getWorkspace() . 'proxy';
         $this->debug('Workspace: ' . $this->getWorkspace());
 
         if (is_dir($proxy)) {
-            return $this->startProxyContainer($proxy);
+            $this->startProxyContainer($proxy);
+        } else {
+            $this->copyProxyContainer($proxy);
         }
-
-        return $this->copyProxyContainer($proxy);
     }
 
-    protected function copyProxyContainer($proxy)
+    protected function copyProxyContainer(string $proxy): void
     {
         // Info message
         $this->getOutputStyle()->info('There is no proxy container in the workspace.');
@@ -57,19 +59,19 @@ class Proxy extends WorkspaceAbstract
         $this->getConfigHelper()->copyResource('docker/proxy', $proxy);
 
         // Success message
-        $message = "Docker proxy container created in workspace.\n"
-            . 'You can start container by executing the same command.';
+        $message = 'Docker proxy container created in workspace.
+You can start container by executing the same command.';
         $this->getOutputStyle()->success($message);
     }
 
     /**
      * Start the proxy container in the workspace.
      *
-     * @param $proxy
+     * @param string $proxy
      *
      * @throws \Exception
      */
-    protected function startProxyContainer($proxy)
+    protected function startProxyContainer(string $proxy): void
     {
         // Info message
         $this->getOutputStyle()->info('Proxy container exists in the workspace.');
@@ -80,7 +82,7 @@ class Proxy extends WorkspaceAbstract
         // Start docker proxy container
         $command = $this->getShellHelper()->execRealTime('./start');
         if (!$command) {
-            throw new \Exception("Can't start docker proxy container");
+            throw new \RuntimeException("Can't start docker proxy container");
         }
 
         // Debug and success messages

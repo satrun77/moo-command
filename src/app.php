@@ -12,8 +12,8 @@ if (PHP_SAPI !== 'cli') {
     echo 'Warning: app should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
 }
 
-if (!version_compare(PHP_VERSION, '5.6', '>=')) {
-    die("PHP version 5.6 or above is required for the command line tool.\n");
+if (!PHP_VERSION_ID >= 70100) {
+    die("PHP version 7.1 or above is required for the command line tool.\n");
 }
 
 define('__APP_DIR__', __DIR__);

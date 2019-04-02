@@ -11,6 +11,7 @@
 
 namespace MooCommand\Console\Helper;
 
+use MooCommand\Console\Command;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\QuestionHelper as BaseQuestionHelper;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -27,7 +28,7 @@ class QuestionHelper extends Helper
      *
      * @return BaseQuestionHelper
      */
-    protected function getHelper()
+    protected function getHelper(): BaseQuestionHelper
     {
         return $this->getHelperSet()->get('question');
     }
@@ -35,20 +36,20 @@ class QuestionHelper extends Helper
     /**
      * Get instance of the current command line class.
      *
-     * @return \Symfony\Component\Console\Command\Command
+     * @return Command
      */
-    protected function getCommand()
+    protected function getCommand(): Command
     {
         return $this->getHelperSet()->getCommand();
     }
 
     /**
-     * @param string $question
-     * @param int    $default
+     * @param string|array $question
+     * @param int          $default
      *
      * @return mixed
      */
-    public function confirmAsk($question, $default = 0)
+    public function confirmAsk($question, int $default = 0)
     {
         $command = $this->getCommand();
         $command->getOutputStyle()->question($question);
@@ -59,7 +60,7 @@ class QuestionHelper extends Helper
     }
 
     /**
-     * @param $question
+     * @param array|string $question
      *
      * @return mixed
      */
@@ -80,7 +81,7 @@ class QuestionHelper extends Helper
      * @param  string           $default
      * @return false|int|string
      */
-    public function choices($questionText, array $choices, $default)
+    public function choices(string $questionText, array $choices, string $default)
     {
         $command = $this->getCommand();
 
@@ -94,7 +95,7 @@ class QuestionHelper extends Helper
         $answer = $this->getHelper()->ask($command->getInput(), $command->getOutput(), $question);
 
         // Return the index of selected answer or the answer if index can't be found
-        $index = array_search($answer, $choices);
+        $index = array_search($answer, $choices, true);
         if ($index !== false) {
             $answer = $index;
         }
@@ -109,7 +110,7 @@ class QuestionHelper extends Helper
      * @param  callable $validator
      * @return string
      */
-    public function askAndValidate($questionText, callable $validator)
+    public function askAndValidate(string $questionText, callable $validator): string
     {
         // Instance of the current command
         $command = $this->getCommand();
@@ -132,7 +133,7 @@ class QuestionHelper extends Helper
      *
      * @return string The canonical name
      */
-    public function getName()
+    public function getName(): string
     {
         return 'moo_question';
     }

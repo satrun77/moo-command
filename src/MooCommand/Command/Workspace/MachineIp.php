@@ -10,14 +10,14 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 
 /**
  * MachineIp.
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class MachineIp extends WorkspaceAbstract
+class MachineIp extends Workspace
 {
     /**
      * @var string
@@ -35,12 +35,14 @@ class MachineIp extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         $ip = $this->getMachineIp();
 
-        if (false === $ip) {
-            return $this->getOutputStyle()->error('Unable to get docker ip');
+        if ($ip === '') {
+            $this->getOutputStyle()->error('Unable to get docker ip');
+
+            return;
         }
 
         $this->getOutputStyle()->success($ip);

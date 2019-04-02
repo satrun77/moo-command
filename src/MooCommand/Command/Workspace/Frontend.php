@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Frontend extends WorkspaceAbstract
+class Frontend extends Workspace
 {
     /**
      * Constants for acceptable commands
@@ -26,7 +26,13 @@ class Frontend extends WorkspaceAbstract
      * @var string
      */
     const CMD_INSTALL = 'install';
+    /**
+     * @var string
+     */
     const CMD_BUILD   = 'build';
+    /**
+     * @var string
+     */
     const CMD_WATCH   = 'watch';
 
     /**
@@ -58,7 +64,7 @@ class Frontend extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // Move to root directory of docker setup
         $this->changeToSiteDirectory();
@@ -77,7 +83,7 @@ class Frontend extends WorkspaceAbstract
      *
      * @return string
      */
-    protected function command()
+    protected function command(): string
     {
         // Command we want to execute inside container
         $command = $this->argument('execute');

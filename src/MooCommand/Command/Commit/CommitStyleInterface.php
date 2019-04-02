@@ -21,28 +21,28 @@ interface CommitStyleInterface
      *
      * @return string
      */
-    public function getDisplayName();
+    public function getDisplayName(): string;
 
     /**
      * Return list of arguments for the command.
      *
      * @return array
      */
-    public function getArguments();
+    public function getArguments(): array;
 
     /**
      * Return list of extra options to be added to the commit defaults.
      *
      * @return array
      */
-    public function getOptions();
+    public function getOptions(): array;
 
     /**
      * Return list of short cut options.
      *
      * @return array
      */
-    public function getShortcutOptions();
+    public function getShortcutOptions(): array;
 
     /**
      * Return list extra validators.
@@ -52,7 +52,7 @@ interface CommitStyleInterface
      *
      * @return array
      */
-    public function getValidators();
+    public function getValidators(): array;
 
     /**
      * Return message for a short option.
@@ -61,16 +61,16 @@ interface CommitStyleInterface
      *
      * @return string
      */
-    public function getShortcutMessage($shortcutOption);
+    public function getShortcutMessage(string $shortcutOption): string;
 
     /**
      * Return details for a short option.
      *
-     * @param $shortcutOption
+     * @param string $shortcutOption
      *
      * @return string
      */
-    public function getShortcutDetails($shortcutOption);
+    public function getShortcutDetails(string $shortcutOption): string;
 
     /**
      * Return an array of arguments for the commit command.
@@ -80,5 +80,5 @@ interface CommitStyleInterface
      *
      * @return array
      */
-    public function getCommitCommand($message, $details);
+    public function getCommitCommand(string $message, string $details): array;
 }

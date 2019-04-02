@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Sh extends WorkspaceAbstract
+class Sh extends Workspace
 {
     /**
      * @var string
@@ -53,7 +53,7 @@ class Sh extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // Move to root directory of docker setup
         $this->changeToSiteDirectory();

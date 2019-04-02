@@ -11,7 +11,9 @@
 
 namespace MooCommand\Console\Helper;
 
+use MooCommand\Console\Command;
 use Symfony\Component\Console\Helper\Helper;
+use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Yaml\Parser;
 
 /**
@@ -29,7 +31,7 @@ class ConfigHelper extends Helper
      *
      * @return string
      */
-    public function getWorkspace()
+    public function getWorkspace(): string
     {
         return rtrim($this->getConfig('workspace'), '/') . '/';
     }
@@ -39,7 +41,7 @@ class ConfigHelper extends Helper
      *
      * @return string
      */
-    public function getCurrentSiteName()
+    public function getCurrentSiteName(): string
     {
         // Current path & convert into an array
         $path     = realpath(trim($this->getShellHelper()->exec('pwd')->getOutput()));
@@ -52,7 +54,7 @@ class ConfigHelper extends Helper
         $siteName = end($segments);
         do {
             $path         = trim(dirname($path), '/');
-            $pathNotFound = $workspace == $path;
+            $pathNotFound = $workspace === $path;
         } while (!$pathNotFound && $siteName = prev($segments));
 
         return $siteName;
@@ -61,11 +63,11 @@ class ConfigHelper extends Helper
     /**
      * Get the docker site root path.
      *
-     * @param $name
+     * @param string $name
      *
      * @return string
      */
-    public function getSiteRoot($name = 'name')
+    public function getSiteRoot(string $name = 'name'): ?string
     {
         $fullPath = $this->getWorkspace() . $this->getCommand()->argument($name);
 
@@ -79,11 +81,11 @@ class ConfigHelper extends Helper
     /**
      * Copy files or directory from the resource directory in this application.
      *
-     * @param       $source
-     * @param       $destination
-     * @param array $excludeData
+     * @param string $source
+     * @param string $destination
+     * @param array  $excludeData
      */
-    public function copyResource($source, $destination, $excludeData = [])
+    public function copyResource(string $source, string $destination, array $excludeData = []): void
     {
         $directory = __APP_DIR__ . '/resources/' . $source;
         // Collection of dot files that should be converted to correct name
@@ -108,7 +110,7 @@ class ConfigHelper extends Helper
                     mkdir($filePath, 0755, true);
                 }
                 $this->getCommand()->debug('Make dir: ' . $filePath);
-            } elseif (!in_array($relativePath, $excludeData)) {
+            } elseif (!in_array($relativePath, $excludeData, true)) {
                 $this->getCommand()->debug('Copy:     ' . $file->getPathname() . ' to ' . $filePath);
 
                 // Copy file
@@ -120,7 +122,7 @@ class ConfigHelper extends Helper
                 }
 
                 // Temporary hack for now
-                if ('start' == $file->getFilename() && !chmod($filePath, 0750)) {
+                if ('start' === $file->getFilename() && !chmod($filePath, 0750)) {
                     $this->getCommand()->getOutputStyle()->error(sprintf('Failed to set permission: %s', $file->getPathname()));
                 }
             }
@@ -134,15 +136,11 @@ class ConfigHelper extends Helper
      *
      * @return mixed
      */
-    public function getResource($filename)
+    public function getResource(string $filename)
     {
         $yml = new Parser();
 
-        return $yml->parse(
-            file_get_contents(__APP_DIR__ . '/resources/' . $filename),
-            true,
-            true
-        );
+        return $yml->parse(file_get_contents(__APP_DIR__ . '/resources/' . $filename));
     }
 
     /**
@@ -150,7 +148,7 @@ class ConfigHelper extends Helper
      *
      * @return string
      */
-    protected function getUserConfigFilePath()
+    protected function getUserConfigFilePath(): string
     {
         $username = $this->getShellHelper()->exec('whoami');
         $path     = '/Users/' . trim($username->getOutput()) . '/.moo.yml';
@@ -164,7 +162,7 @@ class ConfigHelper extends Helper
      *
      * @return string
      */
-    protected function getCoreConfigFilePath()
+    protected function getCoreConfigFilePath(): string
     {
         return __APP_DIR__ . '/resources/core_config.yml';
     }
@@ -174,18 +172,14 @@ class ConfigHelper extends Helper
      *
      * @return void
      */
-    protected function loadConfig()
+    protected function loadConfig(): void
     {
         if (!is_null($this->config)) {
             return;
         }
 
         // Load user configurations
-        $this->config = (new Parser())->parse(
-            file_get_contents($this->getUserConfigFilePath()),
-            true,
-            true
-        );
+        $this->config = (new Parser())->parse(file_get_contents($this->getUserConfigFilePath()));
 
         // Override user configurations with core ones, if exists
         $this->loadCoreConfigIfNeeded();
@@ -196,7 +190,7 @@ class ConfigHelper extends Helper
      *
      * @return void
      */
-    protected function loadCoreConfigIfNeeded()
+    protected function loadCoreConfigIfNeeded(): void
     {
         // Only load core config if file exists
         $configFile = $this->getCoreConfigFilePath();
@@ -205,11 +199,7 @@ class ConfigHelper extends Helper
         }
 
         // Get core configs
-        $coreConfig = (new Parser())->parse(
-            file_get_contents($this->getCoreConfigFilePath()),
-            true,
-            true
-        );
+        $coreConfig = (new Parser())->parse(file_get_contents($this->getCoreConfigFilePath()));
         if (!$coreConfig) {
             return;
         }
@@ -224,11 +214,11 @@ class ConfigHelper extends Helper
     /**
      * Get a value from the .moo.yml file.
      *
-     * @param $name
+     * @param string $name
      *
      * @return array|mixed|null
      */
-    public function getConfig($name)
+    public function getConfig(string $name)
     {
         $this->loadConfig();
 
@@ -253,7 +243,7 @@ class ConfigHelper extends Helper
      *
      * @return string The canonical name
      */
-    public function getName()
+    public function getName(): string
     {
         return 'config';
     }
@@ -263,7 +253,7 @@ class ConfigHelper extends Helper
      *
      * @return ShellHelper
      */
-    protected function getShellHelper()
+    protected function getShellHelper(): HelperInterface
     {
         return $this->getHelperSet()->get('shell');
     }
@@ -271,9 +261,9 @@ class ConfigHelper extends Helper
     /**
      * Get instance of the current command line class.
      *
-     * @return \Symfony\Component\Console\Command\Command
+     * @return Command
      */
-    protected function getCommand()
+    protected function getCommand(): Command
     {
         return $this->getHelperSet()->getCommand();
     }

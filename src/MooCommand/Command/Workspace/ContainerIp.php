@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class ContainerIp extends WorkspaceAbstract
+class ContainerIp extends Workspace
 {
     /**
      * @var string
@@ -45,9 +45,9 @@ class ContainerIp extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
-        $command = 'docker inspect -f \'{{.Name}}|{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}\' $(docker ps -aq)';
+        $command = "docker inspect -f '{{.Name}}|{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \$(docker ps -aq)";
         $grepBy  = $this->argument('filter');
         if (!empty($grepBy)) {
             $command .= ' | grep "%s"';

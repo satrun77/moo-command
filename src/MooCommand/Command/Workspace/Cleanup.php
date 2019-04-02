@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use MooCommand\Console\Helper\ShellHelper;
 use MooCommand\Console\StyledOutput;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,7 +20,7 @@ use Symfony\Component\Console\Input\InputOption;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Cleanup extends WorkspaceAbstract
+class Cleanup extends Workspace
 {
     /**
      * @var string
@@ -52,7 +52,7 @@ class Cleanup extends WorkspaceAbstract
         // Delete old containers that is weeks ago
         [
             'title'   => 'Delete old containers that is weeks ago',
-            'command' => 'docker ps -a | grep \'weeks ago\' | awk \'{print $1}\' | xargs docker rm',
+            'command' => "docker ps -a | grep 'weeks ago' | awk '{print \$1}' | xargs docker rm",
             'error'   => 'Unable to delete old containers.',
         ],
         // Delete old containers
@@ -88,7 +88,7 @@ class Cleanup extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // Change current directory to the container root directory
         $workspace = $this->getWorkspace();
@@ -115,7 +115,7 @@ class Cleanup extends WorkspaceAbstract
      * @param StyledOutput $output
      * @param ShellHelper  $shell
      */
-    protected function executeMethodCallback(array $command, StyledOutput $output, ShellHelper $shell)
+    protected function executeMethodCallback(array $command, StyledOutput $output, ShellHelper $shell): void
     {
         // Check if command is allowed to be executed
         if (array_key_exists('option', $command) && !$this->option($command['option'])) {
@@ -123,9 +123,9 @@ class Cleanup extends WorkspaceAbstract
         }
 
         // Execute method
-        if ($method = $this->getCommandValue('command', $command)) {
+        if (($method = $this->getCommandValue('command', $command)) !== '') {
             $output->title($this->getCommandValue('title', $command));
-            $this->$method($output, $shell);
+            $this->{$method}($output, $shell);
         }
     }
 
@@ -136,11 +136,11 @@ class Cleanup extends WorkspaceAbstract
      * @param StyledOutput $output
      * @param ShellHelper  $shell
      */
-    protected function executeShellCommand(array $command, StyledOutput $output, ShellHelper $shell)
+    protected function executeShellCommand(array $command, StyledOutput $output, ShellHelper $shell): void
     {
         // Value for shell command must exists
         $shellCommand = $this->getCommandValue('command', $command);
-        if (!$shellCommand) {
+        if ($shellCommand === '') {
             return;
         }
 
@@ -161,7 +161,7 @@ class Cleanup extends WorkspaceAbstract
      * @param StyledOutput $output
      * @param ShellHelper  $shell
      */
-    protected function removeStaleNetworks(StyledOutput $output, ShellHelper $shell)
+    protected function removeStaleNetworks(StyledOutput $output, ShellHelper $shell): void
     {
         $networkCommand = $shell->exec('docker network ls -q');
         if (!$networkCommand->isSuccessful()) {
@@ -197,7 +197,7 @@ class Cleanup extends WorkspaceAbstract
      *
      * @return bool
      */
-    protected function isMethodCallback($command)
+    protected function isMethodCallback(string $command): bool
     {
         return !preg_match('/\s/', $command) && method_exists($this, $command);
     }
@@ -210,7 +210,7 @@ class Cleanup extends WorkspaceAbstract
      *
      * @return string
      */
-    protected function getCommandValue($name, array $source)
+    protected function getCommandValue(string $name, array $source): string
     {
         return array_key_exists($name, $source) ? $source[$name] : '';
     }

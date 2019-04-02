@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Start extends WorkspaceAbstract
+class Start extends Workspace
 {
     /**
      * @var string
@@ -45,14 +45,14 @@ class Start extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         $this->changeToSiteDirectory();
 
         // Start the container
         $start = $this->getShellHelper()->execRealTime('./start');
         if (!$start) {
-            throw new \Exception('Unable to start the site container.');
+            throw new \RuntimeException('Unable to start the site container.');
         }
 
         // Success message

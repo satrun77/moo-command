@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Stop extends WorkspaceAbstract
+class Stop extends Workspace
 {
     /**
      * @var string
@@ -45,23 +45,23 @@ class Stop extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         $this->changeToSiteDirectory();
 
         // Should we stop all containers
         if ('all' === $this->argument('name')) {
-            return $this->stopAllContainers();
+            $this->stopAllContainers();
+        } else {
+            // Stop one container only
+            $this->stopContainer();
         }
-
-        // Stop one container only
-        return $this->stopContainer();
     }
 
     /**
      * Stop all of the containers in a site.
      */
-    protected function stopAllContainers()
+    protected function stopAllContainers(): void
     {
         $workspace = $this->getWorkspace();
 
@@ -78,7 +78,7 @@ class Stop extends WorkspaceAbstract
     /**
      * Stop a specific container within a site,.
      */
-    protected function stopContainer()
+    protected function stopContainer(): void
     {
         // Stop the containers
         $stop = $this->getShellHelper()->execRealTime('./start stop');

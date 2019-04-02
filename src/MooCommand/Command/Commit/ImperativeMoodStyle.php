@@ -58,7 +58,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function getDisplayName()
+    public function getDisplayName(): string
     {
         return 'Imperative Mood';
     }
@@ -68,7 +68,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return [
             'Message', 'Details',
@@ -80,7 +80,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return [];
     }
@@ -90,7 +90,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getShortcutOptions()
+    public function getShortcutOptions(): array
     {
         return [];
     }
@@ -103,7 +103,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getValidators()
+    public function getValidators(): array
     {
         return [
             'Message.ImperativeMood' => $this,
@@ -117,7 +117,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function getShortcutMessage($shortcutOption)
+    public function getShortcutMessage(string $shortcutOption): string
     {
         return $this->shortcutMessages[$shortcutOption];
     }
@@ -125,11 +125,11 @@ class ImperativeMoodStyle implements CommitStyleInterface
     /**
      * Return details for a short option.
      *
-     * @param $shortcutOption
+     * @param string $shortcutOption
      *
      * @return string
      */
-    public function getShortcutDetails($shortcutOption)
+    public function getShortcutDetails(string $shortcutOption): string
     {
         return '';
     }
@@ -142,7 +142,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getCommitCommand($message, $details)
+    public function getCommitCommand(string $message, string $details): array
     {
         return [
             "git commit -m \"%s\n\n%s\"",
@@ -156,7 +156,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return void
      */
-    public function beforeInputMessage()
+    public function beforeInputMessage(): void
     {
         $this->command->getOutputStyle()->info('Acceptable words to start commit with: ');
         $this->command->getOutputStyle()->line('If applied, this commit will ....your commit....', 'comment');
@@ -172,7 +172,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function validateMessageImperativeMood($value)
+    public function validateMessageImperativeMood(string $value): string
     {
         $imperativeMood = false;
         foreach ($this->types as $type) {
@@ -200,7 +200,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         if (null === $this->types) {
             $this->types = $this->command->getHelper('config')->getConfig('commit.words');

@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Cp extends WorkspaceAbstract
+class Cp extends Workspace
 {
     /**
      * @var string
@@ -49,7 +49,7 @@ class Cp extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // Validations
         $this->argumentMustNotBeEmpty('name');
@@ -60,12 +60,12 @@ class Cp extends WorkspaceAbstract
         $container = $this->argument('container');
 
         // Ask to Upload or download?
-        $isUpload = $this->getQuestionHelper()->choices(
+        $isUpload = (int) $this->getQuestionHelper()->choices(
             'What would you like to do?',
             ['Upload', 'Download'],
             0
         );
-        $action = 0 == $isUpload ? 'upload' : 'download';
+        $action = 0 === $isUpload ? 'upload' : 'download';
 
         // Ask what is the path of the file you want to copy.
         $copyFrom = $this->getQuestionHelper()->ask('Enter the path of the file you want to copy: ');
@@ -74,13 +74,15 @@ class Cp extends WorkspaceAbstract
         $copyTo = $this->getQuestionHelper()->ask('Enter the path to where you want to copy the file to: ');
 
         $params = ['docker cp %s_%s_1:%s %s', $site, $container, $copyFrom, $copyTo];
-        if (0 == $isUpload) {
+        if (0 === $isUpload) {
             $params = ['docker cp %s %s_%s_1:%s', $copyFrom, $site, $container, $copyTo];
         }
         $copy = $this->getShellHelper()->execRealTime(...$params);
 
         if (!$copy) {
-            return $this->getOutputStyle()->error('Unable to ' . $action . ' file.');
+            $this->getOutputStyle()->error('Unable to ' . $action . ' file.');
+
+            return;
         }
 
         // Success message

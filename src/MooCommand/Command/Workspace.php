@@ -81,9 +81,9 @@ abstract class Workspace extends Command
         '/var/www/html/public',
     ];
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this->signature = $this->signature . $this->childSignature;
+        $this->signature .= $this->childSignature;
 
         parent::configure();
     }
@@ -93,7 +93,7 @@ abstract class Workspace extends Command
      *
      * @return bool|string
      */
-    protected function getMachineIp()
+    protected function getMachineIp(): string
     {
         $ip = $this->getShellHelper()->exec('ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk \'{print $2}\'');
 
@@ -114,7 +114,7 @@ abstract class Workspace extends Command
      *
      * @return string
      */
-    protected function getTemplate($variable)
+    protected function getTemplate(string $variable): string
     {
         // SilverStripe template
         if ('ss' === $variable || file_exists($variable . '/env/ss.env')) {
@@ -146,7 +146,7 @@ abstract class Workspace extends Command
      *
      * @return array
      */
-    protected function getUsedPorts($service = 'VIRTUAL_PORT')
+    protected function getUsedPorts(string $service = 'VIRTUAL_PORT'): array
     {
         $workspace = $this->getConfigHelper()->getWorkspace();
         $ports     = [];
@@ -183,13 +183,13 @@ abstract class Workspace extends Command
     /**
      * Get value of an environment file (web.env) option
      *
-     * @param $field
+     * @param  string $field
      * @param  string $default
      * @return string
      */
-    protected function getEnvFileValue($field, $default = '')
+    protected function getEnvFileValue(string $field, string $default = ''): string
     {
-        $file = $this->getConfigHelper()->getSiteRoot('name') . '/env/web.env';
+        $file = $this->getConfigHelper()->getSiteRoot() . '/env/web.env';
 
         try {
             if (file_exists($file)) {
@@ -218,7 +218,7 @@ abstract class Workspace extends Command
      *
      * @return string
      */
-    protected function getWorkspace()
+    protected function getWorkspace(): string
     {
         return $this->getConfigHelper()->getWorkspace();
     }
@@ -230,7 +230,7 @@ abstract class Workspace extends Command
      *
      * @return array|string
      */
-    public function argument($key = null)
+    public function argument(string $key = null): string
     {
         $value = parent::argument($key);
 
@@ -239,23 +239,23 @@ abstract class Workspace extends Command
             $value = $this->getConfigHelper()->getCurrentSiteName();
         }
 
-        return $value;
+        return (string) $value;
     }
 
     /**
      * Validate whether a parameter is empty.
      *
-     * @param $name
+     * @param string $name
      *
      * @return bool
      *
      * @throws \Exception
      */
-    protected function argumentMustNotBeEmpty($name)
+    protected function argumentMustNotBeEmpty(string $name): bool
     {
         $param = $this->argument($name);
         if (empty($param)) {
-            throw new \Exception('The site name cannot be empty.');
+            throw new \InvalidArgumentException('The site name cannot be empty.');
         }
 
         return true;
@@ -264,17 +264,17 @@ abstract class Workspace extends Command
     /**
      * Validate whether a parameter is equal to 'proxy'.
      *
-     * @param $name
+     * @param string $name
      *
      * @return bool
      *
      * @throws \Exception
      */
-    protected function siteNameMustNotEqualToProxy($name)
+    protected function siteNameMustNotEqualToProxy(string $name): bool
     {
         $param = $this->argument($name);
         if ('proxy' === $param) {
-            throw new \Exception('The site name cannot be empty or named \'proxy\'.');
+            throw new \Exception("The site name cannot be empty or named 'proxy'.");
         }
 
         return true;
@@ -283,17 +283,17 @@ abstract class Workspace extends Command
     /**
      * Validate whether a site does not exists.
      *
-     * @param $name
+     * @param string $name
      *
      * @return bool
      *
      * @throws \Exception
      */
-    protected function siteDirectoryMustExists($name)
+    protected function siteDirectoryMustExists(string $name): bool
     {
         $siteRoot = $this->getConfigHelper()->getSiteRoot($name);
         if (is_null($siteRoot)) {
-            throw new \Exception(sprintf("Unable to find the site with the name '%s'", $this->argument($name)));
+            throw new \InvalidArgumentException(sprintf("Unable to find the site with the name '%s'", $this->argument($name)));
         }
 
         return true;
@@ -302,30 +302,30 @@ abstract class Workspace extends Command
     /**
      * Validate whether a site exists.
      *
-     * @param $name
+     * @param string $name
      *
      * @return bool
      *
      * @throws \Exception siteDirectoryMustExists
      */
-    protected function siteDirectoryMustNotExists($name)
+    protected function siteDirectoryMustNotExists(string $name): bool
     {
         $siteRoot = $this->getConfigHelper()->getSiteRoot($name);
         if (is_dir($siteRoot)) {
-            throw new \Exception(sprintf("There is an existing site with the same name '%s'", $this->argument($name)));
+            throw new \InvalidArgumentException(sprintf("There is an existing site with the same name '%s'", $this->argument($name)));
         }
 
         return true;
     }
 
-    protected function changeToSiteDirectory()
+    protected function changeToSiteDirectory(): string
     {
         // Validations
         $this->argumentMustNotBeEmpty('name');
         $this->siteDirectoryMustExists('name');
 
         // Site root directory
-        $siteRoot = $this->getConfigHelper()->getSiteRoot('name');
+        $siteRoot = $this->getConfigHelper()->getSiteRoot();
 
         // Change current directory to the container root directory
         chdir($siteRoot);
@@ -344,13 +344,13 @@ abstract class Workspace extends Command
      *
      * @throws \Exception
      */
-    protected function execCommandInContainer($command, $args, $container = 'php', $error = '', $success = '')
+    protected function execCommandInContainer(string $command, $args, string $container = 'php', string $error = '', string $success = ''): self
     {
         // Validations
         $this->argumentMustNotBeEmpty('name');
 
         // Site root directory
-        $siteRoot = $this->getConfigHelper()->getSiteRoot('name');
+        $siteRoot = $this->getConfigHelper()->getSiteRoot();
         $siteName = basename($siteRoot);
         // Docker prefix can't have "."
         $siteName = str_replace('.', '', $siteName);
@@ -368,7 +368,7 @@ abstract class Workspace extends Command
         // Execute command inside the docker site
         $status = $this->getShellHelper()->execRealTime('docker exec %s %s %s', $containerName, $command, $args);
         if (!$status && !empty($error)) {
-            throw new \Exception($error);
+            throw new \DomainException($error);
         }
 
         // Success message
@@ -387,31 +387,31 @@ abstract class Workspace extends Command
      * @param  string $stop
      * @return void
      */
-    protected function showDockerSyncInfo($volume, $start = '', $stop = '')
+    protected function showDockerSyncInfo(string $volume, string $start = '', string $stop = ''): void
     {
         $this->getOutputStyle()->title('Docker Sync commands:');
 
         // Message about docker-sync
-        if ($volume) {
+        if ($volume !== '') {
             $volume = str_replace('.', '', $this->argument('name')) . '_dockersync_1';
             $this->getOutputStyle()->warning([
                 'You need to create docker volume, if does not exists!',
-                'Volumne name should be: ' . $volume,
+                'Volume name should be: ' . $volume,
             ]);
             $this->getOutputStyle()->info([
-                'Command to create the volumne:',
+                'Command to create the volume:',
                 'docker volume create --name=' . $volume,
             ]);
         }
 
-        if ($start) {
+        if ($start !== '') {
             $this->getOutputStyle()->info([
                 'Command to start docker-sync:',
                 'docker-sync start',
             ]);
         }
 
-        if ($stop) {
+        if ($stop !== '') {
             $this->getOutputStyle()->info([
                 'Command to stop docker-sync:',
                 'docker-sync stop',

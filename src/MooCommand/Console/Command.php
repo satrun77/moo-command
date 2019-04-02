@@ -14,17 +14,16 @@ namespace MooCommand\Console;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use MooCommand\Console\Helper\ConfigHelper;
+use MooCommand\Console\Helper\QuestionHelper;
 use MooCommand\Console\Helper\ShellHelper;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class Command.
- */
-class Command extends SymfonyCommand
+abstract class Command extends SymfonyCommand
 {
     /**
      * @var bool
@@ -33,20 +32,20 @@ class Command extends SymfonyCommand
     /**
      * The input interface implementation.
      *
-     * @var \Symfony\Component\Console\Input\InputInterface
+     * @var InputInterface
      */
     protected $input;
     /**
      * The output interface implementation.
      *
-     * @var \Symfony\Component\Console\Output\OutputInterface
+     * @var ConsoleOutput
      */
     protected $output;
 
     /**
      * The stdErr output interface implementation.
      *
-     * @var \Symfony\Component\Console\Output\OutputInterface
+     * @var OutputInterface
      */
     protected $errorOutput;
 
@@ -81,7 +80,7 @@ class Command extends SymfonyCommand
     /**
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName($this->signature)
@@ -108,7 +107,7 @@ class Command extends SymfonyCommand
     /**
      * @return ConfigHelper
      */
-    protected function getConfigHelper()
+    protected function getConfigHelper(): ConfigHelper
     {
         return $this->getHelper('config');
     }
@@ -116,15 +115,15 @@ class Command extends SymfonyCommand
     /**
      * @return ShellHelper
      */
-    protected function getShellHelper()
+    protected function getShellHelper(): ShellHelper
     {
         return $this->getHelper('shell');
     }
 
     /**
-     * @return \MooCommand\Console\Helper\QuestionHelper
+     * @return QuestionHelper
      */
-    public function getQuestionHelper()
+    public function getQuestionHelper(): QuestionHelper
     {
         return $this->getHelper('moo_question');
     }
@@ -134,14 +133,10 @@ class Command extends SymfonyCommand
      *
      * @param string $key
      *
-     * @return string|array
+     * @return string|string[]|null
      */
-    public function argument($key = null)
+    public function argument(string $key)
     {
-        if (is_null($key)) {
-            return $this->input->getArguments();
-        }
-
         return $this->input->getArgument($key);
     }
 
@@ -150,15 +145,11 @@ class Command extends SymfonyCommand
      *
      * @param string $key
      *
-     * @return string|array
+     * @return string|string[]|bool|null
      */
-    public function option($key = null)
+    public function option(string $key)
     {
         if ($this->input instanceof InputInterface) {
-            if (is_null($key)) {
-                return $this->input->getOptions();
-            }
-
             return $this->input->getOption($key);
         }
 
@@ -168,9 +159,9 @@ class Command extends SymfonyCommand
     /**
      * Get the output implementation.
      *
-     * @return \Symfony\Component\Console\Output\OutputInterface
+     * @return ConsoleOutput
      */
-    public function getOutput()
+    public function getOutput(): ConsoleOutput
     {
         return $this->output;
     }
@@ -178,7 +169,7 @@ class Command extends SymfonyCommand
     /**
      * @return InputInterface
      */
-    public function getInput()
+    public function getInput(): InputInterface
     {
         return $this->input;
     }
@@ -186,9 +177,9 @@ class Command extends SymfonyCommand
     /**
      * Get the stdErr output implementation.
      *
-     * @return \Symfony\Component\Console\Output\OutputInterface
+     * @return OutputInterface
      */
-    public function getErrorOutput()
+    public function getErrorOutput(): OutputInterface
     {
         if (!$this->errorOutput instanceof ConsoleOutputInterface) {
             $this->errorOutput = $this->getOutput()->getErrorOutput();
@@ -206,9 +197,8 @@ class Command extends SymfonyCommand
      * @return int
      *
      * @throws \Exception
-     * @throws \Symfony\Component\Console\Exception\ExceptionInterface
      */
-    public function run(InputInterface $input, OutputInterface $output)
+    public function run(InputInterface $input, OutputInterface $output): int
     {
         global $argv;
 
@@ -226,7 +216,7 @@ class Command extends SymfonyCommand
             $this->errorOutput = $this->getOutput()->getErrorOutput();
         }
 
-        if ($this->runRoot && 0 != posix_getuid()) {
+        if ($this->runRoot && 0 !== posix_getuid()) {
             throw new \Exception("Execute the moo command with sudo\nsudo " . implode(' ', $argv));
         }
 
@@ -239,7 +229,7 @@ class Command extends SymfonyCommand
      *
      * @return int 0 on successful, 1 on error
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $this->fire();
@@ -253,11 +243,11 @@ class Command extends SymfonyCommand
     }
 
     /**
-     * @param $message
+     * @param string|array $message
      *
      * @return void
      */
-    public function debug($message)
+    public function debug($message): void
     {
         if ($this->option('verbose')) {
             $this->getOutputStyle()->debug($message);
@@ -267,17 +257,17 @@ class Command extends SymfonyCommand
     /**
      * @return StyledOutput
      */
-    public function getOutputStyle()
+    public function getOutputStyle(): StyledOutput
     {
         return new StyledOutput($this->input, $this->getOutput());
     }
 
     /**
-     * @param $message
+     * @param string $message
      *
      * @return void
      */
-    protected function stdErrError($message)
+    protected function stdErrError(string $message): void
     {
         $this->getErrorOutput()->writeln($this->getOutputStyle()->formatLine($message, 'error', 'ERROR'));
     }
@@ -288,12 +278,12 @@ class Command extends SymfonyCommand
      *
      * @return void
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         foreach ($this->arguments as $name => $argument) {
             $method = 'interactInput' . ucfirst($name);
             if (method_exists($this, $method)) {
-                $value = $this->$method($this->argument($name), $argument);
+                $value = $this->{$method}($this->argument($name), $argument);
                 $this->input->setArgument($name, $value);
             }
         }
@@ -305,7 +295,7 @@ class Command extends SymfonyCommand
      *
      * @return void
      */
-    protected function notify($text, $body)
+    protected function notify(string $text, string $body): void
     {
         // Create a Notifier
         $notifier = NotifierFactory::create();
@@ -323,7 +313,5 @@ class Command extends SymfonyCommand
     /**
      * @return void
      */
-    protected function fire()
-    {
-    }
+    abstract protected function fire(): void;
 }

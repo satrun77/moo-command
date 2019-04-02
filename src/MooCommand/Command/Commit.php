@@ -13,9 +13,11 @@ namespace MooCommand\Command;
 use MooCommand\Command\Commit\CommitStyleInterface;
 use MooCommand\Console\Command;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 
 /**
  * Commit.
@@ -24,8 +26,17 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Commit extends Command
 {
+    /**
+     * @var string
+     */
     const SHORTCUT_DEPENDENCIES = 'dependencies';
+    /**
+     * @var string
+     */
     const SHORTCUT_GITIGNORE    = 'gitignore';
+    /**
+     * @var string
+     */
     const SHORTCUT_CSFIXES      = 'csfixes';
 
     /**
@@ -108,7 +119,7 @@ class Commit extends Command
      * @param InputInterface  $input  An InputInterface instance
      * @param OutputInterface $output An OutputInterface instance
      */
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         if ($shortcutOption = $this->hasShortcutOption()) {
             // Message to print in console
@@ -124,7 +135,7 @@ class Commit extends Command
      *
      * @return void
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $shortcutOption = $this->hasShortcutOption();
         $arguments      = $this->getStyle()->getArguments();
@@ -140,7 +151,7 @@ class Commit extends Command
                 $method = 'interactInput' . $argument;
                 $this->callStyleOptionalAction('beforeInput' . $argument);
                 $caller = method_exists($this->getStyle(), $method) ? $this->getStyle() : $this;
-                $value  = $caller->$method();
+                $value  = $caller->{$method}();
             }
 
             // Set argument value if we have one
@@ -157,7 +168,7 @@ class Commit extends Command
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         $this->confirmStagedFiles();
 
@@ -187,7 +198,7 @@ class Commit extends Command
      *
      * @return CommitStyleInterface
      */
-    protected function getStyle()
+    protected function getStyle(): CommitStyleInterface
     {
         if (is_null($this->style)) {
             $class       = __NAMESPACE__ . '\\Commit\\' . $this->getConfigHelper()->getConfig('commit.style');
@@ -202,7 +213,7 @@ class Commit extends Command
      *
      * @return array
      */
-    protected function getShortcutOptions()
+    protected function getShortcutOptions(): array
     {
         return array_merge([
             self::SHORTCUT_CSFIXES,
@@ -216,7 +227,7 @@ class Commit extends Command
      *
      * @return bool|string
      */
-    protected function hasShortcutOption()
+    protected function hasShortcutOption(): bool
     {
         foreach ($this->getShortcutOptions() as $shortcut) {
             // Disable interactive we have a default message
@@ -236,7 +247,7 @@ class Commit extends Command
      *
      * @return $this
      */
-    protected function setArgument($name, $value)
+    protected function setArgument(string $name, string $value): self
     {
         $this->commit[$name] = $value;
 
@@ -250,7 +261,7 @@ class Commit extends Command
      *
      * @return string|null
      */
-    public function argument($key = null)
+    public function argument(string $key = null): ?string
     {
         if (array_key_exists($key, $this->commit)) {
             return $this->commit[$key];
@@ -262,16 +273,15 @@ class Commit extends Command
     /**
      * Display all of the staged files and ask the user to confirm.
      *
-     * @return array
-     *
+     * @return Process
      * @throws \Exception
      */
-    protected function confirmStagedFiles()
+    protected function confirmStagedFiles(): Process
     {
         // Get list of staged files
         $command = $this->getShellHelper()->exec('git diff --name-only --cached');
         if (empty($command->getOutput())) {
-            throw new \Exception('There are no files to commit.');
+            throw new \DomainException('There are no files to commit.');
         }
 
         // Ask the user if these are the correct changes to commit
@@ -281,7 +291,7 @@ class Commit extends Command
         ];
         $status = $this->getQuestionHelper()->confirmAsk($question);
         if (!$status) {
-            throw new \Exception('Commit aborted by user.');
+            throw new RuntimeException('Commit aborted by user.');
         }
 
         return $command;
@@ -293,11 +303,11 @@ class Commit extends Command
      *
      * @return mixed
      */
-    protected function interactInputMessage()
+    protected function interactInputMessage(): string
     {
-        $question = $this->getOutputStyle()->question('Enter Commit Message: ');
+        $this->getOutputStyle()->question('Enter Commit Message: ');
 
-        return $this->validator($question, 'Message');
+        return $this->validator('', 'Message');
     }
 
     /**
@@ -306,12 +316,12 @@ class Commit extends Command
      *
      * @return mixed
      */
-    protected function interactInputDetails()
+    protected function interactInputDetails(): ?string
     {
         if (!$this->option('oneline')) {
-            $question = $this->getOutputStyle()->question('Enter Commit Details (optional): ');
+            $this->getOutputStyle()->question('Enter Commit Details (optional): ');
 
-            return $this->validator($question, 'Details');
+            return $this->validator('', 'Details');
         }
 
         return null;
@@ -322,7 +332,7 @@ class Commit extends Command
      *
      * @return array
      */
-    protected function getValidators()
+    protected function getValidators(): array
     {
         return array_merge([
             'Message.Length' => $this,
@@ -337,7 +347,7 @@ class Commit extends Command
      *
      * @return mixed
      */
-    public function validator($question, $type)
+    public function validator(string $question, string $type): string
     {
         return $this->getQuestionHelper()->askAndValidate($question, function ($value) use ($type) {
             foreach ($this->getValidators() as $name => $validator) {
@@ -360,7 +370,7 @@ class Commit extends Command
      *
      * @return string
      */
-    protected function validateMessageLength($value)
+    protected function validateMessageLength(string $value): string
     {
         // Check the message size
         if (strlen($value) > 60) {
@@ -384,14 +394,12 @@ class Commit extends Command
      * @param string $method
      * @param array  $arguments
      *
-     * @return mixed
+     * @return void
      */
-    protected function callStyleOptionalAction($method, ...$arguments)
+    protected function callStyleOptionalAction(string $method, ...$arguments): void
     {
         if (method_exists($this->getStyle(), $method)) {
-            return $this->getStyle()->$method(...$arguments);
+            $this->getStyle()->{$method}(...$arguments);
         }
-
-        return false;
     }
 }

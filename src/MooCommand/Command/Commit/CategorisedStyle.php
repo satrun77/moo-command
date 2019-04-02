@@ -72,7 +72,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function getDisplayName()
+    public function getDisplayName(): string
     {
         return 'Categorised';
     }
@@ -82,7 +82,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return [
             'Type', 'Message', 'Issue', 'Details',
@@ -94,7 +94,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return [];
     }
@@ -104,7 +104,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getShortcutOptions()
+    public function getShortcutOptions(): array
     {
         return [];
     }
@@ -117,7 +117,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getValidators()
+    public function getValidators(): array
     {
         return [
             'Issue.Number' => $this,
@@ -131,7 +131,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function getShortcutMessage($shortcutOption)
+    public function getShortcutMessage(string $shortcutOption): string
     {
         return $this->shortcutMessages[$shortcutOption];
     }
@@ -139,11 +139,11 @@ class CategorisedStyle implements CommitStyleInterface
     /**
      * Return details for a short option.
      *
-     * @param $shortcutOption
+     * @param string $shortcutOption
      *
      * @return string
      */
-    public function getShortcutDetails($shortcutOption)
+    public function getShortcutDetails(string $shortcutOption): string
     {
         return '';
     }
@@ -156,7 +156,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getCommitCommand($message, $details)
+    public function getCommitCommand(string $message, string $details): array
     {
         // Commit message details
         $type  = explode(':', $this->command->argument('type'))[0];
@@ -176,7 +176,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return void
      */
-    public function beforeInputType()
+    public function beforeInputType(): void
     {
         $this->command->getOutputStyle()->info('Message structured as,');
         $this->command->getOutputStyle()->line([
@@ -193,7 +193,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function interactInputType()
+    public function interactInputType(): string
     {
         return $this->command->getQuestionHelper()->choices(
             'Please select the commit type: ',
@@ -208,12 +208,12 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function interactInputIssue()
+    public function interactInputIssue(): string
     {
         if (!$this->command->option('oneline')) {
-            $question = $this->command->getOutputStyle()->question('Enter Commit Issue No.:  ');
+            $this->command->getOutputStyle()->question('Enter Commit Issue No.:  ');
 
-            return $this->command->validator($question, 'Issue');
+            return $this->command->validator('', 'Issue');
         }
 
         return null;
@@ -226,7 +226,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function validateIssueNumber($value)
+    public function validateIssueNumber(string $value): string
     {
         $value    = strtoupper($value);
         $segments = explode('-', $value);
@@ -247,7 +247,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return array
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         if (null === $this->types) {
             $this->types = array_merge(

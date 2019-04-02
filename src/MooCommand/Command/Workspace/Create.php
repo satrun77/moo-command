@@ -10,7 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
-use MooCommand\Command\Workspace as WorkspaceAbstract;
+use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputArgument;
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
-class Create extends WorkspaceAbstract
+class Create extends Workspace
 {
     /**
      * @var string
@@ -45,7 +45,7 @@ class Create extends WorkspaceAbstract
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // Validations
         $this->argumentMustNotBeEmpty('name');
@@ -92,13 +92,13 @@ class Create extends WorkspaceAbstract
         $this->updatePlaceholders($sitePath, [
             '{{php}}'          => $phpVersion,
             '{{host}}'         => $this->argument('name'),
-            '{{host_port}}'    => (max($usedPorts) + 1),
-            '{{solr_port}}'    => (max($usedSolrPorts) + 1),
-            '{{mysql_port}}'   => (max($usedMysqlPorts) + 1),
+            '{{host_port}}'    => max($usedPorts) + 1,
+            '{{solr_port}}'    => max($usedSolrPorts) + 1,
+            '{{mysql_port}}'   => max($usedMysqlPorts) + 1,
             '{{volume-name}}'  => str_replace('.', '', $this->argument('name')) . '_dockersync_1',
             '{{root_path}}'    => $sitePath,
             '{{name}}'         => str_replace('.', '', $this->argument('name')),
-            '{{work_dir}}'     => !empty($workDirectory) ? $workDirectory : current($this->workDirectories),
+            '{{work_dir}}'     => !empty($workDirectory) ? $this->workDirectories[$workDirectory] : current($this->workDirectories),
             '{{theme_dir}}'    => !empty($themeDirectory) ? $themeDirectory : '',
         ]);
 
@@ -134,7 +134,7 @@ class Create extends WorkspaceAbstract
      *
      * @return void
      */
-    protected function updatePlaceholders($directory, array $placeholders = [])
+    protected function updatePlaceholders(string $directory, array $placeholders = []): void
     {
         // Get iterator of all files within the site containers structure
         $iterator = new \RecursiveIteratorIterator(
@@ -156,7 +156,7 @@ class Create extends WorkspaceAbstract
      * @param string $filePath
      * @param array  $changes
      */
-    protected function updateFileContent($filePath, array $changes)
+    protected function updateFileContent(string $filePath, array $changes): void
     {
         // Get instance of SPL file
         $envFile  = new \SplFileObject($filePath, 'r');
@@ -168,7 +168,6 @@ class Create extends WorkspaceAbstract
             // Read the content of the file, replace placeholder
             $contents = $envFile->fread($envFile->getSize());
             $contents = strtr($contents, $changes);
-            $envFile  = null;
 
             // Write new content of file replacing existing data
             $envFile = new \SplFileObject($filePath, 'w+');

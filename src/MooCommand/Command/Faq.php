@@ -19,7 +19,13 @@ use MooCommand\Console\Command;
  */
 class Faq extends Command
 {
+    /**
+     * @var string
+     */
     const DATA_SOURCE_LOCAL  = 'local';
+    /**
+     * @var string
+     */
     const DATA_SOURCE_REMOTE = 'url';
     /**
      * @var string
@@ -41,7 +47,7 @@ class Faq extends Command
      *
      * @throws \Exception
      */
-    protected function fire()
+    protected function fire(): void
     {
         // FAQ data
         $faqs = $this->getData();
@@ -63,7 +69,7 @@ class Faq extends Command
      *
      * @return array
      */
-    protected function getData()
+    protected function getData(): array
     {
         // Core data
         $faqs          = $this->getConfigHelper()->getResource('faqs.yml');

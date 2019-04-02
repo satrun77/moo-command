@@ -10,7 +10,6 @@
 
 namespace MooCommand\Console;
 
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -50,23 +49,23 @@ class StyledOutput extends SymfonyStyle
     }
 
     /**
-     * @param                 $string
-     * @param null|int|string $verbosity
+     * @param string|array $string
+     * @param int          $verbosity
      *
      * @return void
      */
-    public function success($string, $verbosity = null)
+    public function success($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
         $this->line($string, 'success', 'SUCCESS', $verbosity);
     }
 
     /**
-     * @param                 $string
-     * @param null|int|string $verbosity
+     * @param string|array $string
+     * @param int          $verbosity
      *
      * @return void
      */
-    public function debug($string, $verbosity = null)
+    public function debug($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
         $this->line($string, 'debug', 'DEBUG', $verbosity);
     }
@@ -79,7 +78,7 @@ class StyledOutput extends SymfonyStyle
      *
      * @return void
      */
-    public function table(array $headers, array $rows)
+    public function table(array $headers, array $rows): void
     {
         $style = clone Table::getStyleDefinition('default');
         $style->setCellHeaderFormat('<info>%s</info>');
@@ -91,11 +90,11 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as information output.
      *
-     * @param string $string
+     * @param string|array $string
      *
      * @return void
      */
-    public function info($string)
+    public function info($string): void
     {
         $this->line($string, 'info2', 'INFO');
     }
@@ -103,12 +102,12 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as comment output.
      *
-     * @param string          $string
-     * @param null|int|string $verbosity
+     * @param string|array $string
+     * @param int          $verbosity
      *
      * @return void
      */
-    public function comment($string, $verbosity = null)
+    public function comment($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
         $this->line($string, 'comment', 'COMMENT', $verbosity);
     }
@@ -116,12 +115,12 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as question output.
      *
-     * @param string          $string
-     * @param null|int|string $verbosity
+     * @param string|array $string
+     * @param int          $verbosity
      *
      * @return void
      */
-    public function question($string, $verbosity = null)
+    public function question($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
         $this->line($string, 'question', 'QUESTION', $verbosity);
     }
@@ -129,12 +128,12 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as error output.
      *
-     * @param string          $string
-     * @param null|int|string $verbosity
+     * @param string|array $string
+     * @param int          $verbosity
      *
      * @return void
      */
-    public function error($string, $verbosity = null)
+    public function error($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
         $this->line($string, 'error', 'ERROR', $verbosity);
     }
@@ -142,12 +141,12 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as warning output.
      *
-     * @param string          $string
-     * @param null|int|string $verbosity
+     * @param string|array $string
+     * @param int          $verbosity
      *
      * @return void
      */
-    public function warning($string, $verbosity = null)
+    public function warning($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
         $this->line($string, 'warning', 'WARNING', $verbosity);
     }
@@ -158,11 +157,11 @@ class StyledOutput extends SymfonyStyle
      * @param string $character
      * @param string $style
      */
-    public function separator($character = '_', $style = '')
+    public function separator(string $character = '_', string $style = '')
     {
         $text = str_pad('', $this->outputMinWidth, $character);
 
-        if ($style) {
+        if ($style !== '') {
             $text = "<$style>" . $text . "</$style>";
         }
 
@@ -172,17 +171,17 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as standard output.
      *
-     * @param string          $string
-     * @param string          $style
-     * @param string          $label
-     * @param null|int|string $verbosity
+     * @param string|array $string
+     * @param string       $style
+     * @param string       $label
+     * @param int          $verbosity
      *
      * @return void
      */
-    public function line($string, $style = null, $label = '', $verbosity = Output\OutputInterface::OUTPUT_NORMAL)
+    public function line($string, string $style = null, string $label = '', int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
         // If the string is an array of strings
-        if (is_array($string) || $string instanceof \Traversable) {
+        if (is_iterable($string)) {
             // First line to include the left side label
             if (!empty($label)) {
                 $this->writeln($this->formatLine(array_shift($string), $style, $label), $verbosity);
@@ -196,13 +195,13 @@ class StyledOutput extends SymfonyStyle
             return;
         }
 
-        // Split string into an array of lines & then print reach line, if the string contains \n
         if (false !== strpos($string, "\n")) {
-            return $this->line(explode("\n", $string), $style, $label, $verbosity);
+            // Split string into an array of lines & then print reach line, if the string contains \n
+            $this->line(explode("\n", $string), $style, $label, $verbosity);
+        } else {
+            // Display one line of output
+            $this->writeln($this->formatLine(trim($string), $style, $label), $verbosity);
         }
-
-        // Display one line of output
-        return $this->writeln($this->formatLine(trim($string), $style, $label), $verbosity);
     }
 
     /**
@@ -214,7 +213,7 @@ class StyledOutput extends SymfonyStyle
      *
      * @return string
      */
-    public function formatLine($string, $style = null, $label = '')
+    public function formatLine(string $string, ?string $style = null, string $label = ''): string
     {
         $label = str_pad((!empty($label) ? $label . ':' : $label), 10);
 
@@ -236,7 +235,7 @@ class StyledOutput extends SymfonyStyle
      *
      * @return int
      */
-    public function getOutputMinWidth()
+    public function getOutputMinWidth(): int
     {
         return (int) $this->outputMinWidth;
     }
@@ -246,10 +245,10 @@ class StyledOutput extends SymfonyStyle
      *
      * @return int
      */
-    private function getTerminalWidth()
+    private function getTerminalWidth(): int
     {
         $application = new Terminal();
-        $width  = $application->getWidth();
+        $width       = $application->getWidth();
 
         return $width ?: self::MAX_LINE_LENGTH;
     }
@@ -262,7 +261,7 @@ class StyledOutput extends SymfonyStyle
      *
      * @return $this
      */
-    protected function loadStyle($name, array $formatterStyle)
+    protected function loadStyle(string $name, array $formatterStyle): self
     {
         if (!$this->getFormatter()->hasStyle($name)) {
             $style = new OutputFormatterStyle(...$formatterStyle);
@@ -277,7 +276,7 @@ class StyledOutput extends SymfonyStyle
      *
      * @return $this
      */
-    protected function loadCustomStyles()
+    protected function loadCustomStyles(): self
     {
         foreach ($this->customStyles as $name => $formatterStyle) {
             $this->loadStyle($name, $formatterStyle);
