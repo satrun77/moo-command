@@ -166,6 +166,19 @@ class ImperativeMoodStyle implements CommitStyleInterface
     }
 
     /**
+     * Interactive input to be executed by commit command.
+     * Ask & validate the commit issue number.
+     *
+     * @return string
+     */
+    public function interactInputTicket(): string
+    {
+        $this->command->getOutputStyle()->question('Enter your JIRA ticket number:  ');
+
+        return (string) $this->command->validator('', 'Ticket');
+    }
+
+    /**
      * Validate the first word of the input message.
      *
      * @param string $value

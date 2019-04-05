@@ -125,7 +125,7 @@ class QuestionHelper extends Helper
         $question->setMaxAttempts(10);
 
         // Ask the question
-        return $this->getHelper()->ask($command->getInput(), $command->getOutput(), $question);
+        return (string) $this->getHelper()->ask($command->getInput(), $command->getOutput(), $question);
     }
 
     /**
