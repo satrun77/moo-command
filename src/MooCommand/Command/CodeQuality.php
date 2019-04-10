@@ -141,12 +141,7 @@ class CodeQuality extends Command
         $this->getOutputStyle()->section('Analysing: ' . $path);
 
         // Analyses options
-        $messDetector      = $this->option('mess');
-        $copyPasteDetector = $this->option('copypaste');
-        $securityDetector  = $this->option('security');
-        $lintDetector      = $this->option('lint');
-        $executeAll        = (!$messDetector && !$copyPasteDetector && !$securityDetector && !$lintDetector) ||
-            ($messDetector && $copyPasteDetector && $securityDetector && $lintDetector);
+        $executeAll = $this->hasOptionsAllOrNone(...array_keys($this->analyses));
 
         // Analyse files within the path
         foreach ($this->analyses as $option => $analyse) {
@@ -156,7 +151,7 @@ class CodeQuality extends Command
             }
 
             $callback = $title = '';
-            extract($analyse);
+            extract($analyse, EXTR_OVERWRITE);
 
             // Is it composer.lock file
             $isComposerLock  = strpos($path, 'composer.lock');
@@ -182,6 +177,23 @@ class CodeQuality extends Command
         if (next($paths)) {
             $this->scanFiles($paths);
         }
+    }
+
+    /**
+     * Whether we have all options or none
+     *
+     * @param  mixed ...$options
+     * @return bool
+     */
+    protected function hasOptionsAllOrNone(...$options): bool
+    {
+        // Create an array containing the options defined by user
+        $state = array_filter($options, function ($name) {
+            return $this->option($name);
+        });
+
+        // Return true if we have no options or have them all
+        return empty($state) || count($state) === count($this->analyses);
     }
 
     /**

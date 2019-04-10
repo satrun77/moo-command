@@ -46,7 +46,7 @@ abstract class Workspace extends Command
         'site',
         'php',
         'solr',
-        'frontend',
+        'front',
     ];
 
     /**
