@@ -2,9 +2,9 @@ version: "3"
 
 services:
   site:
-    container_name: {{name}}_site_1
+    container_name: ${APP_NAME}_site_1
     build: ./nginx/
-    image: mo_apache
+    image: mo_nginx
     ports:
       - "${VIRTUAL_PORT}:80"
     links:
@@ -12,7 +12,7 @@ services:
     external_links:
       - proxy:dockergen
     volumes:
-      - {{volume-name}}:/var/www/html:nocopy
+      - app-sync:/var/www/html:nocopy
       - ./nginx/logs:/var/log/nginx
     environment:
       - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
@@ -21,7 +21,7 @@ services:
       - ./env/db.env
 
   mysql:
-    container_name: {{name}}_mysql_1
+    container_name: ${APP_NAME}_mysql_1
     build: ./db/
     image: mo_db
     ports:
@@ -33,17 +33,17 @@ services:
       - ./env/db.env
 
   composer:
-    container_name: {{name}}_composer_1
+    container_name: ${APP_NAME}_composer_1
     image: mo_composer
     build: ./composer/
     volumes:
-      - {{volume-name}}:/var/www/html:nocopy
+      - app-sync:/var/www/html:nocopy
       - ~/.composer:/var/www/composer:cached
       - ~/.ssh:/root/.ssh:cached
       - ~/.netrc:/root/.netrc:cached
 
   php:
-    container_name: {{name}}_php_1
+    container_name: ${APP_NAME}_php_1
     build: ./php/
     image: mo_php
     expose:
@@ -51,7 +51,7 @@ services:
     links:
       - mysql
     volumes:
-      - {{volume-name}}:/var/www/html:nocopy
+      - app-sync:/var/www/html:nocopy
       - ~/.composer:/var/www/composer:cached
       - ~/.ssh:/root/.ssh:cached
       - ~/.netrc:/root/.netrc:cached
@@ -64,5 +64,6 @@ services:
     tty: true
 
 volumes:
-    {{volume-name}}:
-      external: true
+  app-sync:
+    external:
+      name: "${APP_NAME}_dockersync_1"

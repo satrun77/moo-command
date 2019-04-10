@@ -72,7 +72,7 @@ class Create extends Workspace
                 $this->workDirectories,
                 key($this->workDirectories)
             );
-            $themeDirectory = $this->getQuestionHelper()->ask('Enter path to theme directory from site root directory');
+            $themeDirectory = $this->getQuestionHelper()->ask('Enter path to theme directory from /var/www/html/');
         }
 
         // Site root directory
@@ -84,6 +84,8 @@ class Create extends Workspace
         $usedSolrPorts = $this->getUsedPorts('SOLR_PORT');
         // Collection of used solr ports by other environments
         $usedMysqlPorts = $this->getUsedPorts('MYSQL_PORT');
+        // Site name
+        $siteName = str_replace('.', '', $this->argument('name'));
 
         // Copy container files
         $this->getConfigHelper()->copyResource('docker/' . $template, $sitePath);
@@ -95,9 +97,7 @@ class Create extends Workspace
             '{{host_port}}'    => max($usedPorts) + 1,
             '{{solr_port}}'    => max($usedSolrPorts) + 1,
             '{{mysql_port}}'   => max($usedMysqlPorts) + 1,
-            '{{volume-name}}'  => str_replace('.', '', $this->argument('name')) . '_dockersync_1',
-            '{{root_path}}'    => $sitePath,
-            '{{name}}'         => str_replace('.', '', $this->argument('name')),
+            '{{name}}'         => $siteName,
             '{{work_dir}}'     => !empty($workDirectory) ? $this->workDirectories[$workDirectory] : current($this->workDirectories),
             '{{theme_dir}}'    => !empty($themeDirectory) ? $themeDirectory : '',
         ]);
@@ -111,7 +111,7 @@ class Create extends Workspace
         $this->getOutputStyle()->success($successMessage);
 
         // Show current sites
-        $shell->execApplicationCommand('ws:sites');
+        $shell->execApplicationCommand('ws:sites', ['container' => $siteName]);
 
         $this->getOutputStyle()->info('Make sure the environment configurations in the new container are correct.');
 

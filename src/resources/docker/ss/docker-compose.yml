@@ -2,7 +2,7 @@ version: "3"
 
 services:
   site:
-    container_name: {{name}}_site_1
+    container_name: ${APP_NAME}_site_1
     build: ./apache/
     image: mo_apache
     ports:
@@ -12,7 +12,7 @@ services:
     external_links:
       - proxy:dockergen
     volumes:
-      - {{volume-name}}:/var/www/html:nocopy
+      - app-sync:/var/www/html:nocopy
       - ./apache/logs:/var/log/apache2
     environment:
       - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
@@ -21,7 +21,7 @@ services:
       - ./env/db.env
 
   mysql:
-    container_name: {{name}}_mysql_1
+    container_name: ${APP_NAME}_mysql_1
     build: ./db/
     image: mo_db
     ports:
@@ -33,17 +33,17 @@ services:
       - ./env/db.env
 
   composer:
-    container_name: {{name}}_composer_1
+    container_name: ${APP_NAME}_composer_1
     image: mo_composer
     build: ./composer/
     volumes:
-      - {{volume-name}}:/var/www/html:nocopy
+      - app-sync:/var/www/html:nocopy
       - ~/.composer:/var/www/composer:cached
       - ~/.ssh:/root/.ssh:cached
       - ~/.netrc:/root/.netrc:cached
 
   php:
-    container_name: {{name}}_php_1
+    container_name: ${APP_NAME}_php_1
     build: ./php/
     image: mo_php
     expose:
@@ -51,12 +51,12 @@ services:
     links:
       - mysql
     volumes:
-      - {{volume-name}}:/var/www/html:nocopy
+      - app-sync:/var/www/html:nocopy
       - ~/.composer:/var/www/composer:cached
       - ~/.ssh:/root/.ssh:cached
       - ~/.netrc:/root/.netrc:cached
       - ./php/mail:/var/www/mail
-      - data:/var/www/solr
+      - solr-data:/var/www/solr
     environment:
       - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
     env_file:
@@ -65,27 +65,28 @@ services:
     tty: true
 
   solr:
-    container_name: {{name}}_solr_1
+    container_name: ${APP_NAME}_solr_1
     image: mo_solr
     build: ./solr/
     ports:
       - "${SOLR_PORT}:8983"
     volumes:
-      - data:/var/www/solr
+      - solr-data:/var/www/solr
 
   front:
-    container_name: {{name}}_front_1
+    container_name: ${APP_NAME}_front_1
     image: mo_front
     build: ./front/
     working_dir: /var/www/html/${THEME_DIR}
     volumes:
-      - {{volume-name}}:/var/www/html:nocopy
+      - app-sync:/var/www/html:nocopy
       - ~/.ssh:/root/.ssh:cached
       - ~/.netrc:/root/.netrc:cached
     env_file:
       - ./env/web.env
 
 volumes:
-    {{volume-name}}:
-      external: true
-    data:
+  app-sync:
+    external:
+      name: "${APP_NAME}_dockersync_1"
+  solr-data:
