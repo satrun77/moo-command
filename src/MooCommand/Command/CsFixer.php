@@ -47,10 +47,17 @@ class CsFixer extends Command
      * @var array
      */
     protected $options = [
-        'dry-run' => [
+        'dry' => [
             'mode'        => InputOption::VALUE_OPTIONAL,
             'description' => 'Displays the files that need to be fixed but without modifying them.',
             'default'     => false,
+            'shortcut'    => 'd',
+        ],
+        'risky' => [
+            'mode'        => InputOption::VALUE_OPTIONAL,
+            'description' => 'Allows you to set whether risky rules may run.',
+            'default'     => false,
+            'shortcut'    => 'r',
         ],
     ];
 
@@ -84,14 +91,15 @@ class CsFixer extends Command
             $this->getOutputStyle()->section('Fixing: ' . $path);
 
             // Define php-cs-fixer options
-            $verbose = $this->option('verbose') ? '--verbose' : '';
-            $dryrun  = $this->option('dry-run') ? '--dry-run' : '';
+            $verbose = $this->option('verbose') !== false ? '--verbose' : '';
+            $risky   = $this->option('risky') !== false ? '--allow-risky=yes' : '';
+            $dryrun  = $this->option('dry') !== false ? '--dry-run' : '';
 
             // Execute and display progress
             if (file_exists($path)) {
                 $this->getShellHelper()->execRealTime(
-                    "php-cs-fixer fix %s --rules='%s' %s %s",
-                    $path, $this->getFixes(), $verbose, $dryrun
+                    "php-cs-fixer fix %s --rules='%s' %s %s %s",
+                    $path, $this->getFixes(), $verbose, $dryrun, $risky
                 );
             }
         }
