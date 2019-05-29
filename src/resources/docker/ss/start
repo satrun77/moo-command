@@ -10,12 +10,12 @@ TYPE=${1:-up -d}
 
 if [ "$TYPE" = "up -d" ]
 then
-    docker-compose up -d
     docker-sync start || true
+    docker-compose up -d
 elif [ "$TYPE" = "stop" ]
 then
-    docker-compose down
     docker-sync stop || true
+    docker-compose down
 else
    docker-compose ${1:-up -d}
 fi
