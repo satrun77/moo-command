@@ -72,7 +72,7 @@ class Create extends Workspace
                 $this->workDirectories,
                 key($this->workDirectories)
             );
-            $themeDirectory = $this->getQuestionHelper()->ask('Enter path to theme directory from site root directory');
+            $themeDirectory = $this->getQuestionHelper()->ask('Enter path to theme directory from /var/www/html/');
         }
 
         // Site root directory
