@@ -113,7 +113,7 @@ class Create extends Workspace
         $this->getOutputStyle()->success($successMessage);
 
         // Show current sites
-        $shell->execApplicationCommand('ws:sites');
+        $shell->execApplicationCommand('ws:sites', ['container' => $siteName]);
 
         $this->getOutputStyle()->info('Make sure the environment configurations in the new container are correct.');
 
