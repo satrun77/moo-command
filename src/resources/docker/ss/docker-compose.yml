@@ -56,7 +56,7 @@ services:
       - ~/.ssh:/root/.ssh:cached
       - ~/.netrc:/root/.netrc:cached
       - ./php/mail:/var/www/mail
-      - data:/var/www/solr
+      - solrdata:/var/www/solr
     environment:
       - "DOCKER_MACHINE_IP=${DOCKER_MACHINE_IP}"
     env_file:
@@ -71,7 +71,7 @@ services:
     ports:
       - "${SOLR_PORT}:8983"
     volumes:
-      - data:/var/www/solr
+      - solrdata:/var/www/solr
 
   front:
     container_name: {{name}}_front_1
@@ -88,4 +88,4 @@ services:
 volumes:
     {{volume-name}}:
       external: true
-    data:
+    solrdata:
