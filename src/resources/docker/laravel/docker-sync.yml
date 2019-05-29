@@ -3,8 +3,8 @@ options:
   verbose: true
   cli_mode: 'thor'
 syncs:
-    ${APP_NAME}_dockersync_1:
-      src: './site'
+    {{volume-name}}:
+      src: '{{root_path}}/site/'
       notify_terminal: true
       sync_excludes: ['.git', '.gitignore', 'node_modules', '.bower_components', 'sass-cache', '.sass-cache', './vendor/', '.editorconfig', 'bitbucket-pipelines.yml']
       watch_excludes: ['.git', '.gitignore', 'node_modules', '.bower_components', 'sass-cache', '.sass-cache', './vendor/', '.editorconfig', 'bitbucket-pipelines.yml']
