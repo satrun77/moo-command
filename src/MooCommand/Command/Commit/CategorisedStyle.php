@@ -216,7 +216,7 @@ class CategorisedStyle implements CommitStyleInterface
             return $this->command->validator('', 'Issue');
         }
 
-        return null;
+        return '';
     }
 
     /**
@@ -226,7 +226,7 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * @return string
      */
-    public function validateIssueNumber(string $value): string
+    public function validateIssueNumber(?string $value): string
     {
         $value    = strtoupper($value);
         $segments = explode('-', $value);
