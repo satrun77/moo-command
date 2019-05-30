@@ -6,8 +6,6 @@ syncs:
   {{volume-name}}:
     src: '{{root_path}}/site/'
     notify_terminal: true
-    sync_excludes: ['.git', '.idea/', '.gitignore', 'node_modules', '.bower_components', 'sass-cache', '.sass-cache', './vendor/', '.editorconfig', 'bitbucket-pipelines.yml']
-    watch_excludes: ['.git', '.idea/', '.gitignore', 'node_modules', '.bower_components', 'sass-cache', '.sass-cache', './vendor/', '.editorconfig', 'bitbucket-pipelines.yml']
     monit_enable: true
     monit_interval: 10
     monit_high_cpu_cycles: 6
