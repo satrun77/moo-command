@@ -11,9 +11,4 @@ syncs:
       monit_high_cpu_cycles: 6
       watch_args: '-v'
       sync_userid: '33'
-      sync_args:
-          - "-ignore='Path .idea'"          # no need to send PHPStorm config to container
-          - "-ignore='Path .git'"           # ignore the main .git repo
-          - "-ignore='BelowPath .git'"      # also ignore .git repos in subfolders such as in composer vendor dirs
-          - "-ignore='BelowPath node_modules'" # remove this if you need code completion
-          # - "-ignore='Path vendor/*'"     # we could ignore the composer vendor folder, but then you won't have code completion in your IDE
+      sync_args: "-ignore='Path .idea' -ignore='Path .git' -ignore='Name .DS_Store' -ignore='Path .docker-sync' -ignore='BelowPath node_modules' -ignore='Path vendor/*'"
