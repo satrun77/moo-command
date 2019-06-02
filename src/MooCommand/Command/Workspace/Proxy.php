@@ -37,8 +37,6 @@ class Proxy extends Workspace
      */
     protected function fire(): void
     {
-        $this->changeToSiteDirectory();
-
         $proxy = $this->getWorkspace() . 'proxy';
         $this->debug('Workspace: ' . $this->getWorkspace());
 
