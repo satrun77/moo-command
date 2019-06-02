@@ -146,7 +146,7 @@ abstract class Workspace extends Command
      *
      * @return array
      */
-    protected function getUsedPorts(string $service = 'VIRTUAL_PORT'): array
+    protected function getWebEnvData(string $service = 'VIRTUAL_PORT'): array
     {
         $workspace = $this->getConfigHelper()->getWorkspace();
         $ports     = [];

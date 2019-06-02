@@ -79,11 +79,11 @@ class Create extends Workspace
         $sitePath = $this->getConfigHelper()->getWorkspace() . $this->argument('name');
 
         // Collection of used hosts ports by other environments
-        $usedPorts = $this->getUsedPorts();
+        $usedPorts = $this->getWebEnvData();
         // Collection of used solr ports by other environments
-        $usedSolrPorts = $this->getUsedPorts('SOLR_PORT');
+        $usedSolrPorts = $this->getWebEnvData('SOLR_PORT');
         // Collection of used solr ports by other environments
-        $usedMysqlPorts = $this->getUsedPorts('MYSQL_PORT');
+        $usedMysqlPorts = $this->getWebEnvData('MYSQL_PORT');
         // Site name
         $siteName = str_replace('.', '', $this->argument('name'));
 

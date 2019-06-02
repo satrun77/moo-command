@@ -37,7 +37,7 @@ class Hosts extends Workspace
      */
     protected function fire(): void
     {
-        $sites   = implode(' ', array_keys($this->getUsedPorts()));
+        $sites   = str_replace(';', ' ', implode(' ', $this->getWebEnvData('VIRTUAL_HOST')));
         $ip      = $this->getMachineIp();
         $domains = $ip . '    ' . $sites . ' # Moo workspace';
 
