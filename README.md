@@ -2,13 +2,13 @@
 
 Commands to help you manage local development environment.
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat-square)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.1-8892BF.svg?style=flat-square)](https://php.net/)
 
 Installation
 --------------------
 
 ```bash
-$ wget https://github.com/satrun77/moo-command/releases/download/v1.0.0-alpha8/moo.phar
+$ wget https://github.com/satrun77/moo-command/releases/download/v1.0.0-alpha9/moo.phar
 
 $ chmod +x moo.phar
 
