@@ -108,38 +108,6 @@ abstract class Workspace extends Command
     }
 
     /**
-     * Returns template name by path or key.
-     *
-     * @param string $variable
-     *
-     * @return string
-     */
-    protected function getTemplate(string $variable): string
-    {
-        // SilverStripe template
-        if ('ss' === $variable || file_exists($variable . '/env/ss.env')) {
-            return 'ss';
-        }
-
-        // Laravel template
-        if ('laravel' === $variable || file_exists($variable . '/site/.env')) {
-            return 'laravel';
-        }
-
-        // Proxy template
-        if ('proxy' === $variable || is_dir($variable . '/proxy')) {
-            return 'proxy';
-        }
-
-        // Any other template
-        if (array_key_exists($variable, $this->templates)) {
-            return $variable;
-        }
-
-        return false;
-    }
-
-    /**
      * Return an array of used ports.
      *
      * @param string $service
