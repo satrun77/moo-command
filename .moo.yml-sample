@@ -68,6 +68,15 @@ commit:
     - Revert
     - Extend
 
+# Option to define the qcode.phpstan commands per framework
+# {path} to be populated with the path to file/directory to be analysed
+# {site_root} to be populated with path to site root directory
+qcode:
+  phpstan:
+    default: "{site_root}vendor/bin/phpstan analyse {path} --level 1 --memory-limit=5000M --ansi"
+    laravel: 'php artisan code:analyse --paths="{path}"'
+    silverstripe: '{site_root}vendor/bin/phpstan analyse {path} -c {site_root}phpstan.neon -a {site_root}vendor/symbiote/silverstripe-phpstan/bootstrap.php --level 1 --memory-limit=5000M --ansi'
+
 csfixes:
   "@Symfony": true
   "pre_increment": false

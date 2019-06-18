@@ -72,6 +72,12 @@ class CodeQuality extends Command
             'description' => 'Security Advisories Checker Analyses',
             'default'     => null,
         ],
+        'phpstan'   => [
+            'shortcut'    => 'p',
+            'mode'        => InputOption::VALUE_NONE,
+            'description' => 'PHP Static Analysis Tool',
+            'default'     => null,
+        ],
     ];
 
     /**
@@ -93,6 +99,10 @@ class CodeQuality extends Command
         'security'  => [
             'callback' => 'analyseSecurityChecker',
             'title'    => 'Security Advisories Checker',
+        ],
+        'phpstan'   => [
+            'callback' => 'analyseStaticCodeChecker',
+            'title'    => 'PHP Static Analysis Tool',
         ],
     ];
 
@@ -282,6 +292,56 @@ class CodeQuality extends Command
             'parallel-lint %s',
             $path
         );
+    }
+
+    /**
+     * Execute PHP Static Analysis Tool
+     *
+     * @param string $path
+     */
+    protected function analyseStaticCodeChecker(string $path): void
+    {
+        // Get path to workspace
+        $workspace = $this->getConfigHelper()->getWorkspace();
+        // Get name of current site
+        $siteName = $this->getConfigHelper()->getCurrentSiteName();
+        // Get path to site root directory - default to current path
+        $siteRootPath = rtrim(getcwd(), '/') . '/';
+
+        // If site name can be found, then display INFO message, else set site root directory to current site (docker setup)
+        if (empty($siteName)) {
+            $this->getOutputStyle()->info(sprintf('Unable to find a workspace site. The anaylse is from the current directory: %s', getcwd()));
+        } else {
+            $siteRootPath = $workspace . $siteName . '/site/';
+        }
+
+        // Default code base, or if we are in laravel code base, or if we are in SilverStripe 4+ code base
+        $codeBase = 'default';
+        if (file_exists($siteRootPath . 'artisan')) {
+            $codeBase = 'laravel';
+        } elseif (is_dir($siteRootPath . 'vendor/silverstripe')) {
+            $codeBase = 'silverstripe';
+        }
+
+        // Collection of commands based on each code base - default collection and override defined in .moo.yml
+        $commands = array_merge([
+            'default'      => '{site_root}vendor/bin/phpstan analyse {path} --level 1 --memory-limit=5000M --ansi',
+            'laravel'      => 'php artisan code:analyse --paths="{path}"',
+            'silverstripe' => '{site_root}vendor/bin/phpstan analyse {path} -c {site_root}phpstan.neon -a {site_root}vendor/symbiote/silverstripe-phpstan/bootstrap.php --level 1 --memory-limit=5000M --ansi',
+        ], (array) $this->getConfigHelper()->getConfig('qcode.phpstan'));
+
+        // Check if we have a command to execute based on code base
+        if (empty($commands[$codeBase])) {
+            $this->getOutputStyle()->error(sprintf('There is no command to execute for base code: %s', $codeBase));
+
+            return;
+        }
+
+        // Execute analyse command
+        $this->getShellHelper()->execRealTime(strtr($commands[$codeBase], [
+            '{path}'      => $path,
+            '{site_root}' => $siteRootPath,
+        ]));
     }
 
     /**
