@@ -147,9 +147,9 @@ class CsFixer extends Command
         }
 
         // Download php-cs-fixer
-        $command = 'curl http://get.sensiolabs.org/php-cs-fixer.phar -o php-cs-fixer';
+        $command = 'curl -L https://cs.symfony.com/download/php-cs-fixer-v2.phar -o php-cs-fixer';
         if ($wget) {
-            $command = 'wget http://get.sensiolabs.org/php-cs-fixer.phar -O php-cs-fixer';
+            $command = 'wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O php-cs-fixer';
         }
         $download = $shellHelper->exec($command);
         if (!$download->isSuccessful()) {
