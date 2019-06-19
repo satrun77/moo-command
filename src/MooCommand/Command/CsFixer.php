@@ -59,6 +59,12 @@ class CsFixer extends Command
             'default'     => false,
             'shortcut'    => 'r',
         ],
+        'update' => [
+            'mode'        => InputOption::VALUE_OPTIONAL,
+            'description' => 'Update php-cs-fixer',
+            'default'     => false,
+            'shortcut'    => 'u',
+        ],
     ];
 
     /**
@@ -72,6 +78,14 @@ class CsFixer extends Command
     {
         // List of directories/files to scan
         $paths = $this->argument('paths');
+
+        // Update php-cs-fixer only
+        if ($this->option('update') !== false) {
+            $this->getOutputStyle()->info('Updating php-cs-fixer to latest version...');
+            $this->getShellHelper()->execRealTime('php-cs-fixer self-update');
+
+            return;
+        }
 
         // Install command if it does not exists
         if (!$this->getShellHelper()->isCommandInstall('php-cs-fixer')) {
