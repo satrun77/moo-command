@@ -78,23 +78,60 @@ qcode:
     silverstripe: '{site_root}vendor/bin/phpstan analyse {path} -c {site_root}phpstan.neon -a {site_root}vendor/symbiote/silverstripe-phpstan/bootstrap.php --level 1 --memory-limit=5000M --ansi'
 
 csfixes:
+  "@PSR2": true
+  "@PSR1": true
   "@Symfony": true
-  "pre_increment": false
-  "no_unreachable_default_argument_value": true
-  "array_syntax":
-      "syntax": "short"
-  "binary_operator_spaces":
-      "align_double_arrow": true
-      "align_equals": true
-  "combine_consecutive_unsets": true
+  "align_multiline_comment": true
+  "array_indentation": true
+  "mb_str_functions": true
+  "method_separation": false
+  "no_unreachable_default_argument_value": false
+  "no_useless_else": false
+  "no_useless_return": false
+  "blank_line_after_opening_tag": true
+  "blank_line_before_return": true
+  "cast_spaces": true
   "concat_space":
-      "spacing": "one"
+    "spacing": "one"
+  "function_typehint_space": true
+  "hash_to_slash_comment": true
+  "lowercase_cast": true
+  "magic_constant_casing": true
+  "new_with_braces": true
+  "no_singleline_whitespace_before_semicolons": true
+  "no_unused_imports": true
+  "phpdoc_align": true
+  "standardize_not_equals": true
+  "single_quote": true
+  "pre_increment": false
+  "array_syntax":
+    "syntax": "short"
+  "binary_operator_spaces":
+    "align_double_arrow": true
+    "align_equals": true
   "linebreak_after_opening_tag": true
   "no_trailing_comma_in_list_call": false
-  "no_useless_else": true
-  "no_useless_return": true
   "ordered_imports": true
   "phpdoc_add_missing_param_annotation": true
   "phpdoc_no_empty_return": false
-  "heredoc_to_nowdoc": true
   "semicolon_after_instruction": true
+  "phpdoc_annotation_without_dot": true
+  "phpdoc_summary": false
+  "protected_to_private": false
+  "phpdoc_separation": false
+  "no_extra_consecutive_blank_lines": false
+  "class_attributes_separation": false
+  "yoda_style": false
+  "no_extra_blank_lines": false
+  "combine_consecutive_issets": true
+  "combine_consecutive_unsets": true
+  "compact_nullable_typehint": true
+  "explicit_indirect_variable": true
+  "explicit_string_variable": true
+  "increment_style": false
+  "standardize_increment": false
+  "list_syntax":
+    "syntax": "short"
+  "method_chaining_indentation": true
+  "simple_to_complex_string_variable": true
+  "single_trait_insert_per_statement": false
