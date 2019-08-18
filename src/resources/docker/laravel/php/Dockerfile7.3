@@ -1,4 +1,4 @@
-FROM php:{{php}}-fpm
+FROM php:7.3-fpm
 
 MAINTAINER Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
 
@@ -14,13 +14,13 @@ RUN echo "[url \"git@github.com:\"]\n\tinsteadOf = https://github.com/" >> ~/.gi
 # Install needed libraries
 RUN apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 RUN apt-get update
-RUN apt-get install -y libmcrypt-dev
 RUN apt-get install -y libtidy-dev
 RUN apt-get install -y libpng-dev
 RUN apt-get install -y libjpeg62-turbo-dev
 RUN apt-get install -y libfreetype6-dev
 RUN apt-get install -y git-core
 RUN apt-get install -y zlib1g-dev libicu-dev g++
+RUN apt-get install -y libzip-dev
 
 # PHP extensions
 RUN docker-php-ext-install mbstring
@@ -32,9 +32,9 @@ RUN docker-php-ext-install pdo
 RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install -j$(nproc) iconv
-#RUN docker-php-ext-install -j$(nproc) mcrypt
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/
 RUN docker-php-ext-install -j$(nproc) gd
+
 
 # PHP configs
 COPY templates/php.ini /usr/local/etc/php/php.ini
@@ -46,6 +46,9 @@ RUN echo 'sendmail_path = /usr/local/bin/php /var/www/sendmail' > /usr/local/etc
 RUN chmod +x /var/www/sendmail
 RUN if [ ! -d /var/www/mail ]; then mkdir /var/www/mail; fi
 
+# To grant permissions to www-data
+RUN usermod -u 1000 www-data
+
 # Copy composer from composer container
 ENV COMPOSER_ALLOW_SUPERUSER 1
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -53,20 +56,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Shrink image
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Make sure the volume mount point is empty
-RUN rm -rf /var/www/html/*
-
-# To grant permissions to www-data
-RUN usermod -u 1000 www-data
-
-# Create a directory composer may use and ensure assets directory readable by apache
+# Create a directory composer may use
 RUN if [ ! -d /var/www/.composer ]; then mkdir /var/www/.composer; fi
 RUN chown -R www-data:www-data /var/www/.composer
-RUN if [ ! -d {{work_dir}}/assets ]; then mkdir -p {{work_dir}}/assets; fi
-RUN chown -R www-data:www-data {{work_dir}}/assets
 
-# Solr directory
-RUN if [ ! -d /var/www/solr ]; then mkdir /var/www/solr; fi
-RUN chown -R www-data:www-data /var/www/solr
-
-WORKDIR {{work_dir}}
+WORKDIR /var/www/html

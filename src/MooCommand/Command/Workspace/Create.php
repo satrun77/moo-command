@@ -108,6 +108,13 @@ class Create extends Workspace
         $shell->exec('sudo chmod +x %s/start', $sitePath);
         $shell->exec('sudo chmod +x %s/php/templates/sendmail', $sitePath);
 
+        // Custom setup for PHP 7.3
+        if ($phpVersion === static::PHP_73) {
+            // Delete default php docker setup and use php7.3 specific setup
+            $shell->exec('rm -rf %s/php/Dockerfile', $sitePath);
+            $shell->exec('mv %s/php/Dockerfile7.3 %s/php/Dockerfile', $sitePath, $sitePath);
+        }
+
         // Display success message
         $successMessage = 'The new site files created successfully.';
         $this->getOutputStyle()->success($successMessage);

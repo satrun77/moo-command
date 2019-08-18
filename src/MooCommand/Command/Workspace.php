@@ -20,6 +20,16 @@ use MooCommand\Console\Command;
 abstract class Workspace extends Command
 {
     /**
+     * Constants for supported php versions
+     *
+     * @var string
+     */
+    const PHP_56 = '5.6';
+    const PHP_71 = '7.1';
+    const PHP_72 = '7.2';
+    const PHP_73 = '7.3';
+
+    /**
      * @var bool
      */
     protected $runRoot = false;
@@ -65,10 +75,10 @@ abstract class Workspace extends Command
      * @var array
      */
     protected $phpVersions = [
-        '7.3' => 'PHP 7.3',
-        '7.2' => 'PHP 7.2',
-        '7.1' => 'PHP 7.1',
-        '5.6' => 'PHP 5.6',
+        self::PHP_73 => 'PHP 7.3',
+        self::PHP_72 => 'PHP 7.2',
+        self::PHP_71 => 'PHP 7.1',
+        self::PHP_56 => 'PHP 5.6',
     ];
 
     /**'
