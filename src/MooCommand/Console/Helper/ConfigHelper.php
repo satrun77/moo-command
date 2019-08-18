@@ -12,6 +12,7 @@
 namespace MooCommand\Console\Helper;
 
 use MooCommand\Console\Command;
+use SplFileInfo;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Yaml\Parser;
@@ -101,9 +102,15 @@ class ConfigHelper extends Helper
         );
 
         foreach ($iterator as $file) {
+            /** @var SplFileInfo $file */
             $relativePath = str_replace($directory, '', $file->getPath());
             $fileName     = strtr($iterator->getSubPathName(), $dotFiles);
             $filePath     = $destination . DIRECTORY_SEPARATOR . $fileName;
+
+            // Ignore MAC .DS_Store
+            if ($file->getFilename() === '.DS_Store') {
+                continue;
+            }
 
             if ($file->isDir()) {
                 if (!is_dir($filePath)) {
