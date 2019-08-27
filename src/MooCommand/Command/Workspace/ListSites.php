@@ -16,6 +16,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
 
@@ -62,6 +63,18 @@ class ListSites extends Workspace
         'container' => [
             'mode'        => InputArgument::OPTIONAL,
             'description' => 'Name of the container to show its status',
+        ],
+    ];
+
+    /**
+     * @var array
+     */
+    protected $options = [
+        'all'      => [
+            'shortcut'    => 'a',
+            'mode'        => InputOption::VALUE_NONE,
+            'description' => 'List all sites',
+            'default'     => null,
         ],
     ];
 
@@ -242,9 +255,15 @@ class ListSites extends Workspace
         // Container name & container filter argument
         $containerFilter = $this->argument('container');
         $container       = !empty($data['container']) ? $data['container'] : '';
+        $showAll         = $this->option('all');
 
         // Filter out output if we have container filter argument
         if (!empty($containerFilter) && strpos($container, $containerFilter) === false) {
+            return;
+        }
+
+        // If no filter used and we don't want to show all sites, then limit display to active sites
+        if (empty($containerFilter) && !$showAll && !in_array(static::STATUS_ACTIVE, $data)) {
             return;
         }
 
