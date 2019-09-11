@@ -45,7 +45,7 @@ services:
   php:
     container_name: {{name}}_php_1
     build: ./php/
-    image: mo_php
+    image: {{php_image}}
     expose:
       - 9000
     links:

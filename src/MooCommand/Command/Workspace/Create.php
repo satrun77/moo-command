@@ -78,6 +78,8 @@ class Create extends Workspace
         // Site root directory
         $sitePath = $this->getConfigHelper()->getWorkspace() . $this->argument('name');
 
+        // PHP image name based on the selected php version - latest version not included in the image name
+        $phpImage = 'mo_php' . ($phpVersion !== key($this->phpVersions)? str_replace('.', '', $phpVersion) : '');
         // Collection of used hosts ports by other environments
         $usedPorts = $this->getWebEnvData();
         // Collection of used solr ports by other environments
@@ -93,6 +95,7 @@ class Create extends Workspace
         // Update other placeholders such as, PHP version to use, values in web.env file, or docker-sync settings
         $this->updatePlaceholders($sitePath, [
             '{{php}}'          => $phpVersion,
+            '{{php_image}}'    => $phpImage,
             '{{host}}'         => $this->argument('name'),
             '{{host_port}}'    => max($usedPorts) + 1,
             '{{solr_port}}'    => max($usedSolrPorts) + 1,
