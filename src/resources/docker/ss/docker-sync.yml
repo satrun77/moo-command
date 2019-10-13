@@ -2,13 +2,36 @@ version: "2"
 options:
   verbose: true
   cli_mode: 'thor'
+  project_root: 'config_path'
 syncs:
   {{volume-name}}:
     src: '{{root_path}}/site/'
     notify_terminal: true
-    monit_enable: true
     monit_interval: 10
     monit_high_cpu_cycles: 6
-    watch_args: '-v'
     sync_userid: '33'
-    sync_args: "-ignore='Path .idea' -ignore='Path .git' -ignore='Name .DS_Store' -ignore='Path .docker-sync' -ignore='Path public/assets/*' -ignore='Path public/resources/*' -ignore='BelowPath node_modules' -ignore='Path vendor/*'"
+    sync_args: "-ignore='Path .idea' -ignore='Path .git' -ignore='Name .DS_Store' -ignore='Path .docker-sync' -ignore='BelowPath node_modules' -ignore='Path vendor/*'"
+    # optional, a list of excludes. These patterns will not be synced
+    # see http://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html#ignore for the possible syntax and see sync_excludes_type below
+    sync_excludes: ['.sass-cache', 'sass-cache', 'bower_components', 'node_modules', '.gitignore', '.git']
+#    sync_excludes: ['Gemfile.lock', 'Gemfile', 'config.rb', '.sass-cache', 'sass', 'sass-cache', 'bower.json', 'package.json', 'Gruntfile*', 'bower_components', 'node_modules', '.gitignore', '.git', '*.coffee', '*.scss', '*.sass']
+    # use this to change the exclude syntax.
+    # Path: you match the exact path ( nesting problem )
+    # Name: If a file or a folder does match this string ( solves nesting problem )
+    # Regex: Define a regular expression
+    # none: You can define a type for each sync exclude, so sync_excludes: ['Name .git', 'Path Gemlock']
+    #
+    # for more see http://www.cis.upenn.edu/~bcpierce/unison/download/releases/stable/unison-manual.html#pathspec
+    sync_excludes_type: 'Name'
+    # optional, default can be either rsync or unison See Strategies in the wiki for explanation
+    sync_strategy: 'unison'
+    # defines how sync-conflicts should be handled. With default it will prefer the source with --copyonconflict
+    # so on conflict, pick the one from the host and copy the conflicted file for backup
+    sync_prefer: 'default'    # optional, a list of regular expressions to exclude from the fswatch - see fswatch docs for details
+    # IMPORTANT: this is not supported by native_osx
+    watch_excludes: ['.*/.git', '.*/node_modules', '.*/bower_components', '.*/sass-cache', '.*/.sass-cache', '.*/.sass-cache', '.gitignore']
+#    watch_excludes: ['.*/.git', '.*/node_modules', '.*/bower_components', '.*/sass-cache', '.*/.sass-cache', '.*/.sass-cache', '.coffee', '.scss', '.sass', '.gitignore']
+    watch_args: '-v'
+    # monit can be used to monitor the health of unison in the native_osx strategy and can restart unison if it detects a problem
+    # optional: use this to switch monit monitoring on
+    monit_enable: true
