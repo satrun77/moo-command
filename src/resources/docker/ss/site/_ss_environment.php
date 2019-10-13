@@ -1,7 +1,7 @@
 <?php
 
 if (!isset($_SERVER['HTTP_HOST'])) {
-    $_SERVER['HTTP_HOST']       = '127.0.0.1';
+    $_SERVER['HTTP_HOST']       = 'docker.for.mac.localhost';
     $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
     $_SERVER['REQUEST_METHOD']  = 'GET';
 }
@@ -17,7 +17,7 @@ define('SS_DATABASE_NAME', getenv('MYSQL_DATABASE'));
 define('SS_DEFAULT_ADMIN_USERNAME', 'admin');
 define('SS_DEFAULT_ADMIN_PASSWORD', 'admin');
 
-define('SOLR_SERVER', getenv('DOCKER_MACHINE_IP'));
+define('SOLR_SERVER', 'docker.for.mac.localhost');
 define('SOLR_PORT', getenv('SOLR_PORT'));
 define('SOLR_MODE', 'file');
 define('SOLR_PATH', '/solr/');
@@ -30,4 +30,4 @@ define('SOLR_INDEXSTORE_PATH', '/var/www/solr');
 date_default_timezone_set('Pacific/Auckland');
 
 global $_FILE_TO_URL_MAPPING;
-$_FILE_TO_URL_MAPPING['/var/www/html/public'] = 'http://localhost:' . getenv('VIRTUAL_PORT');
+$_FILE_TO_URL_MAPPING['/var/www/html/public'] = 'http://docker.for.mac.localhost:' . getenv('VIRTUAL_PORT');
