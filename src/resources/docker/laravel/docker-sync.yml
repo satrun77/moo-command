@@ -26,7 +26,7 @@ syncs:
     sync_strategy: 'unison'
     # defines how sync-conflicts should be handled. With default it will prefer the source with --copyonconflict
     # so on conflict, pick the one from the host and copy the conflicted file for backup
-    sync_prefer: 'default'    # optional, a list of regular expressions to exclude from the fswatch - see fswatch docs for details
+    sync_prefer: 'src'    # optional, a list of regular expressions to exclude from the fswatch - see fswatch docs for details
     # IMPORTANT: this is not supported by native_osx
     watch_excludes: ['.*/.git', '.*/node_modules', '.*/bower_components', '.*/sass-cache', '.*/.sass-cache', '.*/.sass-cache', '.coffee', '.scss', '.sass', '.gitignore']
     watch_args: '-v'
