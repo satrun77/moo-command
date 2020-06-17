@@ -373,6 +373,10 @@ class ListSites extends Workspace
     protected function machineIp(): string
     {
         return $this->cache('machineIp', function () {
+            $fixedIp = $this->getHelper('config')->getConfig('sites.ip');
+            if (!empty($fixedIp)) {
+                return $fixedIp;
+            }
             return $this->getMachineIp();
         });
     }

@@ -18,6 +18,8 @@ workspace: /Users/moo/workspace/
 #  source: url
 #  data: http://domain.com/api.json
 
+sites:
+  ip: 127.0.0.1 #IP address to use for list of sites instead of finding one
 commit:
   style: CategorisedStyle # options: ImperativeMoodStyle, CategorisedStyle
   categories:
