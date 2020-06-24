@@ -351,7 +351,7 @@ class CodeQuality extends Command
      */
     protected function installMessDetector(): void
     {
-        $this->installCommandLine('phpmd', 'http://static.phpmd.org/php/latest/phpmd.phar');
+        $this->installCommandLine('phpmd', 'https://phpmd.org/static/latest/phpmd.phar');
     }
 
     /**
