@@ -61,8 +61,7 @@ RUN usermod -u 1000 www-data
 # Create a directory composer may use and ensure assets directory readable by apache
 RUN if [ ! -d /var/www/.composer ]; then mkdir /var/www/.composer; fi
 RUN chown -R www-data:www-data /var/www/.composer
-RUN if [ ! -d {{work_dir}}/assets ]; then mkdir -p {{work_dir}}/assets; fi
-RUN chown -R www-data:www-data {{work_dir}}/assets
+RUN if [ -d {{work_dir}}/public/assets ]; then chown -R www-data:www-data {{work_dir}}/public/assets; fi
 
 # Solr directory
 RUN if [ ! -d /var/www/solr ]; then mkdir /var/www/solr; fi
