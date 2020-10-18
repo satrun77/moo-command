@@ -377,6 +377,7 @@ class ListSites extends Workspace
             if (!empty($fixedIp)) {
                 return $fixedIp;
             }
+
             return $this->getMachineIp();
         });
     }

@@ -208,7 +208,7 @@ class StyledOutput extends SymfonyStyle
      * Format string for console output.
      *
      * @param string      $string
-     * @param null|string $style
+     * @param string|null $style
      * @param string      $label
      *
      * @return string

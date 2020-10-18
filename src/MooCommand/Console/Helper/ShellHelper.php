@@ -54,7 +54,7 @@ class ShellHelper extends Helper
     /**
      * Execute a shell command.
      *
-     * @param array ...$params
+     * @param string ...$params
      *
      * @return Process
      */
@@ -78,7 +78,7 @@ class ShellHelper extends Helper
     /**
      * Execute a shell command with real time output.
      *
-     * @param array ...$params
+     * @param string ...$params
      *
      * @return bool
      */

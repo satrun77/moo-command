@@ -52,6 +52,89 @@ class Create extends Workspace
         $this->siteNameMustNotEqualToProxy('name');
         $this->siteDirectoryMustNotExists('name');
 
+        if ($dockerTemplates = $this->getDockerTemplates()) {
+            $this->buildFromTemplateDocker($dockerTemplates);
+        } else {
+            $this->buildFromDefaultDocker();
+        }
+
+        $this->finaliseBuild();
+    }
+
+    /**
+     * Get site name used by docker
+     *
+     * @return string
+     */
+    protected function getSiteName(): string
+    {
+        return str_replace('.', '', $this->argument('name'));
+    }
+
+    /**
+     * Get absolute path to new site
+     *
+     * @return string
+     */
+    protected function getSitePath(): string
+    {
+        return $this->getConfigHelper()->getWorkspace() . $this->argument('name');
+    }
+
+    /**
+     * Get collection of docker templates from a remote repository
+     *
+     * @return array
+     */
+    protected function getDockerTemplates(): array
+    {
+        $dockerTemplates = $this->getConfigHelper()->getConfig('docker.templates');
+        if (!empty($dockerTemplates)) {
+            return [];
+        }
+
+        $process = $this->getShellHelper()->exec('git ls-remote %s | grep "refs/heads/" | awk \'{print $NF}\'', $dockerTemplates);
+        if (!$process->isSuccessful()) {
+            $this->getOutputStyle()->warning('Unable to read docker.templates');
+
+            return [];
+        }
+
+        return array_filter(array_map('trim', explode('refs/heads/', $process->getOutput())));
+    }
+
+    /**
+     * Start building site based on docker templates from a remote repository
+     *
+     * @param array $branches
+     */
+    protected function buildFromTemplateDocker(array $branches): void
+    {
+        $sitePath = $this->getSitePath();
+
+        array_unshift($branches, '--skip--');
+        $dockerTemplate = $this->getQuestionHelper()->choices(
+            'Please select a docker template',
+            $branches,
+            0
+        );
+
+        if ($dockerTemplate) {
+            $dockerTemplates = $this->getConfigHelper()->getConfig('docker.templates');
+            $this->getShellHelper()->execRealTime('git clone %s %s --branch %s', $dockerTemplates, $sitePath, $branches[$dockerTemplate]);
+        } else {
+            $this->buildFromDefaultDocker();
+        }
+    }
+
+    /**
+     * Start building site based on default build
+     */
+    protected function buildFromDefaultDocker(): void
+    {
+        $sitePath = $this->getSitePath();
+        $siteName = $this->getSiteName();
+
         $template = $this->getQuestionHelper()->choices(
             'Please select environment template',
             $this->templates,
@@ -75,48 +158,58 @@ class Create extends Workspace
             $themeDirectory = $this->getQuestionHelper()->ask('Enter path to theme directory from /var/www/html/');
         }
 
-        // Site root directory
-        $sitePath = $this->getConfigHelper()->getWorkspace() . $this->argument('name');
-
         // PHP image name based on the selected php version - latest version not included in the image name
-        $phpImage = 'mo_php' . ($phpVersion !== key($this->phpVersions)? str_replace('.', '', $phpVersion) : '');
+        $phpImage = 'mo_php' . ($phpVersion !== key($this->phpVersions) ? str_replace('.', '', $phpVersion) : '');
         // Collection of used hosts ports by other environments
         $usedPorts = $this->getWebEnvData();
         // Collection of used solr ports by other environments
         $usedSolrPorts = $this->getWebEnvData('SOLR_PORT');
         // Collection of used solr ports by other environments
         $usedMysqlPorts = $this->getWebEnvData('MYSQL_PORT');
-        // Site name
-        $siteName = str_replace('.', '', $this->argument('name'));
 
         // Copy container files
         $this->getConfigHelper()->copyResource('docker/' . $template, $sitePath);
 
         // Update other placeholders such as, PHP version to use, values in web.env file, or docker-sync settings
         $this->updatePlaceholders($sitePath, [
-            '{{php}}'          => $phpVersion,
-            '{{php_image}}'    => $phpImage,
-            '{{host}}'         => $this->argument('name'),
-            '{{host_port}}'    => max($usedPorts) + 1,
-            '{{solr_port}}'    => max($usedSolrPorts) + 1,
-            '{{mysql_port}}'   => max($usedMysqlPorts) + 1,
-            '{{volume-name}}'  => $siteName . '_dockersync_1',
-            '{{root_path}}'    => $sitePath,
-            '{{name}}'         => $siteName,
-            '{{work_dir}}'     => !empty($workDirectory) ? $this->workDirectories[$workDirectory] : current($this->workDirectories),
-            '{{theme_dir}}'    => !empty($themeDirectory) ? $themeDirectory : '',
+            '{{php}}'         => $phpVersion,
+            '{{php_image}}'   => $phpImage,
+            '{{host}}'        => $this->argument('name'),
+            '{{host_port}}'   => max($usedPorts) + 1,
+            '{{solr_port}}'   => max($usedSolrPorts) + 1,
+            '{{mysql_port}}'  => max($usedMysqlPorts) + 1,
+            '{{volume-name}}' => $siteName . '_dockersync_1',
+            '{{root_path}}'   => $sitePath,
+            '{{name}}'        => $siteName,
+            '{{work_dir}}'    => !empty($workDirectory) ? $this->workDirectories[$workDirectory] : current($this->workDirectories),
+            '{{theme_dir}}'   => !empty($themeDirectory) ? $themeDirectory : '',
         ]);
-
-        $shell = $this->getShellHelper();
-        $shell->exec('sudo chmod +x %s/start', $sitePath);
-        $shell->exec('sudo chmod +x %s/php/templates/sendmail', $sitePath);
 
         // Custom setup for PHP 7.3
         if ($phpVersion === static::PHP_73) {
+            $shell = $this->getShellHelper();
             // Delete default php docker setup and use php7.3 specific setup
             $shell->exec('rm -rf %s/php/Dockerfile', $sitePath);
             $shell->exec('mv %s/php/Dockerfile7.3 %s/php/Dockerfile', $sitePath, $sitePath);
         }
+    }
+
+    /**
+     * Final steps.
+     * Display confirmation message and option to start the new site
+     *
+     * @throws \Exception
+     */
+    protected function finaliseBuild(): void
+    {
+        // Site root directory
+        $sitePath = $this->getSitePath();
+        // Site name
+        $siteName = $this->getSiteName();
+
+        $shell = $this->getShellHelper();
+        $shell->exec('sudo chmod +x %s/start', $sitePath);
+        $shell->exec('sudo chmod +x %s/php/templates/sendmail', $sitePath);
 
         // Display success message
         $successMessage = 'The new site files created successfully.';
@@ -171,7 +264,7 @@ class Create extends Workspace
     protected function updateFileContent(string $filePath, array $changes): void
     {
         // Get instance of SPL file
-        $envFile  = new \SplFileObject($filePath, 'r');
+        $envFile = new \SplFileObject($filePath, 'r');
         // Get the file size
         $size = $envFile->getSize();
 
