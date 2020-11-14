@@ -162,10 +162,13 @@ class Create extends Workspace
         $phpImage = 'mo_php' . ($phpVersion !== key($this->phpVersions) ? str_replace('.', '', $phpVersion) : '');
         // Collection of used hosts ports by other environments
         $usedPorts = $this->getWebEnvData();
+        $usedPorts = !empty($usedPorts)? [1000] : $usedPorts;
         // Collection of used solr ports by other environments
         $usedSolrPorts = $this->getWebEnvData('SOLR_PORT');
+        $usedSolrPorts = !empty($usedSolrPorts)? [9000] : $usedSolrPorts;
         // Collection of used solr ports by other environments
         $usedMysqlPorts = $this->getWebEnvData('MYSQL_PORT');
+        $usedMysqlPorts = !empty($usedMysqlPorts)? [3000] : $usedMysqlPorts;
 
         // Copy container files
         $this->getConfigHelper()->copyResource('docker/' . $template, $sitePath);
