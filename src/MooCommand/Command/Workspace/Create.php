@@ -213,6 +213,8 @@ class Create extends Workspace
         $shell = $this->getShellHelper();
         $shell->exec('sudo chmod +x %s/start', $sitePath);
         $shell->exec('sudo chmod +x %s/php/templates/sendmail', $sitePath);
+        $shell->exec('sudo chmod +x %s/php/templates/permission', $sitePath);
+        $shell->exec('sudo chmod +x %s/permission', $sitePath);
 
         // Display success message
         $successMessage = 'The new site files created successfully.';

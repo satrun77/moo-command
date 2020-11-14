@@ -45,6 +45,9 @@ RUN echo 'sendmail_path = /usr/local/bin/php /var/www/sendmail' > /usr/local/etc
 RUN chmod +x /var/www/sendmail
 RUN if [ ! -d /var/www/mail ]; then mkdir /var/www/mail; fi
 
+COPY templates/permission /var/www/permission
+RUN chmod +x /var/www/permission
+
 # Copy composer from composer container
 ENV COMPOSER_ALLOW_SUPERUSER 1
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
