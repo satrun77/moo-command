@@ -1,0 +1,47 @@
+
+# Coding style rules
+csfixes:
+  "@PSR2": true
+  "@PSR1": true
+  "@Symfony": true
+  "align_multiline_comment": true
+  "array_indentation": true
+  "array_syntax":
+    "syntax": "short"
+  "binary_operator_spaces":
+    "align_double_arrow": true
+    "align_equals": true
+    "default": "align_single_space_minimal"
+  "combine_consecutive_issets": true
+  "combine_consecutive_unsets": true
+  "compact_nullable_typehint": true
+  "concat_space":
+    "spacing": "one"
+  "explicit_indirect_variable": true
+  "explicit_string_variable": true
+  "final_static_access": true
+  "fully_qualified_strict_types": true
+  "heredoc_to_nowdoc": true
+  "linebreak_after_opening_tag": true
+  "list_syntax":
+    "syntax": "short"
+  "method_chaining_indentation": true
+  "multiline_comment_opening_closing": true
+  "multiline_whitespace_before_semicolons": true
+  "no_null_property_initialization": true
+  "no_superfluous_elseif": true
+  "no_unset_cast": true
+  "no_useless_else": true
+  "no_useless_return": true
+  "ordered_class_elements": true
+  "phpdoc_no_empty_return": true
+  "phpdoc_order": true
+  "return_assignment": true
+  "self_static_accessor": true
+  "simple_to_complex_string_variable": true
+  "simplified_null_return": true
+  "no_trailing_comma_in_list_call": false
+  "phpdoc_add_missing_param_annotation": true
+  "protected_to_private": false
+  "yoda_style": false
+  "mb_str_functions": true
