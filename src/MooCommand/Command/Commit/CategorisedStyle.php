@@ -25,8 +25,8 @@ class CategorisedStyle implements CommitStyleInterface
      */
     protected $shortcutMessages = [
         Commit::SHORTCUT_DEPENDENCIES => 'Misc: update Composer dependencies',
-        Commit::SHORTCUT_GITIGNORE    => 'Misc: update .gitignore',
-        Commit::SHORTCUT_CSFIXES      => 'Misc: apply CS fixes',
+        Commit::SHORTCUT_GITIGNORE => 'Misc: update .gitignore',
+        Commit::SHORTCUT_CSFIXES => 'Misc: apply CS fixes',
     ];
 
     /**
@@ -35,11 +35,11 @@ class CategorisedStyle implements CommitStyleInterface
      * @var array
      */
     protected static $DEFAULT_TYPES = [
-        'Change'  => 'Implemented a change to source code.',
-        'Misc'    => 'Generic change.',
-        'Bug'     => 'Fixed a bug.',
-        'Update'  => 'Update site core code or installed/update modules',
-        'Build'   => 'build CSS & Javascript',
+        'Change' => 'Implemented a change to source code.',
+        'Misc' => 'Generic change.',
+        'Bug' => 'Fixed a bug.',
+        'Update' => 'Update site core code or installed/update modules',
+        'Build' => 'build CSS & Javascript',
         'Feature' => 'Implemented a new feature.',
     ];
 
@@ -59,8 +59,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * CategorisedStyle constructor.
-     *
-     * @param Commit $command
      */
     public function __construct(Commit $command)
     {
@@ -69,8 +67,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Return the display name of the commit style.
-     *
-     * @return string
      */
     public function getDisplayName(): string
     {
@@ -79,8 +75,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Return list of arguments for the command.
-     *
-     * @return array
      */
     public function getArguments(): array
     {
@@ -91,8 +85,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Return list of extra options to be added to the commit defaults.
-     *
-     * @return array
      */
     public function getOptions(): array
     {
@@ -101,8 +93,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Return list of short cut options.
-     *
-     * @return array
      */
     public function getShortcutOptions(): array
     {
@@ -114,8 +104,6 @@ class CategorisedStyle implements CommitStyleInterface
      *
      * [Input name].[Validator name] => class containing the validator.
      * (ie. 'Issue.Number' for method validateIssueNumber)
-     *
-     * @return array
      */
     public function getValidators(): array
     {
@@ -126,10 +114,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Return message for a short option.
-     *
-     * @param string $shortcutOption
-     *
-     * @return string
      */
     public function getShortcutMessage(string $shortcutOption): string
     {
@@ -138,10 +122,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Return details for a short option.
-     *
-     * @param string $shortcutOption
-     *
-     * @return string
      */
     public function getShortcutDetails(string $shortcutOption): string
     {
@@ -150,16 +130,11 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Return an array of arguments for the commit command.
-     *
-     * @param string $message
-     * @param string $details
-     *
-     * @return array
      */
     public function getCommitCommand(string $message, string $details): array
     {
         // Commit message details
-        $type  = explode(':', $this->command->argument('type'))[0];
+        $type = explode(':', $this->command->argument('type'))[0];
         $issue = $this->command->argument('issue');
 
         return [
@@ -173,8 +148,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Execute code before interactive input type.
-     *
-     * @return void
      */
     public function beforeInputType(): void
     {
@@ -190,8 +163,6 @@ class CategorisedStyle implements CommitStyleInterface
     /**
      * Interactive input to be executed by commit command.
      * Ask & validate the commit type.
-     *
-     * @return string
      */
     public function interactInputType(): string
     {
@@ -205,8 +176,6 @@ class CategorisedStyle implements CommitStyleInterface
     /**
      * Interactive input to be executed by commit command.
      * Ask & validate the commit issue number.
-     *
-     * @return string
      */
     public function interactInputIssue(): string
     {
@@ -223,12 +192,10 @@ class CategorisedStyle implements CommitStyleInterface
      * Validate the issue number.
      *
      * @param string $value
-     *
-     * @return string
      */
     public function validateIssueNumber(?string $value): string
     {
-        $value    = strtoupper($value);
+        $value = mb_strtoupper($value);
         $segments = explode('-', $value);
 
         if (empty($segments[0])) {
@@ -244,8 +211,6 @@ class CategorisedStyle implements CommitStyleInterface
 
     /**
      * Get an array of commit types (categories).
-     *
-     * @return array
      */
     public function getTypes(): array
     {

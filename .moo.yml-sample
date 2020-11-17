@@ -22,6 +22,10 @@ sites:
   ip: 127.0.0.1 #IP address to use for list of sites instead of finding one
 commit:
   style: CategorisedStyle # options: ImperativeMoodStyle, CategorisedStyle
+  format: "{Message}\n\n{Details}" # Optional for ImperativeMoodStyle
+  inputs: # Optional for ImperativeMoodStyle
+   - Message
+   - Details
   categories:
     One: One
     Bug: Bug

@@ -25,8 +25,8 @@ class ImperativeMoodStyle implements CommitStyleInterface
      */
     protected $shortcutMessages = [
         Commit::SHORTCUT_DEPENDENCIES => 'Update Composer dependencies',
-        Commit::SHORTCUT_GITIGNORE    => 'Update .gitignore',
-        Commit::SHORTCUT_CSFIXES      => 'Apply CS fixes',
+        Commit::SHORTCUT_GITIGNORE => 'Update .gitignore',
+        Commit::SHORTCUT_CSFIXES => 'Apply CS fixes',
     ];
 
     /**
@@ -45,8 +45,6 @@ class ImperativeMoodStyle implements CommitStyleInterface
 
     /**
      * ImperativeMoodStyle constructor.
-     *
-     * @param Commit $command
      */
     public function __construct(Commit $command)
     {
@@ -55,8 +53,6 @@ class ImperativeMoodStyle implements CommitStyleInterface
 
     /**
      * Return the display name of the commit style.
-     *
-     * @return string
      */
     public function getDisplayName(): string
     {
@@ -65,20 +61,19 @@ class ImperativeMoodStyle implements CommitStyleInterface
 
     /**
      * Return list of arguments for the command.
-     *
-     * @return array
      */
     public function getArguments(): array
     {
-        return [
-            'Message', 'Details',
-        ];
+        $arguments = (array) $this->command->getHelper('config')->getConfig('commit.arguments');
+        if (empty($arguments)) {
+            $arguments = ['Message', 'Details'];
+        }
+
+        return $arguments;
     }
 
     /**
      * Return list of extra options to be added to the commit defaults.
-     *
-     * @return array
      */
     public function getOptions(): array
     {
@@ -87,8 +82,6 @@ class ImperativeMoodStyle implements CommitStyleInterface
 
     /**
      * Return list of short cut options.
-     *
-     * @return array
      */
     public function getShortcutOptions(): array
     {
@@ -100,8 +93,6 @@ class ImperativeMoodStyle implements CommitStyleInterface
      *
      * [Input name].[Validator name] => class containing the validator.
      * (ie. 'Issue.Number' for method validateIssueNumber)
-     *
-     * @return array
      */
     public function getValidators(): array
     {
@@ -112,10 +103,6 @@ class ImperativeMoodStyle implements CommitStyleInterface
 
     /**
      * Return message for a short option.
-     *
-     * @param string $shortcutOption
-     *
-     * @return string
      */
     public function getShortcutMessage(string $shortcutOption): string
     {
@@ -124,10 +111,6 @@ class ImperativeMoodStyle implements CommitStyleInterface
 
     /**
      * Return details for a short option.
-     *
-     * @param string $shortcutOption
-     *
-     * @return string
      */
     public function getShortcutDetails(string $shortcutOption): string
     {
@@ -136,25 +119,29 @@ class ImperativeMoodStyle implements CommitStyleInterface
 
     /**
      * Return an array of arguments for the commit command.
-     *
-     * @param string $message
-     * @param string $details
-     *
-     * @return array
      */
     public function getCommitCommand(string $message, string $details): array
     {
+        $format = (array) $this->command->getHelper('config')->getConfig('commit.format');
+        if (!empty($format)) {
+            // Commit message details
+            $arguments = $this->getArguments();
+            foreach ($arguments as $argument) {
+                $argumentValue = (string) $this->command->argument(mb_strtolower($argument));
+                $format = str_replace('{' . $argument . '}', $argumentValue, $format);
+            }
+        } else {
+            $format = sprintf("%s\n\n%s", ucfirst($message), $details);
+        }
+
         return [
-            "git commit -m \"%s\n\n%s\"",
-            ucfirst($message),
-            $details,
+            'git commit -m "%s"',
+            $format,
         ];
     }
 
     /**
      * Execute code before interactive input message.
-     *
-     * @return void
      */
     public function beforeInputMessage(): void
     {
@@ -168,28 +155,23 @@ class ImperativeMoodStyle implements CommitStyleInterface
     /**
      * Interactive input to be executed by commit command.
      * Ask & validate the commit issue number.
-     *
-     * @return string
      */
-    public function interactInputTicket(): string
+    public function interactInputIssue(): string
     {
-        $this->command->getOutputStyle()->question('Enter your JIRA ticket number:  ');
+        $issueNumber = $this->command->findTicketFromBranch();
+        $this->command->getOutputStyle()->question('Enter your issue number: (default: ' . $issueNumber . ') ');
 
-        return (string) $this->command->validator('', 'Ticket');
+        return (string) $this->command->validator('', 'Ticket', $issueNumber);
     }
 
     /**
      * Validate the first word of the input message.
-     *
-     * @param string $value
-     *
-     * @return string
      */
     public function validateMessageImperativeMood(string $value): string
     {
         $imperativeMood = false;
         foreach ($this->types as $type) {
-            if (0 === stripos($value, $type . ' ')) {
+            if (0 === mb_stripos($value, $type . ' ')) {
                 $imperativeMood = true;
                 break;
             }
@@ -210,8 +192,6 @@ class ImperativeMoodStyle implements CommitStyleInterface
 
     /**
      * Get an array of allowed commit words.
-     *
-     * @return array
      */
     public function getTypes(): array
     {

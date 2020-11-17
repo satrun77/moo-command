@@ -110,7 +110,7 @@ class QuestionHelper extends Helper
      * @param  callable $validator
      * @return string
      */
-    public function askAndValidate(string $questionText, callable $validator): string
+    public function askAndValidate(string $questionText, callable $validator, string $default = null): string
     {
         // Instance of the current command
         $command = $this->getCommand();
@@ -120,7 +120,7 @@ class QuestionHelper extends Helper
             $command->getOutputStyle()->question($questionText);
         }
         // Create instance of question with validator and max attempts of 10
-        $question = new Question('> ');
+        $question = new Question('> ', $default);
         $question->setValidator($validator);
         $question->setMaxAttempts(10);
 
