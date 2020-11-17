@@ -23,7 +23,7 @@ sites:
 commit:
   style: CategorisedStyle # options: ImperativeMoodStyle, CategorisedStyle
   format: "{Message}\n\n{Details}" # Optional for ImperativeMoodStyle
-  inputs: # Optional for ImperativeMoodStyle
+  arguments: # Optional for ImperativeMoodStyle
    - Message
    - Details
   categories:
