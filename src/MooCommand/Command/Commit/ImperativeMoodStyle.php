@@ -122,7 +122,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
      */
     public function getCommitCommand(string $message, string $details): array
     {
-        $format = (array) $this->command->getHelper('config')->getConfig('commit.format');
+        $format = (string) $this->command->getHelper('config')->getConfig('commit.format');
         if (!empty($format)) {
             // Commit message details
             $arguments = $this->getArguments();
