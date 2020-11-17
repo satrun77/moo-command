@@ -31,8 +31,6 @@ class Proxy extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @return void
-     *
      * @throws \Exception
      */
     protected function fire(): void
@@ -64,8 +62,6 @@ You can start container by executing the same command.';
 
     /**
      * Start the proxy container in the workspace.
-     *
-     * @param string $proxy
      *
      * @throws \Exception
      */

@@ -24,28 +24,7 @@ use Symfony\Component\Console\Question\Question;
 class QuestionHelper extends Helper
 {
     /**
-     * Get instance of symfony question helper.
-     *
-     * @return BaseQuestionHelper
-     */
-    protected function getHelper(): BaseQuestionHelper
-    {
-        return $this->getHelperSet()->get('question');
-    }
-
-    /**
-     * Get instance of the current command line class.
-     *
-     * @return Command
-     */
-    protected function getCommand(): Command
-    {
-        return $this->getHelperSet()->getCommand();
-    }
-
-    /**
      * @param string|array $question
-     * @param int          $default
      *
      * @return mixed
      */
@@ -54,7 +33,7 @@ class QuestionHelper extends Helper
         $command = $this->getCommand();
         $command->getOutputStyle()->question($question);
         $yesNoString = $command->getOutputStyle()->formatLine('[yes/no]', 'fg=green');
-        $question    = new ConfirmationQuestion($yesNoString . "\n> ", (bool) $default);
+        $question = new ConfirmationQuestion($yesNoString . "\n> ", (bool) $default);
 
         return $this->getHelper()->ask($command->getInput(), $command->getOutput(), $question);
     }
@@ -76,9 +55,6 @@ class QuestionHelper extends Helper
     /**
      * Ask user a question with selection of answers to choice from.
      *
-     * @param  string           $questionText
-     * @param  array            $choices
-     * @param  string           $default
      * @return false|int|string
      */
     public function choices(string $questionText, array $choices, string $default)
@@ -106,9 +82,7 @@ class QuestionHelper extends Helper
     /**
      * Ask the user question and validate the answer.
      *
-     * @param  string   $questionText
-     * @param  callable $validator
-     * @return string
+     * @param string $default
      */
     public function askAndValidate(string $questionText, callable $validator, string $default = null): string
     {
@@ -136,5 +110,21 @@ class QuestionHelper extends Helper
     public function getName(): string
     {
         return 'moo_question';
+    }
+
+    /**
+     * Get instance of symfony question helper.
+     */
+    protected function getHelper(): BaseQuestionHelper
+    {
+        return $this->getHelperSet()->get('question');
+    }
+
+    /**
+     * Get instance of the current command line class.
+     */
+    protected function getCommand(): Command
+    {
+        return $this->getHelperSet()->getCommand();
     }
 }

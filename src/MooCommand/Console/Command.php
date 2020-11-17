@@ -77,52 +77,6 @@ abstract class Command extends SymfonyCommand
      */
     protected $options = [];
 
-    /**
-     * @return void
-     */
-    protected function configure(): void
-    {
-        $this
-            ->setName($this->signature)
-            ->setDescription($this->description);
-
-        foreach ($this->arguments as $name => $argument) {
-            if (!array_key_exists('default', $argument)) {
-                $argument['default'] = null;
-            }
-            $this->addArgument($name, $argument['mode'], $argument['description'], $argument['default']);
-        }
-
-        foreach ($this->options as $name => $option) {
-            $option = array_merge([
-                'shortcut'    => null,
-                'mode'        => InputOption::VALUE_NONE,
-                'description' => '',
-                'default'     => null,
-            ], $option);
-            $this->addOption($name, $option['shortcut'], $option['mode'], $option['description'], $option['default']);
-        }
-    }
-
-    /**
-     * @return ConfigHelper
-     */
-    protected function getConfigHelper(): ConfigHelper
-    {
-        return $this->getHelper('config');
-    }
-
-    /**
-     * @return ShellHelper
-     */
-    protected function getShellHelper(): ShellHelper
-    {
-        return $this->getHelper('shell');
-    }
-
-    /**
-     * @return QuestionHelper
-     */
     public function getQuestionHelper(): QuestionHelper
     {
         return $this->getHelper('moo_question');
@@ -130,8 +84,6 @@ abstract class Command extends SymfonyCommand
 
     /**
      * Get the value of a command argument.
-     *
-     * @param string $key
      *
      * @return string|string[]|null
      */
@@ -142,8 +94,6 @@ abstract class Command extends SymfonyCommand
 
     /**
      * Get the value of a command option.
-     *
-     * @param string $key
      *
      * @return string|string[]|bool|null
      */
@@ -158,17 +108,12 @@ abstract class Command extends SymfonyCommand
 
     /**
      * Get the output implementation.
-     *
-     * @return ConsoleOutput
      */
     public function getOutput(): ConsoleOutput
     {
         return $this->output;
     }
 
-    /**
-     * @return InputInterface
-     */
     public function getInput(): InputInterface
     {
         return $this->input;
@@ -176,8 +121,6 @@ abstract class Command extends SymfonyCommand
 
     /**
      * Get the stdErr output implementation.
-     *
-     * @return OutputInterface
      */
     public function getErrorOutput(): OutputInterface
     {
@@ -191,18 +134,13 @@ abstract class Command extends SymfonyCommand
     /**
      * Run the console command.
      *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int
-     *
      * @throws \Exception
      */
     public function run(InputInterface $input, OutputInterface $output): int
     {
         global $argv;
 
-        $this->input  = $input;
+        $this->input = $input;
         $this->output = $output;
 
         // Pass this command to the helper set
@@ -224,9 +162,55 @@ abstract class Command extends SymfonyCommand
     }
 
     /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
+     * @param string|array $message
+     */
+    public function debug($message): void
+    {
+        if ($this->option('verbose')) {
+            $this->getOutputStyle()->debug($message);
+        }
+    }
+
+    public function getOutputStyle(): StyledOutput
+    {
+        return new StyledOutput($this->input, $this->getOutput());
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->setName($this->signature)
+            ->setDescription($this->description);
+
+        foreach ($this->arguments as $name => $argument) {
+            if (!array_key_exists('default', $argument)) {
+                $argument['default'] = null;
+            }
+            $this->addArgument($name, $argument['mode'], $argument['description'], $argument['default']);
+        }
+
+        foreach ($this->options as $name => $option) {
+            $option = array_merge([
+                'shortcut' => null,
+                'mode' => InputOption::VALUE_NONE,
+                'description' => '',
+                'default' => null,
+            ], $option);
+            $this->addOption($name, $option['shortcut'], $option['mode'], $option['description'], $option['default']);
+        }
+    }
+
+    protected function getConfigHelper(): ConfigHelper
+    {
+        return $this->getHelper('config');
+    }
+
+    protected function getShellHelper(): ShellHelper
+    {
+        return $this->getHelper('shell');
+    }
+
+    /**
      * @return int 0 on successful, 1 on error
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -242,42 +226,11 @@ abstract class Command extends SymfonyCommand
         return 0;
     }
 
-    /**
-     * @param string|array $message
-     *
-     * @return void
-     */
-    public function debug($message): void
-    {
-        if ($this->option('verbose')) {
-            $this->getOutputStyle()->debug($message);
-        }
-    }
-
-    /**
-     * @return StyledOutput
-     */
-    public function getOutputStyle(): StyledOutput
-    {
-        return new StyledOutput($this->input, $this->getOutput());
-    }
-
-    /**
-     * @param string $message
-     *
-     * @return void
-     */
     protected function stdErrError(string $message): void
     {
         $this->getErrorOutput()->writeln($this->getOutputStyle()->formatLine($message, 'error', 'ERROR'));
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return void
-     */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         foreach ($this->arguments as $name => $argument) {
@@ -289,12 +242,6 @@ abstract class Command extends SymfonyCommand
         }
     }
 
-    /**
-     * @param string $text
-     * @param string $body
-     *
-     * @return void
-     */
     protected function notify(string $text, string $body): void
     {
         // Create a Notifier
@@ -310,8 +257,5 @@ abstract class Command extends SymfonyCommand
         $notifier->send($notification);
     }
 
-    /**
-     * @return void
-     */
     abstract protected function fire(): void;
 }

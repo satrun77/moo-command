@@ -32,12 +32,12 @@ class Ssh extends Workspace
      * @var array
      */
     protected $arguments = [
-        'name'      => [
-            'mode'        => InputArgument::REQUIRED,
+        'name' => [
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'container' => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode' => InputArgument::OPTIONAL,
             'description' => 'Name of the container to ssh into',
         ],
     ];
@@ -45,15 +45,13 @@ class Ssh extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @return void
-     *
      * @throws \Exception
      */
     protected function fire(): void
     {
         $this->changeToSiteDirectory();
 
-        $siteName  = str_replace('.', '', $this->argument('name'));
+        $siteName = str_replace('.', '', $this->argument('name'));
         $container = $this->argument('container');
 
         $containerName = $container;

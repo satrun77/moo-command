@@ -20,7 +20,7 @@ use MooCommand\Console\Command;
 abstract class Workspace extends Command
 {
     /**
-     * Constants for supported php versions
+     * Constants for supported php versions.
      *
      * @var string
      */
@@ -65,7 +65,7 @@ abstract class Workspace extends Command
      * @var array
      */
     protected $templates = [
-        'ss'      => 'SilverStripe',
+        'ss' => 'SilverStripe',
         'laravel' => 'Laravel Framework',
     ];
 
@@ -81,7 +81,7 @@ abstract class Workspace extends Command
         self::PHP_56 => 'PHP 5.6',
     ];
 
-    /**'
+    /*'
      * List of supported work directories
      *
      * @var array
@@ -90,6 +90,25 @@ abstract class Workspace extends Command
         '/var/www/html',
         '/var/www/html/public',
     ];
+
+    /**
+     * Get argument value. Extend to hack the name value from "." to convert to current directory name.
+     *
+     * @param string $key
+     *
+     * @return array|string
+     */
+    public function argument(string $key = null): string
+    {
+        $value = parent::argument($key);
+
+        // Hack solution but works for now
+        if ('name' === $key && '.' === $value) {
+            $value = $this->getConfigHelper()->getCurrentSiteName();
+        }
+
+        return (string) $value;
+    }
 
     protected function configure(): void
     {
@@ -119,15 +138,11 @@ abstract class Workspace extends Command
 
     /**
      * Return an array of used ports.
-     *
-     * @param string $service
-     *
-     * @return array
      */
     protected function getWebEnvData(string $service = 'VIRTUAL_PORT'): array
     {
         $workspace = $this->getConfigHelper()->getWorkspace();
-        $ports     = [];
+        $ports = [];
 
         try {
             $iterator = new \DirectoryIterator($workspace);
@@ -159,11 +174,7 @@ abstract class Workspace extends Command
     }
 
     /**
-     * Get value of an environment file (web.env) option
-     *
-     * @param  string $field
-     * @param  string $default
-     * @return string
+     * Get value of an environment file (web.env) option.
      */
     protected function getEnvFileValue(string $field, string $default = ''): string
     {
@@ -193,8 +204,6 @@ abstract class Workspace extends Command
 
     /**
      * Returns path to workspace.
-     *
-     * @return string
      */
     protected function getWorkspace(): string
     {
@@ -202,30 +211,7 @@ abstract class Workspace extends Command
     }
 
     /**
-     * Get argument value. Extend to hack the name value from "." to convert to current directory name.
-     *
-     * @param string $key
-     *
-     * @return array|string
-     */
-    public function argument(string $key = null): string
-    {
-        $value = parent::argument($key);
-
-        // Hack solution but works for now
-        if ('name' === $key && '.' === $value) {
-            $value = $this->getConfigHelper()->getCurrentSiteName();
-        }
-
-        return (string) $value;
-    }
-
-    /**
      * Validate whether a parameter is empty.
-     *
-     * @param string $name
-     *
-     * @return bool
      *
      * @throws \Exception
      */
@@ -242,10 +228,6 @@ abstract class Workspace extends Command
     /**
      * Validate whether a parameter is equal to 'proxy'.
      *
-     * @param string $name
-     *
-     * @return bool
-     *
      * @throws \Exception
      */
     protected function siteNameMustNotEqualToProxy(string $name): bool
@@ -261,10 +243,6 @@ abstract class Workspace extends Command
     /**
      * Validate whether a site does not exists.
      *
-     * @param string $name
-     *
-     * @return bool
-     *
      * @throws \Exception
      */
     protected function siteDirectoryMustExists(string $name): bool
@@ -279,10 +257,6 @@ abstract class Workspace extends Command
 
     /**
      * Validate whether a site exists.
-     *
-     * @param string $name
-     *
-     * @return bool
      *
      * @throws \Exception siteDirectoryMustExists
      */
@@ -312,15 +286,11 @@ abstract class Workspace extends Command
     }
 
     /**
-     * @param string       $command
      * @param array|string $args
-     * @param string       $container
-     * @param string       $error
-     * @param string       $success
-     *
-     * @return $this
      *
      * @throws \Exception
+     *
+     * @return $this
      */
     protected function execCommandInContainer(string $command, $args, string $container = 'php', string $error = '', string $success = ''): self
     {
@@ -359,11 +329,6 @@ abstract class Workspace extends Command
 
     /**
      * Display information about docker-sync commands.
-     *
-     * @param  string $volume
-     * @param  string $start
-     * @param  string $stop
-     * @return void
      */
     protected function showDockerSyncInfo(string $volume, string $start = '', string $stop = ''): void
     {

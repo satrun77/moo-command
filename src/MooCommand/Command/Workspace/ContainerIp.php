@@ -33,7 +33,7 @@ class ContainerIp extends Workspace
      */
     protected $arguments = [
         'filter' => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode' => InputArgument::OPTIONAL,
             'description' => 'Filter the output by keyword',
         ],
     ];
@@ -41,21 +41,19 @@ class ContainerIp extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @return void
-     *
      * @throws \Exception
      */
     protected function fire(): void
     {
         $command = "docker inspect -f '{{.Name}}|{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' \$(docker ps -aq)";
-        $grepBy  = $this->argument('filter');
+        $grepBy = $this->argument('filter');
         if (!empty($grepBy)) {
             $command .= ' | grep "%s"';
         }
 
         // Get output as an array
         $output = $this->getShellHelper()->exec($command, $grepBy)->getOutput();
-        $lines  = array_filter(explode("\n", $output));
+        $lines = array_filter(explode("\n", $output));
 
         // Convert command output to table rows
         $rows = [];

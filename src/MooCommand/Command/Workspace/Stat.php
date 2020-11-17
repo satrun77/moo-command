@@ -33,7 +33,7 @@ class Stat extends Workspace
      */
     protected $arguments = [
         'filter' => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode' => InputArgument::OPTIONAL,
             'description' => 'Filter the output by keyword',
         ],
     ];
@@ -41,15 +41,13 @@ class Stat extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @return void
-     *
      * @throws \Exception
      */
     protected function fire(): void
     {
         $command = 'docker stats $(docker ps%s|grep -v "NAMES"|awk \'{ print $NF }\'|tr "\n" " ")';
 
-        $grepBy  = $this->argument('filter');
+        $grepBy = $this->argument('filter');
         if (!empty($grepBy)) {
             $grepBy = '|grep "' . $grepBy . '" ';
         }

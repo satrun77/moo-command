@@ -32,20 +32,18 @@ class Cp extends Workspace
      * @var array
      */
     protected $arguments = [
-        'name'      => [
-            'mode'        => InputArgument::REQUIRED,
+        'name' => [
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'container' => [
-            'mode'        => InputArgument::REQUIRED,
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the container to upload file to or download file from',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */
@@ -56,7 +54,7 @@ class Cp extends Workspace
         $this->siteDirectoryMustExists('name');
         $site = $this->argument('name');
         // Docker prefix can't have "."
-        $site      = str_replace('.', '', $site);
+        $site = str_replace('.', '', $site);
         $container = $this->argument('container');
 
         // Ask to Upload or download?

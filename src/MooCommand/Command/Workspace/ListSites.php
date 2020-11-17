@@ -28,11 +28,11 @@ use Symfony\Component\Yaml\Yaml;
 class ListSites extends Workspace
 {
     /**
-     * Constants for various statuses
+     * Constants for various statuses.
      *
      * @var string
      */
-    const STATUS_ACTIVE   = '✔';
+    const STATUS_ACTIVE = '✔';
     /**
      * @var string
      */
@@ -40,28 +40,27 @@ class ListSites extends Workspace
     /**
      * @var string
      */
-    const STATUS_NA       = '●';
-
+    const STATUS_NA = '●';
 
     /**
-     * Collection of color for each status
+     * Collection of color for each status.
      *
      * @var array
      */
     protected static $statusTag = [
-        self::STATUS_ACTIVE   => ['info', 'info'],
-        self::STATUS_NA       => ['fg=white', ''],
+        self::STATUS_ACTIVE => ['info', 'info'],
+        self::STATUS_NA => ['fg=white', ''],
         self::STATUS_INACTIVE => ['fg=red', ''],
     ];
 
     /**
-     * Command arguments
+     * Command arguments.
      *
      * @var array
      */
     protected $arguments = [
         'container' => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode' => InputArgument::OPTIONAL,
             'description' => 'Name of the container to show its status',
         ],
     ];
@@ -70,11 +69,11 @@ class ListSites extends Workspace
      * @var array
      */
     protected $options = [
-        'all'      => [
-            'shortcut'    => 'a',
-            'mode'        => InputOption::VALUE_NONE,
+        'all' => [
+            'shortcut' => 'a',
+            'mode' => InputOption::VALUE_NONE,
             'description' => 'List all sites',
-            'default'     => null,
+            'default' => null,
         ],
     ];
 
@@ -88,24 +87,21 @@ class ListSites extends Workspace
     protected $childSignature = 'sites';
 
     /**
-     * Collection holds internal cache data
+     * Collection holds internal cache data.
      *
      * @var array
      */
     protected static $cache = [
-        'ports'            => [],
-        'machineIp'        => null,
+        'ports' => [],
+        'machineIp' => null,
         'activeContainers' => '',
         'uniqueContainers' => [],
-        'ymlParser'        => null,
-        'tableOutput'      => null,
+        'ymlParser' => null,
+        'tableOutput' => null,
     ];
-
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */
@@ -121,7 +117,7 @@ class ListSites extends Workspace
 
         try {
             $iterator = new \DirectoryIterator($workspace);
-            $rows     = [];
+            $rows = [];
             foreach ($iterator as $file) {
                 // Get data from web.env file about port & host
                 if ($file->isDir() && ($row = $this->containerData($file))) {
@@ -150,7 +146,7 @@ class ListSites extends Workspace
     }
 
     /**
-     * Output title
+     * Output title.
      */
     protected function outputTitle(): void
     {
@@ -164,11 +160,6 @@ class ListSites extends Workspace
         $this->getOutputStyle()->title($title);
     }
 
-    /**
-     * @param  array  $row
-     * @param  string $key
-     * @return array
-     */
     protected function validateContainersStatuses(array $row, string $key): array
     {
         $containers = $this->uniqueContainers();
@@ -180,19 +171,15 @@ class ListSites extends Workspace
             }
 
             // Check status of the container
-            $containerName   = sprintf('%s_%s_1', str_replace('.', '', $key), $container);
-            $row[$container] = false !== strpos($this->activeContainers(), $containerName) ? static::STATUS_ACTIVE : static::STATUS_INACTIVE;
+            $containerName = sprintf('%s_%s_1', str_replace('.', '', $key), $container);
+            $row[$container] = false !== mb_strpos($this->activeContainers(), $containerName) ? static::STATUS_ACTIVE : static::STATUS_INACTIVE;
         }
 
         return $row;
     }
 
     /**
-     * Check if the container port does not match any other ports used for another container
-     *
-     * @param  int    $port
-     * @param  string $key
-     * @return string
+     * Check if the container port does not match any other ports used for another container.
      */
     protected function validatePort(int $port, string $key): string
     {
@@ -205,10 +192,7 @@ class ListSites extends Workspace
     }
 
     /**
-     * Get data for a container
-     *
-     * @param  \SplFileInfo $file
-     * @return array|null
+     * Get data for a container.
      */
     protected function containerData(\SplFileInfo $file): ?array
     {
@@ -218,7 +202,7 @@ class ListSites extends Workspace
         }
 
         $envFile = new \SplFileObject($env, 'r');
-        $row     = ['container' => $file->getFilename()];
+        $row = ['container' => $file->getFilename()];
 
         // Extract data from env file
         foreach ($envFile as $line) {
@@ -239,26 +223,24 @@ class ListSites extends Workspace
         // Get containers grouped per site
         // Exclude app, data, & composer from docker YML
         // Add padding on both side for each container to have equal width columns
-        $containers                             = array_diff(array_keys($services['services']), ['app', 'data', 'composer']);
+        $containers = array_diff(array_keys($services['services']), ['app', 'data', 'composer']);
         $this->containers[$file->getFilename()] = $containers;
 
         return $row;
     }
 
     /**
-     * Output site details
-     *
-     * @param array $data
+     * Output site details.
      */
     protected function outputSite(array $data): void
     {
         // Container name & container filter argument
         $containerFilter = $this->argument('container');
-        $container       = !empty($data['container']) ? $data['container'] : '';
-        $showAll         = $this->option('all');
+        $container = !empty($data['container']) ? $data['container'] : '';
+        $showAll = $this->option('all');
 
         // Filter out output if we have container filter argument
-        if (!empty($containerFilter) && strpos($container, $containerFilter) === false) {
+        if (!empty($containerFilter) && mb_strpos($container, $containerFilter) === false) {
             return;
         }
 
@@ -309,16 +291,13 @@ class ListSites extends Workspace
     }
 
     /**
-     * Format metadata cells and return collection
-     *
-     * @param  array $data
-     * @return array
+     * Format metadata cells and return collection.
      */
     protected function formatMetadataCells(array $data): array
     {
         $cells = [];
         foreach ($data as $name => $value) {
-            $tag          = array_key_exists($value, static::$statusTag) ? static::$statusTag[$value] : static::$statusTag[static::STATUS_NA];
+            $tag = array_key_exists($value, static::$statusTag) ? static::$statusTag[$value] : static::$statusTag[static::STATUS_NA];
             $cells[$name] = str_pad(sprintf('<%s>%s %s</%s>', $tag[0], $value, $name, $tag[1]), 6, ' ', STR_PAD_RIGHT);
         }
 
@@ -326,9 +305,7 @@ class ListSites extends Workspace
     }
 
     /**
-     * Get table output
-     *
-     * @return Table
+     * Get table output.
      */
     protected function tableOutput(): Table
     {
@@ -341,9 +318,7 @@ class ListSites extends Workspace
     }
 
     /**
-     * Get collection of all unique containers
-     *
-     * @return array
+     * Get collection of all unique containers.
      */
     protected function uniqueContainers(): array
     {
@@ -359,9 +334,7 @@ class ListSites extends Workspace
     }
 
     /**
-     * Get YML file parser
-     *
-     * @return Parser
+     * Get YML file parser.
      */
     protected function ymlParser(): Parser
     {
@@ -383,9 +356,7 @@ class ListSites extends Workspace
     }
 
     /**
-     * Get command output for all active containers
-     *
-     * @return string
+     * Get command output for all active containers.
      */
     protected function activeContainers(): string
     {
@@ -395,11 +366,7 @@ class ListSites extends Workspace
     }
 
     /**
-     * Get collection of ports or add value to the collection
-     *
-     * @param  string $key
-     * @param  string $port
-     * @return array
+     * Get collection of ports or add value to the collection.
      */
     protected function ports(string $key = '', string $port = ''): array
     {
@@ -415,10 +382,8 @@ class ListSites extends Workspace
     }
 
     /**
-     * Helper method to get value from an internal cache
+     * Helper method to get value from an internal cache.
      *
-     * @param  string   $name
-     * @param  callable $fetch
      * @return mixed
      */
     protected function cache(string $name, callable $fetch)

@@ -14,14 +14,14 @@ use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
- * Frontend provide command to execute frontend tasks (ie. build assets, watch for assets changes)
+ * Frontend provide command to execute frontend tasks (ie. build assets, watch for assets changes).
  *
  * @author Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
  */
 class Frontend extends Workspace
 {
     /**
-     * Constants for acceptable commands
+     * Constants for acceptable commands.
      *
      * @var string
      */
@@ -29,11 +29,11 @@ class Frontend extends Workspace
     /**
      * @var string
      */
-    const CMD_BUILD   = 'build';
+    const CMD_BUILD = 'build';
     /**
      * @var string
      */
-    const CMD_WATCH   = 'watch';
+    const CMD_WATCH = 'watch';
 
     /**
      * @var string
@@ -47,20 +47,18 @@ class Frontend extends Workspace
      * @var array
      */
     protected $arguments = [
-        'name'    => [
-            'mode'        => InputArgument::REQUIRED,
+        'name' => [
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'execute' => [
-            'mode'        => InputArgument::REQUIRED,
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Command to execute inside the container',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */
@@ -79,9 +77,7 @@ class Frontend extends Workspace
     }
 
     /**
-     * Get command to execute in container
-     *
-     * @return string
+     * Get command to execute in container.
      */
     protected function command(): string
     {
@@ -90,8 +86,8 @@ class Frontend extends Workspace
         // Collection of acceptable commands
         $options = [
             static::CMD_INSTALL => 'install',
-            static::CMD_BUILD   => 'run dev',
-            static::CMD_WATCH   => 'run watch',
+            static::CMD_BUILD => 'run dev',
+            static::CMD_WATCH => 'run watch',
         ];
         // Check if command option value or fallback to build
         if (!array_key_exists($command, $options)) {

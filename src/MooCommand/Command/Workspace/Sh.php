@@ -32,24 +32,22 @@ class Sh extends Workspace
      * @var array
      */
     protected $arguments = [
-        'name'      => [
-            'mode'        => InputArgument::REQUIRED,
+        'name' => [
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'container' => [
-            'mode'        => InputArgument::REQUIRED,
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the container to execute command into',
         ],
         'execute' => [
-            'mode'        => InputArgument::REQUIRED,
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Command to execute inside the container',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */
@@ -59,7 +57,7 @@ class Sh extends Workspace
         $this->changeToSiteDirectory();
 
         // Ensure site name does not include "."
-        $siteName  = str_replace('.', '', $this->argument('name'));
+        $siteName = str_replace('.', '', $this->argument('name'));
         // Name of the container from command argument
         $container = $this->argument('container');
         // Convert name of the container to the name used by docker

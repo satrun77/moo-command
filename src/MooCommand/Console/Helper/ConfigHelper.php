@@ -29,8 +29,6 @@ class ConfigHelper extends Helper
 
     /**
      * Get the path to workspace. Defined in .moo.yml file.
-     *
-     * @return string
      */
     public function getWorkspace(): string
     {
@@ -39,13 +37,11 @@ class ConfigHelper extends Helper
 
     /**
      * Get site directory name from the current path.
-     *
-     * @return string
      */
     public function getCurrentSiteName(): string
     {
         // Current path & convert into an array
-        $path     = realpath(trim($this->getShellHelper()->exec('pwd')->getOutput()));
+        $path = realpath(trim($this->getShellHelper()->exec('pwd')->getOutput()));
         $segments = explode('/', $path);
         // Workspace path without trailing "/"
         $workspace = trim($this->getWorkspace(), '/');
@@ -54,7 +50,7 @@ class ConfigHelper extends Helper
         // then the previous item is the site name
         $siteName = end($segments);
         do {
-            $path         = trim(dirname($path), '/');
+            $path = trim(dirname($path), '/');
             $pathNotFound = $workspace === $path;
         } while (!$pathNotFound && $siteName = prev($segments));
 
@@ -63,8 +59,6 @@ class ConfigHelper extends Helper
 
     /**
      * Get the docker site root path.
-     *
-     * @param string $name
      *
      * @return string
      */
@@ -81,18 +75,14 @@ class ConfigHelper extends Helper
 
     /**
      * Copy files or directory from the resource directory in this application.
-     *
-     * @param string $source
-     * @param string $destination
-     * @param array  $excludeData
      */
     public function copyResource(string $source, string $destination, array $excludeData = []): void
     {
         $directory = __APP_DIR__ . '/resources/' . $source;
         // Collection of dot files that should be converted to correct name
         $dotFiles = [
-            'gitkeep'      => '.gitkeep',
-            'site/env'     => 'site/.env',
+            'gitkeep' => '.gitkeep',
+            'site/env' => 'site/.env',
             'dockerignore' => '.dockerignore',
         ];
 
@@ -104,8 +94,8 @@ class ConfigHelper extends Helper
         foreach ($iterator as $file) {
             /** @var SplFileInfo $file */
             $relativePath = str_replace($directory, '', $file->getPath());
-            $fileName     = strtr($iterator->getSubPathName(), $dotFiles);
-            $filePath     = $destination . DIRECTORY_SEPARATOR . $fileName;
+            $fileName = strtr($iterator->getSubPathName(), $dotFiles);
+            $filePath = $destination . DIRECTORY_SEPARATOR . $fileName;
 
             // Ignore MAC .DS_Store
             if ($file->getFilename() === '.DS_Store') {
@@ -139,8 +129,6 @@ class ConfigHelper extends Helper
     /**
      * Load YML resource. Stored in the resources directory in this application.
      *
-     * @param string $filename
-     *
      * @return mixed
      */
     public function getResource(string $filename)
@@ -151,14 +139,47 @@ class ConfigHelper extends Helper
     }
 
     /**
-     * Get path to user config file.
+     * Get a value from the .moo.yml file.
      *
-     * @return string
+     * @return array|mixed|null
+     */
+    public function getConfig(string $name)
+    {
+        $this->loadConfig();
+
+        if (array_key_exists($name, $this->config)) {
+            return $this->config[$name];
+        }
+
+        $array = $this->config;
+        foreach (explode('.', $name) as $segment) {
+            if (array_key_exists($segment, $array)) {
+                $array = $array[$segment];
+            } else {
+                return;
+            }
+        }
+
+        return $array;
+    }
+
+    /**
+     * Returns the canonical name of this helper.
+     *
+     * @return string The canonical name
+     */
+    public function getName(): string
+    {
+        return 'config';
+    }
+
+    /**
+     * Get path to user config file.
      */
     protected function getUserConfigFilePath(): string
     {
         $username = $this->getShellHelper()->exec('whoami');
-        $path     = '/Users/' . trim($username->getOutput()) . '/.moo.yml';
+        $path = '/Users/' . trim($username->getOutput()) . '/.moo.yml';
         $this->getCommand()->debug('User config: ' . $path);
 
         return $path;
@@ -166,8 +187,6 @@ class ConfigHelper extends Helper
 
     /**
      * Get path to core config file.
-     *
-     * @return string
      */
     protected function getCoreConfigFilePath(): string
     {
@@ -176,8 +195,6 @@ class ConfigHelper extends Helper
 
     /**
      * Load and merge configuration files.
-     *
-     * @return void
      */
     protected function loadConfig(): void
     {
@@ -194,8 +211,6 @@ class ConfigHelper extends Helper
 
     /**
      * Load core config to override user configs from .moo.yml.
-     *
-     * @return void
      */
     protected function loadCoreConfigIfNeeded(): void
     {
@@ -219,43 +234,6 @@ class ConfigHelper extends Helper
     }
 
     /**
-     * Get a value from the .moo.yml file.
-     *
-     * @param string $name
-     *
-     * @return array|mixed|null
-     */
-    public function getConfig(string $name)
-    {
-        $this->loadConfig();
-
-        if (array_key_exists($name, $this->config)) {
-            return $this->config[$name];
-        }
-
-        $array = $this->config;
-        foreach (explode('.', $name) as $segment) {
-            if (array_key_exists($segment, $array)) {
-                $array = $array[$segment];
-            } else {
-                return null;
-            }
-        }
-
-        return $array;
-    }
-
-    /**
-     * Returns the canonical name of this helper.
-     *
-     * @return string The canonical name
-     */
-    public function getName(): string
-    {
-        return 'config';
-    }
-
-    /**
      * Get instance of the shell helper.
      *
      * @return ShellHelper
@@ -267,8 +245,6 @@ class ConfigHelper extends Helper
 
     /**
      * Get instance of the current command line class.
-     *
-     * @return Command
      */
     protected function getCommand(): Command
     {

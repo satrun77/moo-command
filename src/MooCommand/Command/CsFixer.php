@@ -39,7 +39,7 @@ class CsFixer extends Command
      */
     protected $arguments = [
         'paths' => [
-            'mode'        => InputArgument::IS_ARRAY,
+            'mode' => InputArgument::IS_ARRAY,
             'description' => 'List of relative paths.',
         ],
     ];
@@ -48,29 +48,27 @@ class CsFixer extends Command
      */
     protected $options = [
         'dry' => [
-            'mode'        => InputOption::VALUE_OPTIONAL,
+            'mode' => InputOption::VALUE_OPTIONAL,
             'description' => 'Displays the files that need to be fixed but without modifying them.',
-            'default'     => false,
-            'shortcut'    => 'd',
+            'default' => false,
+            'shortcut' => 'd',
         ],
         'risky' => [
-            'mode'        => InputOption::VALUE_OPTIONAL,
+            'mode' => InputOption::VALUE_OPTIONAL,
             'description' => 'Allows you to set whether risky rules may run.',
-            'default'     => false,
-            'shortcut'    => 'r',
+            'default' => false,
+            'shortcut' => 'r',
         ],
         'update' => [
-            'mode'        => InputOption::VALUE_OPTIONAL,
+            'mode' => InputOption::VALUE_OPTIONAL,
             'description' => 'Update php-cs-fixer',
-            'default'     => false,
-            'shortcut'    => 'u',
+            'default' => false,
+            'shortcut' => 'u',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */
@@ -94,7 +92,7 @@ class CsFixer extends Command
 
         // Check the version of CS fixer - support 2.x
         $version = $this->getShellHelper()->exec('php-cs-fixer --version')->getOutput();
-        if (false === strpos(trim($version), '2.')) {
+        if (false === mb_strpos(trim($version), '2.')) {
             $this->getOutputStyle()->error('This command require CS Fixer version 2.x');
 
             return;
@@ -106,8 +104,8 @@ class CsFixer extends Command
 
             // Define php-cs-fixer options
             $verbose = $this->option('verbose') !== false ? '--verbose' : '';
-            $risky   = $this->option('risky') !== false ? '--allow-risky=yes' : '';
-            $dryrun  = $this->option('dry') !== false ? '--dry-run' : '';
+            $risky = $this->option('risky') !== false ? '--allow-risky=yes' : '';
+            $dryrun = $this->option('dry') !== false ? '--dry-run' : '';
 
             // Execute and display progress
             if (file_exists($path)) {
@@ -121,8 +119,6 @@ class CsFixer extends Command
 
     /**
      * Returns a list fixes to apply.
-     *
-     * @return string
      */
     protected function getFixes(): string
     {

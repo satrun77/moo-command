@@ -33,15 +33,13 @@ class Create extends Workspace
      */
     protected $arguments = [
         'name' => [
-            'mode'        => InputArgument::REQUIRED,
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */
@@ -62,9 +60,7 @@ class Create extends Workspace
     }
 
     /**
-     * Get site name used by docker
-     *
-     * @return string
+     * Get site name used by docker.
      */
     protected function getSiteName(): string
     {
@@ -72,9 +68,7 @@ class Create extends Workspace
     }
 
     /**
-     * Get absolute path to new site
-     *
-     * @return string
+     * Get absolute path to new site.
      */
     protected function getSitePath(): string
     {
@@ -82,9 +76,7 @@ class Create extends Workspace
     }
 
     /**
-     * Get collection of docker templates from a remote repository
-     *
-     * @return array
+     * Get collection of docker templates from a remote repository.
      */
     protected function getDockerTemplates(): array
     {
@@ -104,9 +96,7 @@ class Create extends Workspace
     }
 
     /**
-     * Start building site based on docker templates from a remote repository
-     *
-     * @param array $branches
+     * Start building site based on docker templates from a remote repository.
      */
     protected function buildFromTemplateDocker(array $branches): void
     {
@@ -128,7 +118,7 @@ class Create extends Workspace
     }
 
     /**
-     * Start building site based on default build
+     * Start building site based on default build.
      */
     protected function buildFromDefaultDocker(): void
     {
@@ -162,30 +152,30 @@ class Create extends Workspace
         $phpImage = 'mo_php' . ($phpVersion !== key($this->phpVersions) ? str_replace('.', '', $phpVersion) : '');
         // Collection of used hosts ports by other environments
         $usedPorts = $this->getWebEnvData();
-        $usedPorts = empty($usedPorts)? [1000] : $usedPorts;
+        $usedPorts = empty($usedPorts) ? [1000] : $usedPorts;
         // Collection of used solr ports by other environments
         $usedSolrPorts = $this->getWebEnvData('SOLR_PORT');
-        $usedSolrPorts = empty($usedSolrPorts)? [9000] : $usedSolrPorts;
+        $usedSolrPorts = empty($usedSolrPorts) ? [9000] : $usedSolrPorts;
         // Collection of used solr ports by other environments
         $usedMysqlPorts = $this->getWebEnvData('MYSQL_PORT');
-        $usedMysqlPorts = empty($usedMysqlPorts)? [3000] : $usedMysqlPorts;
+        $usedMysqlPorts = empty($usedMysqlPorts) ? [3000] : $usedMysqlPorts;
 
         // Copy container files
         $this->getConfigHelper()->copyResource('docker/' . $template, $sitePath);
 
         // Update other placeholders such as, PHP version to use, values in web.env file, or docker-sync settings
         $this->updatePlaceholders($sitePath, [
-            '{{php}}'         => $phpVersion,
-            '{{php_image}}'   => $phpImage,
-            '{{host}}'        => $this->argument('name'),
-            '{{host_port}}'   => max($usedPorts) + 1,
-            '{{solr_port}}'   => max($usedSolrPorts) + 1,
-            '{{mysql_port}}'  => max($usedMysqlPorts) + 1,
+            '{{php}}' => $phpVersion,
+            '{{php_image}}' => $phpImage,
+            '{{host}}' => $this->argument('name'),
+            '{{host_port}}' => max($usedPorts) + 1,
+            '{{solr_port}}' => max($usedSolrPorts) + 1,
+            '{{mysql_port}}' => max($usedMysqlPorts) + 1,
             '{{volume-name}}' => $siteName . '_dockersync_1',
-            '{{root_path}}'   => $sitePath,
-            '{{name}}'        => $siteName,
-            '{{work_dir}}'    => !empty($workDirectory) ? $this->workDirectories[$workDirectory] : current($this->workDirectories),
-            '{{theme_dir}}'   => !empty($themeDirectory) ? $themeDirectory : '',
+            '{{root_path}}' => $sitePath,
+            '{{name}}' => $siteName,
+            '{{work_dir}}' => !empty($workDirectory) ? $this->workDirectories[$workDirectory] : current($this->workDirectories),
+            '{{theme_dir}}' => !empty($themeDirectory) ? $themeDirectory : '',
         ]);
 
         // Custom setup for PHP 7.3
@@ -199,7 +189,7 @@ class Create extends Workspace
 
     /**
      * Final steps.
-     * Display confirmation message and option to start the new site
+     * Display confirmation message and option to start the new site.
      *
      * @throws \Exception
      */
@@ -238,11 +228,6 @@ class Create extends Workspace
 
     /**
      * Update any placeholders within the docker files.
-     *
-     * @param string $directory
-     * @param array  $placeholders
-     *
-     * @return void
      */
     protected function updatePlaceholders(string $directory, array $placeholders = []): void
     {
@@ -262,9 +247,6 @@ class Create extends Workspace
 
     /**
      * Update the content of a file by replacing a placeholders with their values.
-     *
-     * @param string $filePath
-     * @param array  $changes
      */
     protected function updateFileContent(string $filePath, array $changes): void
     {

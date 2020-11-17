@@ -39,7 +39,7 @@ class CodeQuality extends Command
      */
     protected $arguments = [
         'paths' => [
-            'mode'        => InputArgument::IS_ARRAY,
+            'mode' => InputArgument::IS_ARRAY,
             'description' => 'List of relative paths.',
         ],
     ];
@@ -48,35 +48,35 @@ class CodeQuality extends Command
      * @var array
      */
     protected $options = [
-        'mess'      => [
-            'shortcut'    => 'm',
-            'mode'        => InputOption::VALUE_NONE,
+        'mess' => [
+            'shortcut' => 'm',
+            'mode' => InputOption::VALUE_NONE,
             'description' => 'Mess Detector Analyses',
-            'default'     => null,
+            'default' => null,
         ],
         'copypaste' => [
-            'shortcut'    => 'c',
-            'mode'        => InputOption::VALUE_NONE,
+            'shortcut' => 'c',
+            'mode' => InputOption::VALUE_NONE,
             'description' => 'Copy/Paste Detector Analyses',
-            'default'     => null,
+            'default' => null,
         ],
-        'lint'      => [
-            'shortcut'    => 'l',
-            'mode'        => InputOption::VALUE_NONE,
+        'lint' => [
+            'shortcut' => 'l',
+            'mode' => InputOption::VALUE_NONE,
             'description' => 'PHP Parallel Lint Analyses',
-            'default'     => null,
+            'default' => null,
         ],
-        'security'  => [
-            'shortcut'    => 's',
-            'mode'        => InputOption::VALUE_NONE,
+        'security' => [
+            'shortcut' => 's',
+            'mode' => InputOption::VALUE_NONE,
             'description' => 'Security Advisories Checker Analyses',
-            'default'     => null,
+            'default' => null,
         ],
-        'phpstan'   => [
-            'shortcut'    => 'p',
-            'mode'        => InputOption::VALUE_NONE,
+        'phpstan' => [
+            'shortcut' => 'p',
+            'mode' => InputOption::VALUE_NONE,
             'description' => 'PHP Static Analysis Tool',
-            'default'     => null,
+            'default' => null,
         ],
     ];
 
@@ -84,32 +84,30 @@ class CodeQuality extends Command
      * @var array
      */
     protected $analyses = [
-        'mess'      => [
+        'mess' => [
             'callback' => 'analyseMessDetector',
-            'title'    => 'Mess Detector',
+            'title' => 'Mess Detector',
         ],
         'copypaste' => [
             'callback' => 'analyseCopyPasteDetector',
-            'title'    => 'Copy/Paste Detector',
+            'title' => 'Copy/Paste Detector',
         ],
-        'lint'      => [
+        'lint' => [
             'callback' => 'analyseLintChecker',
-            'title'    => 'PHP Parallel Lint',
+            'title' => 'PHP Parallel Lint',
         ],
-        'security'  => [
+        'security' => [
             'callback' => 'analyseSecurityChecker',
-            'title'    => 'Security Advisories Checker',
+            'title' => 'Security Advisories Checker',
         ],
-        'phpstan'   => [
+        'phpstan' => [
             'callback' => 'analyseStaticCodeChecker',
-            'title'    => 'PHP Static Analysis Tool',
+            'title' => 'PHP Static Analysis Tool',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */
@@ -139,10 +137,6 @@ class CodeQuality extends Command
 
     /**
      * Analyse a path for code quality.
-     *
-     * @param array $paths
-     *
-     * @return void
      */
     protected function scanFiles(array $paths): void
     {
@@ -164,7 +158,7 @@ class CodeQuality extends Command
             extract($analyse, EXTR_OVERWRITE);
 
             // Is it composer.lock file
-            $isComposerLock  = strpos($path, 'composer.lock');
+            $isComposerLock = mb_strpos($path, 'composer.lock');
             $hasComposerLock = file_exists(rtrim($path, '/') . '/composer.lock');
 
             // Skip analyseSecurityChecker if path is not for composer.lock
@@ -190,10 +184,9 @@ class CodeQuality extends Command
     }
 
     /**
-     * Whether we have all options or none
+     * Whether we have all options or none.
      *
-     * @param  mixed ...$options
-     * @return bool
+     * @param mixed ...$options
      */
     protected function hasOptionsAllOrNone(...$options): bool
     {
@@ -208,8 +201,6 @@ class CodeQuality extends Command
 
     /**
      * Execute Mess detector on a path.
-     *
-     * @param string $path
      */
     protected function analyseMessDetector(string $path): void
     {
@@ -228,10 +219,10 @@ class CodeQuality extends Command
 
         $rows = [];
         foreach ($xml->file as $file) {
-            $filePath  = (string) $file->attributes()['name'];
+            $filePath = (string) $file->attributes()['name'];
             $beginLine = (string) $file->violation->attributes()['beginline'];
-            $endLine   = (string) $file->violation->attributes()['endline'];
-            $message   = trim((string) $file->violation);
+            $endLine = (string) $file->violation->attributes()['endline'];
+            $message = trim((string) $file->violation);
 
             $rows[] = [$beginLine, $endLine, $filePath, $message];
         }
@@ -243,8 +234,6 @@ class CodeQuality extends Command
 
     /**
      * Execute Copy/Paste detector on a path.
-     *
-     * @param string $path
      */
     protected function analyseCopyPasteDetector(string $path): void
     {
@@ -256,8 +245,6 @@ class CodeQuality extends Command
 
     /**
      * Execute security checker on composer.lock file.
-     *
-     * @param string $path
      */
     protected function analyseSecurityChecker(string $path): void
     {
@@ -269,7 +256,7 @@ class CodeQuality extends Command
         }
 
         // If composer.lock is in the root level of the directory $path
-        if (false === strpos($path, 'composer.lock')) {
+        if (false === mb_strpos($path, 'composer.lock')) {
             $path = rtrim($path, '/') . '/composer.lock';
         }
 
@@ -283,8 +270,6 @@ class CodeQuality extends Command
 
     /**
      * Execute PHP Parallel Lint on a path.
-     *
-     * @param string $path
      */
     protected function analyseLintChecker(string $path): void
     {
@@ -295,9 +280,7 @@ class CodeQuality extends Command
     }
 
     /**
-     * Execute PHP Static Analysis Tool
-     *
-     * @param string $path
+     * Execute PHP Static Analysis Tool.
      */
     protected function analyseStaticCodeChecker(string $path): void
     {
@@ -325,8 +308,8 @@ class CodeQuality extends Command
 
         // Collection of commands based on each code base - default collection and override defined in .moo.yml
         $commands = array_merge([
-            'default'      => '{site_root}vendor/bin/phpstan analyse {path} --level 1 --memory-limit=5000M --ansi',
-            'laravel'      => 'php artisan code:analyse --paths="{path}"',
+            'default' => '{site_root}vendor/bin/phpstan analyse {path} --level 1 --memory-limit=5000M --ansi',
+            'laravel' => 'php artisan code:analyse --paths="{path}"',
             'silverstripe' => '{site_root}vendor/bin/phpstan analyse {path} -c {site_root}phpstan.neon -a {site_root}vendor/symbiote/silverstripe-phpstan/bootstrap.php --level 1 --memory-limit=5000M --ansi',
         ], (array) $this->getConfigHelper()->getConfig('qcode.phpstan'));
 
@@ -339,7 +322,7 @@ class CodeQuality extends Command
 
         // Execute analyse command
         $this->getShellHelper()->execRealTime(strtr($commands[$codeBase], [
-            '{path}'      => $path,
+            '{path}' => $path,
             '{site_root}' => $siteRootPath,
         ]));
     }
@@ -405,9 +388,6 @@ class CodeQuality extends Command
 
     /**
      * Attempt to install a command in user machine if it does not exists.
-     *
-     * @param string $name
-     * @param string $url
      *
      * @throws CommandNotFoundException
      */

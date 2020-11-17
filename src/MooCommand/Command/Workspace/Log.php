@@ -32,20 +32,18 @@ class Log extends Workspace
      * @var array
      */
     protected $arguments = [
-        'name'      => [
-            'mode'        => InputArgument::REQUIRED,
+        'name' => [
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'container' => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode' => InputArgument::OPTIONAL,
             'description' => 'Name of the container to show its logs',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */

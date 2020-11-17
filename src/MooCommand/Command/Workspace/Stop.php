@@ -33,15 +33,13 @@ class Stop extends Workspace
      */
     protected $arguments = [
         'name' => [
-            'mode'        => InputArgument::REQUIRED,
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */

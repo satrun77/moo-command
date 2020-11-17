@@ -33,15 +33,13 @@ class Start extends Workspace
      */
     protected $arguments = [
         'name' => [
-            'mode'        => InputArgument::REQUIRED,
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */
@@ -56,9 +54,9 @@ class Start extends Workspace
         }
 
         // Success message
-        $protocol       = 'http://';
-        $ip             = $this->getMachineIp();
-        $port           = ':' . $this->getEnvFileValue('VIRTUAL_PORT');
+        $protocol = 'http://';
+        $ip = $this->getMachineIp();
+        $port = ':' . $this->getEnvFileValue('VIRTUAL_PORT');
         $successMessage = sprintf("The site started successfully.\nWebsite: %s%s%s", $protocol, $ip, $port);
         $this->getOutputStyle()->success($successMessage);
         $this->notify('Start environment ' . $this->getConfigHelper()->getCurrentSiteName(), $successMessage);

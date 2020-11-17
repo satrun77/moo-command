@@ -32,21 +32,19 @@ class Composer extends Workspace
      * @var array
      */
     protected $arguments = [
-        'name'     => [
-            'mode'        => InputArgument::REQUIRED,
+        'name' => [
+            'mode' => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'argument' => [
-            'mode'        => InputArgument::OPTIONAL,
+            'mode' => InputArgument::OPTIONAL,
             'description' => 'Argument to pass to composer command',
-            'default'     => 'install',
+            'default' => 'install',
         ],
     ];
 
     /**
      * Main method to execute the command script.
-     *
-     * @return void
      *
      * @throws \Exception
      */

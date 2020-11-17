@@ -31,8 +31,6 @@ class MachineIp extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @return void
-     *
      * @throws \Exception
      */
     protected function fire(): void

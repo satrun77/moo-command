@@ -25,24 +25,18 @@ class ShellHelper extends Helper
     /**
      * Execute a command from the current application.
      *
-     * @param string $name
-     * @param array  $args
-     *
-     * @return int
      * @throws \Exception
      */
     public function execApplicationCommand(string $name, array $args = []): int
     {
         $command = $this->getCommand()->getApplication()->find($name);
-        $input   = new ArrayInput($args);
+        $input = new ArrayInput($args);
 
         return $command->run($input, $this->getCommand()->getOutput());
     }
 
     /**
      * Whether or not a command line installed in user machine.
-     *
-     * @param string $name
      *
      * @return mixed
      */
@@ -55,8 +49,6 @@ class ShellHelper extends Helper
      * Execute a shell command.
      *
      * @param string ...$params
-     *
-     * @return Process
      */
     public function exec(...$params): Process
     {
@@ -79,13 +71,11 @@ class ShellHelper extends Helper
      * Execute a shell command with real time output.
      *
      * @param string ...$params
-     *
-     * @return bool
      */
     public function execRealTime(...$params): bool
     {
         $command = $this->sprintf(...$params);
-        $return  = 0;
+        $return = 0;
         $this->getCommand()->debug('Command executed: ' . $command);
 
         $this->getCommand()->getOutputStyle()->block('Start process...', null, 'bg=cyan;fg=black');
@@ -96,9 +86,17 @@ class ShellHelper extends Helper
     }
 
     /**
-     * @param $args
+     * Returns the canonical name of this helper.
      *
-     * @return string
+     * @return string The canonical name
+     */
+    public function getName(): string
+    {
+        return 'shell';
+    }
+
+    /**
+     * @param $args
      */
     protected function sprintf(...$args): string
     {
@@ -107,16 +105,6 @@ class ShellHelper extends Helper
         }
 
         return $args[0];
-    }
-
-    /**
-     * Returns the canonical name of this helper.
-     *
-     * @return string The canonical name
-     */
-    public function getName(): string
-    {
-        return 'shell';
     }
 
     /**
@@ -131,8 +119,6 @@ class ShellHelper extends Helper
 
     /**
      * Get instance of the current command line class.
-     *
-     * @return Command
      */
     protected function getCommand(): Command
     {

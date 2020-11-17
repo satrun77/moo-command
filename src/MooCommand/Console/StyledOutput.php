@@ -29,15 +29,11 @@ class StyledOutput extends SymfonyStyle
      */
     protected $customStyles = [
         'success' => ['default', 'green', ['bold']],
-        'debug'   => ['yellow', 'black', ['bold']],
-        'info2'   => ['cyan', 'default'],
+        'debug' => ['yellow', 'black', ['bold']],
+        'info2' => ['cyan', 'default'],
         'warning' => ['black', 'yellow'],
     ];
 
-    /**
-     * @param InputInterface         $input
-     * @param Output\OutputInterface $output
-     */
     public function __construct(InputInterface $input, Output\OutputInterface $output)
     {
         parent::__construct($input, $output);
@@ -50,9 +46,6 @@ class StyledOutput extends SymfonyStyle
 
     /**
      * @param string|array $string
-     * @param int          $verbosity
-     *
-     * @return void
      */
     public function success($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -61,9 +54,6 @@ class StyledOutput extends SymfonyStyle
 
     /**
      * @param string|array $string
-     * @param int          $verbosity
-     *
-     * @return void
      */
     public function debug($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -72,11 +62,6 @@ class StyledOutput extends SymfonyStyle
 
     /**
      * Format input to textual table.
-     *
-     * @param array $headers
-     * @param array $rows
-     *
-     * @return void
      */
     public function table(array $headers, array $rows): void
     {
@@ -91,8 +76,6 @@ class StyledOutput extends SymfonyStyle
      * Write a string as information output.
      *
      * @param string|array $string
-     *
-     * @return void
      */
     public function info($string): void
     {
@@ -103,9 +86,6 @@ class StyledOutput extends SymfonyStyle
      * Write a string as comment output.
      *
      * @param string|array $string
-     * @param int          $verbosity
-     *
-     * @return void
      */
     public function comment($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -116,9 +96,6 @@ class StyledOutput extends SymfonyStyle
      * Write a string as question output.
      *
      * @param string|array $string
-     * @param int          $verbosity
-     *
-     * @return void
      */
     public function question($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -129,9 +106,6 @@ class StyledOutput extends SymfonyStyle
      * Write a string as error output.
      *
      * @param string|array $string
-     * @param int          $verbosity
-     *
-     * @return void
      */
     public function error($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -142,9 +116,6 @@ class StyledOutput extends SymfonyStyle
      * Write a string as warning output.
      *
      * @param string|array $string
-     * @param int          $verbosity
-     *
-     * @return void
      */
     public function warning($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -153,16 +124,13 @@ class StyledOutput extends SymfonyStyle
 
     /**
      * Draw a separator in the command output.
-     *
-     * @param string $character
-     * @param string $style
      */
     public function separator(string $character = '_', string $style = '')
     {
         $text = str_pad('', $this->outputMinWidth, $character);
 
         if ($style !== '') {
-            $text = "<$style>" . $text . "</$style>";
+            $text = "<{$style}>" . $text . "</{$style}>";
         }
 
         return $this->writeln($text);
@@ -173,10 +141,6 @@ class StyledOutput extends SymfonyStyle
      *
      * @param string|array $string
      * @param string       $style
-     * @param string       $label
-     * @param int          $verbosity
-     *
-     * @return void
      */
     public function line($string, string $style = null, string $label = '', int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -195,7 +159,7 @@ class StyledOutput extends SymfonyStyle
             return;
         }
 
-        if (false !== strpos($string, "\n")) {
+        if (false !== mb_strpos($string, "\n")) {
             // Split string into an array of lines & then print reach line, if the string contains \n
             $this->line(explode("\n", $string), $style, $label, $verbosity);
         } else {
@@ -206,12 +170,6 @@ class StyledOutput extends SymfonyStyle
 
     /**
      * Format string for console output.
-     *
-     * @param string      $string
-     * @param string|null $style
-     * @param string      $label
-     *
-     * @return string
      */
     public function formatLine(string $string, ?string $style = null, string $label = ''): string
     {
@@ -219,12 +177,12 @@ class StyledOutput extends SymfonyStyle
 
         // side padding
         $padding = 1;
-        $width   = $this->outputMinWidth - (strlen($label) + ($padding * 2));
+        $width = $this->outputMinWidth - (mb_strlen($label) + ($padding * 2));
         // Format output
-        $string = " $label" . str_pad($string, $width) . ' ';
+        $string = " {$label}" . str_pad($string, $width) . ' ';
 
         if ($style) {
-            return "<$style>" . $string . "</$style>";
+            return "<{$style}>" . $string . "</{$style}>";
         }
 
         return $string;
@@ -232,8 +190,6 @@ class StyledOutput extends SymfonyStyle
 
     /**
      * Returns the output width.
-     *
-     * @return int
      */
     public function getOutputMinWidth(): int
     {
@@ -241,23 +197,7 @@ class StyledOutput extends SymfonyStyle
     }
 
     /**
-     * Calculate the terminal width.
-     *
-     * @return int
-     */
-    private function getTerminalWidth(): int
-    {
-        $application = new Terminal();
-        $width       = $application->getWidth();
-
-        return $width ?: self::MAX_LINE_LENGTH;
-    }
-
-    /**
      * Create and load output formatter style.
-     *
-     * @param string $name
-     * @param array  $formatterStyle
      *
      * @return $this
      */
@@ -283,5 +223,16 @@ class StyledOutput extends SymfonyStyle
         }
 
         return $this;
+    }
+
+    /**
+     * Calculate the terminal width.
+     */
+    private function getTerminalWidth(): int
+    {
+        $application = new Terminal();
+        $width = $application->getWidth();
+
+        return $width ?: self::MAX_LINE_LENGTH;
     }
 }

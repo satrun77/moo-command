@@ -31,14 +31,12 @@ class Hosts extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @return void
-     *
      * @throws \Exception
      */
     protected function fire(): void
     {
-        $sites   = str_replace(',', ' ', implode(' ', $this->getWebEnvData('VIRTUAL_HOST')));
-        $ip      = $this->getMachineIp();
+        $sites = str_replace(',', ' ', implode(' ', $this->getWebEnvData('VIRTUAL_HOST')));
+        $ip = $this->getMachineIp();
         $domains = $ip . '    ' . $sites . ' # Moo workspace';
 
         $this->getShellHelper()->exec("sudo sed -i.bk '/# Moo workspace/d' /etc/hosts");
