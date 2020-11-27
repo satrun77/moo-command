@@ -15,7 +15,7 @@ then
     docker-sync clean && docker-sync start --foreground
 elif [ "$TYPE" = "stop" ]
 then
-    docker-compose down
+    docker-compose stop
 else
    docker-compose ${1:-up -d}
 fi
