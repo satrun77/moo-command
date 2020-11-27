@@ -32,16 +32,6 @@ services:
       - ./env/web.env
       - ./env/db.env
 
-  composer:
-    container_name: {{name}}_composer_1
-    image: mo_composer
-    build: ./composer/
-    volumes:
-      - {{volume-name}}:/var/www/html:nocopy
-      - ~/.composer:/var/www/composer:cached
-      - ~/.ssh:/root/.ssh:cached
-      - ~/.netrc:/root/.netrc:cached
-
   php:
     container_name: {{name}}_php_1
     build: ./php/
