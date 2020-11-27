@@ -1,0 +1,87 @@
+FROM php:7.4-fpm
+
+MAINTAINER Mohamed Alsharaf <mohamed.alsharaf@gmail.com>
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Fix stdin is not a tty
+RUN echo 'tty -s && mesg n' > /root/.profile
+
+# Add extra config
+RUN echo "alias ll='ls -lap --color=auto'\nexport TERM=xterm" >> ~/.bashrc
+RUN echo "[url \"git@github.com:\"]\n\tinsteadOf = https://github.com/" >> ~/.gitconfig
+
+# Install needed libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  autoconf \
+  libtidy-dev \
+  git-core \
+  build-essential \
+  apt-utils \
+  zlib1g-dev \
+  libzip-dev \
+  unzip \
+  zip \
+  libmagick++-dev \
+  libmagickwand-dev \
+  libpq-dev \
+  libfreetype6-dev \
+  libjpeg62-turbo-dev \
+  libpng-dev \
+  libonig-dev && \
+  apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
+# PHP extensions
+RUN docker-php-ext-configure gd --with-jpeg --with-freetype
+RUN docker-php-ext-install gd
+RUN docker-php-ext-install mysqli
+RUN docker-php-ext-configure intl
+RUN docker-php-ext-install intl
+RUN docker-php-ext-install tidy
+RUN docker-php-ext-install pdo
+RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install -j$(nproc) iconv
+
+# PHP configs
+COPY templates/php.ini /usr/local/etc/php/php.ini
+COPY templates/php-fpm.conf /usr/local/etc/
+
+# Tell PHP to log emails
+COPY templates/sendmail /var/www/sendmail
+RUN echo 'sendmail_path = /usr/local/bin/php /var/www/sendmail' > /usr/local/etc/php/conf.d/mailcatcher.ini
+RUN chmod +x /var/www/sendmail
+RUN if [ ! -d /var/www/mail ]; then mkdir /var/www/mail; fi
+
+COPY templates/permission /var/www/permission
+RUN chmod +x /var/www/permission
+
+# Copy composer from composer container
+ENV COMPOSER_ALLOW_SUPERUSER 1
+COPY --from=composer:1.10.17 /usr/bin/composer /usr/bin/composer
+
+# Shrink image
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Make sure the volume mount point is empty
+RUN rm -rf /var/www/html/*
+
+# To grant permissions to www-data
+RUN usermod -u 1000 www-data
+
+# Permissions
+RUN chown -R root:www-data /var/www/html
+RUN chmod u+rwx,g+rx,o+rx /var/www/html
+RUN find /var/www/html -type d -exec chmod u+rwx,g+rx,o+rx {} +
+RUN find /var/www/html -type f -exec chmod u+rw,g+rw,o+r {} +
+
+# Create a directory composer may use and ensure assets directory readable by apache
+RUN if [ ! -d /var/www/.composer ]; then mkdir /var/www/.composer; fi
+RUN chown -R www-data:www-data /var/www/.composer
+RUN if [ -d {{work_dir}}/public/assets ]; then chown -R www-data:www-data {{work_dir}}/public/assets; fi
+
+# Solr directory
+RUN if [ ! -d /var/www/solr ]; then mkdir /var/www/solr; fi
+RUN chown -R www-data:www-data /var/www/solr
+
+WORKDIR {{work_dir}}
