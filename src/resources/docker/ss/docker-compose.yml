@@ -63,18 +63,6 @@ services:
     volumes:
       - solrdata:/var/www/solr
 
-  front:
-    container_name: {{name}}_front_1
-    image: mo_front
-    build: ./front/
-    working_dir: /var/www/html/${THEME_DIR}
-    volumes:
-      - {{volume-name}}:/var/www/html:nocopy
-      - ~/.ssh:/root/.ssh:cached
-      - ~/.netrc:/root/.netrc:cached
-    env_file:
-      - ./env/web.env
-
 volumes:
     {{volume-name}}:
       external: true
