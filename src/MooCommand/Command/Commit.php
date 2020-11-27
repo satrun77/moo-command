@@ -156,13 +156,24 @@ class Commit extends Command
             return null;
         }
 
+        // Branch name
         $branchName = explode('/', $command->getOutput());
         $branchName = $branchName[1] ?? $branchName[0];
+
+        // If - can't be found in branch name skip
+        if (strpos($branchName, '-') === false) {
+            return null;
+        }
+
+        // Split branch name by the ticket separator
         $branchSegments = explode('-', $branchName);
 
+        // Ticket code
         $ticket = $branchSegments[0] ?? $branchSegments[0];
+        // Ticker number.
+        // If _ used to connect to ticket number then strip out that part
         if (!empty($branchSegments[1])) {
-            $ticket .= '-' . $branchSegments[1];
+            $ticket .= '-' . explode('_', $branchSegments[1])[0];
         }
 
         return $ticket;

@@ -131,7 +131,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
                 $format = str_replace('{' . $argument . '}', $argumentValue, $format);
             }
         } else {
-            $format = sprintf("%s\n\n%s", ucfirst($message), $details);
+            $format = sprintf("%s\n\n%s", trim($message), $details);
         }
 
         return [
@@ -159,7 +159,11 @@ class ImperativeMoodStyle implements CommitStyleInterface
     public function interactInputIssue(): string
     {
         $issueNumber = $this->command->findTicketFromBranch();
-        $this->command->getOutputStyle()->question('Enter your issue number: (default: ' . $issueNumber . ') ');
+        $question = 'Enter your issue number: ';
+        if (!empty($issueNumber)) {
+            $question .= '(default: ' . $issueNumber . ') ';
+        }
+        $this->command->getOutputStyle()->question($question);
 
         return (string) $this->command->validator('', 'Ticket', $issueNumber);
     }
@@ -187,7 +191,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
             throw new \InvalidArgumentException('Please try again');
         }
 
-        return $value;
+        return ucfirst($value);
     }
 
     /**
