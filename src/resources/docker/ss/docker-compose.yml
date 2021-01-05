@@ -26,8 +26,6 @@ services:
     image: mo_db
     ports:
       - "${MYSQL_PORT}:3306"
-    volumes:
-      - ./db/database:/var/lib/mysql:consistent
     env_file:
       - ./env/web.env
       - ./env/db.env
