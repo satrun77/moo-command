@@ -28,6 +28,7 @@ abstract class Workspace extends Command
     const PHP_71 = '7.1';
     const PHP_72 = '7.2';
     const PHP_73 = '7.3';
+    const PHP_74 = '7.4';
 
     /**
      * @var bool
@@ -75,6 +76,7 @@ abstract class Workspace extends Command
      * @var array
      */
     protected $phpVersions = [
+        self::PHP_74 => 'PHP 7.4',
         self::PHP_73 => 'PHP 7.3',
         self::PHP_72 => 'PHP 7.2',
         self::PHP_71 => 'PHP 7.1',
