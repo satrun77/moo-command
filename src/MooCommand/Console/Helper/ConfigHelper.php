@@ -156,7 +156,7 @@ class ConfigHelper extends Helper
             if (array_key_exists($segment, $array)) {
                 $array = $array[$segment];
             } else {
-                return;
+                return null;
             }
         }
 

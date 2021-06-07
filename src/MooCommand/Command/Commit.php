@@ -176,7 +176,7 @@ class Commit extends Command
             $ticket .= '-' . explode('_', $branchSegments[1])[0];
         }
 
-        return $ticket;
+        return trim($ticket);
     }
 
     /**
@@ -241,6 +241,7 @@ class Commit extends Command
         $command = $this->getShellHelper()->exec(...$commit);
         if (!$command->isSuccessful()) {
             $this->getOutputStyle()->error('Failed to commit!');
+            $this->getOutputStyle()->error($command->getErrorOutput());
 
             return;
         }

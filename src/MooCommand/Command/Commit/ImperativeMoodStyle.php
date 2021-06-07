@@ -128,7 +128,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
             $arguments = $this->getArguments();
             foreach ($arguments as $argument) {
                 $argumentValue = (string) $this->command->argument(mb_strtolower($argument));
-                $format = str_replace('{' . $argument . '}', $argumentValue, $format);
+                $format = trim(str_replace('{' . $argument . '}', $argumentValue, $format));
             }
         } else {
             $format = sprintf("%s\n\n%s", trim($message), $details);
