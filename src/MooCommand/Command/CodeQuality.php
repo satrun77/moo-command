@@ -78,6 +78,18 @@ class CodeQuality extends Command
             'description' => 'PHP Static Analysis Tool',
             'default' => null,
         ],
+        'dephpend' => [
+            'shortcut' => 'd',
+            'mode' => InputOption::VALUE_NONE,
+            'description' => 'dePHPend Tool',
+            'default' => null,
+        ],
+        'phpinsights' => [
+            'shortcut' => 'i',
+            'mode' => InputOption::VALUE_NONE,
+            'description' => 'PHP Insights Analysis Tool',
+            'default' => null,
+        ],
     ];
 
     /**
@@ -104,6 +116,14 @@ class CodeQuality extends Command
             'callback' => 'analyseStaticCodeChecker',
             'title' => 'PHP Static Analysis Tool',
         ],
+        'dephpend' => [
+            'callback' => 'analyseDephpendChecker',
+            'title' => 'dePHPend Tool',
+        ],
+        'phpinsights' => [
+            'callback' => 'analysePhpInsightsChecker',
+            'title' => 'PHP Insights Analysis Tool',
+        ],
     ];
 
     /**
@@ -129,6 +149,16 @@ class CodeQuality extends Command
         // Install PHP Parallel Lint if not exists
         if (!$this->getShellHelper()->isCommandInstall('parallel-lint')) {
             $this->installPhpLintDetector();
+        }
+
+        // Install PHP Parallel Lint if not exists
+        if (!$this->getShellHelper()->isCommandInstall('dephpend')) {
+            $this->installDephpendDetector();
+        }
+
+        // Install PHP Parallel Lint if not exists
+        if (!$this->getShellHelper()->isCommandInstall('phpinsights')) {
+            $this->installPhpInsightsDetector();
         }
 
         // Scan paths and display report
@@ -205,12 +235,12 @@ class CodeQuality extends Command
     protected function analyseMessDetector(string $path): void
     {
         $phpmd = $this->getShellHelper()->exec(
-            'phpmd %s xml cleancode, codesize, controversial, design, naming, unusedcode',
+            'phpmd %s ansi cleancode, codesize, controversial, design, naming, unusedcode',
             $path
         );
 
         try {
-            $xml = new \SimpleXMLElement((string) $phpmd->getOutput());
+            $xml = new \SimpleXMLElement((string)$phpmd->getOutput());
         } catch (\Exception $e) {
             $this->getOutputStyle()->error($e->getMessage());
 
@@ -219,10 +249,10 @@ class CodeQuality extends Command
 
         $rows = [];
         foreach ($xml->file as $file) {
-            $filePath = (string) $file->attributes()['name'];
-            $beginLine = (string) $file->violation->attributes()['beginline'];
-            $endLine = (string) $file->violation->attributes()['endline'];
-            $message = trim((string) $file->violation);
+            $filePath = (string)$file->attributes()['name'];
+            $beginLine = (string)$file->violation->attributes()['beginline'];
+            $endLine = (string)$file->violation->attributes()['endline'];
+            $message = trim((string)$file->violation);
 
             $rows[] = [$beginLine, $endLine, $filePath, $message];
         }
@@ -311,7 +341,7 @@ class CodeQuality extends Command
             'default' => '{site_root}vendor/bin/phpstan analyse {path} --level 1 --memory-limit=5000M --ansi',
             'laravel' => 'php artisan code:analyse --paths="{path}"',
             'silverstripe' => '{site_root}vendor/bin/phpstan analyse {path} -c {site_root}phpstan.neon -a {site_root}vendor/symbiote/silverstripe-phpstan/bootstrap.php --level 1 --memory-limit=5000M --ansi',
-        ], (array) $this->getConfigHelper()->getConfig('qcode.phpstan'));
+        ], (array)$this->getConfigHelper()->getConfig('qcode.phpstan'));
 
         // Check if we have a command to execute based on code base
         if (empty($commands[$codeBase])) {
@@ -325,6 +355,29 @@ class CodeQuality extends Command
             '{path}' => $path,
             '{site_root}' => $siteRootPath,
         ]));
+    }
+
+    /**
+     * Execute dePHPend on a path.
+     */
+    protected function analyseDephpendChecker(string $path): void
+    {
+        $this->getShellHelper()->execRealTime(
+            'dephpend uml %s --keep-uml --output=%s.png --depth=3',
+            $path,
+            $this->getName()
+        );
+    }
+
+    /**
+     * Execute PHP Insights on a path.
+     */
+    protected function analysePhpInsightsChecker(string $path): void
+    {
+        $this->getShellHelper()->execRealTime(
+            '~/.composer/vendor/bin/phpinsights analyse %s',
+            $path
+        );
     }
 
     /**
@@ -384,6 +437,36 @@ class CodeQuality extends Command
         }
 
         $this->getOutputStyle()->info('php-parallel-lint installed globally.');
+    }
+
+    /**
+     * Install dePHPend from phar file
+     */
+    protected function installDephpendDetector(): void
+    {
+        $this->installCommandLine('dephpend', 'https://github.com/mihaeu/dephpend/releases/download/0.8.0/dephpend-0.8.0.phar');
+        $this->getOutputStyle()->info('dePHPend installed globally.');
+    }
+
+    /**
+     * Install PHP Insights using composer global
+     */
+    protected function installPhpInsightsDetector(): void
+    {
+        // Install composer if not exists
+        if (!$this->getShellHelper()->isCommandInstall('composer')) {
+            $this->installComposer();
+        }
+
+        // Download PHP Insights
+        $command = $this->getShellHelper()->exec('composer global require --dev nunomaduro/phpinsights');
+        if (!$command->isSuccessful()) {
+            $this->getOutputStyle()->error('Unable to make install nunomaduro/phpinsights globally.');
+
+            return;
+        }
+
+        $this->getOutputStyle()->info('PHP insights installed globally.');
     }
 
     /**
