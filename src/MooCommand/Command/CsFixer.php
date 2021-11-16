@@ -22,6 +22,8 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class CsFixer extends Command
 {
+    protected const PHP_FIXER_VERSION = '3.';
+
     /**
      * @var bool
      */
@@ -90,10 +92,10 @@ class CsFixer extends Command
             $this->installCsFixer();
         }
 
-        // Check the version of CS fixer - support 2.x
+        // Check the version of CS fixer - support 3.x
         $version = $this->getShellHelper()->exec('php-cs-fixer --version')->getOutput();
-        if (false === mb_strpos(trim($version), '2.')) {
-            $this->getOutputStyle()->error('This command require CS Fixer version 2.x');
+        if (false === mb_strpos(trim($version), static::PHP_FIXER_VERSION)) {
+            $this->getOutputStyle()->error(sprintf('This command require CS Fixer version %sx', static::PHP_FIXER_VERSION));
 
             return;
         }

@@ -12,22 +12,35 @@ qcode:
 csfixes:
   "@PSR2": true
   "@PSR1": true
+  "@PSR12": true
   "@Symfony": true
-  "align_multiline_comment": true
-  "array_indentation": true
+  "@PhpCsFixer": true
+  "php_unit_test_class_requires_covers": false
   "array_syntax":
     "syntax": "short"
+  "ordered_imports":
+    "sort_algorithm": "alpha"
+  "phpdoc_to_comment": true
+  "concat_space":
+    "spacing": "one"
+  "protected_to_private": false
+  "linebreak_after_opening_tag": true
+  "yoda_style": false
+  "global_namespace_import":
+    "import_classes": true
+    "import_constants": null
+    "import_functions": null
+  "binary_operator_spaces":
+    "default": "align"
+  "align_multiline_comment": true
+  "array_indentation": true
   "combine_consecutive_issets": true
   "combine_consecutive_unsets": true
   "compact_nullable_typehint": true
-  "concat_space":
-    "spacing": "one"
   "explicit_indirect_variable": true
   "explicit_string_variable": true
-  "final_static_access": true
   "fully_qualified_strict_types": true
   "heredoc_to_nowdoc": true
-  "linebreak_after_opening_tag": true
   "list_syntax":
     "syntax": "short"
   "method_chaining_indentation": true
@@ -47,7 +60,5 @@ csfixes:
   "simplified_null_return": true
   "no_trailing_comma_in_list_call": false
   "phpdoc_add_missing_param_annotation": true
-  "protected_to_private": false
-  "yoda_style": false
   "mb_str_functions": true
   "no_superfluous_phpdoc_tags": false
