@@ -11,6 +11,7 @@
 
 namespace MooCommand\Console;
 
+use Exception;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use MooCommand\Console\Helper\ConfigHelper;
@@ -29,12 +30,14 @@ abstract class Command extends SymfonyCommand
      * @var bool
      */
     protected $runRoot = true;
+
     /**
      * The input interface implementation.
      *
      * @var InputInterface
      */
     protected $input;
+
     /**
      * The output interface implementation.
      *
@@ -77,15 +80,10 @@ abstract class Command extends SymfonyCommand
      */
     protected $options = [];
 
-    public function getQuestionHelper(): QuestionHelper
-    {
-        return $this->getHelper('moo_question');
-    }
-
     /**
      * Get the value of a command argument.
      *
-     * @return string|string[]|null
+     * @return null|string|string[]
      */
     public function argument(string $key)
     {
@@ -95,7 +93,7 @@ abstract class Command extends SymfonyCommand
     /**
      * Get the value of a command option.
      *
-     * @return string|string[]|bool|null
+     * @return null|bool|string|string[]
      */
     public function option(string $key)
     {
@@ -134,17 +132,17 @@ abstract class Command extends SymfonyCommand
     /**
      * Run the console command.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function run(InputInterface $input, OutputInterface $output): int
     {
         global $argv;
 
-        $this->input = $input;
+        $this->input  = $input;
         $this->output = $output;
 
         // Pass this command to the helper set
-        $this->getHelperSet()->setCommand($this);
+//        $this->getHelperSet()->setCommand($this);
 
         // Default $stdErr variable to output
         $this->errorOutput = $this->getOutput();
@@ -155,14 +153,14 @@ abstract class Command extends SymfonyCommand
         }
 
         if ($this->runRoot && 0 !== posix_getuid()) {
-            throw new \Exception("Execute the moo command with sudo\nsudo " . implode(' ', $argv));
+            throw new Exception("Execute the moo command with sudo\nsudo " . implode(' ', $argv));
         }
 
         return parent::run($input, $output);
     }
 
     /**
-     * @param string|array $message
+     * @param array|string $message
      */
     public function debug($message): void
     {
@@ -191,10 +189,10 @@ abstract class Command extends SymfonyCommand
 
         foreach ($this->options as $name => $option) {
             $option = array_merge([
-                'shortcut' => null,
-                'mode' => InputOption::VALUE_NONE,
+                'shortcut'    => null,
+                'mode'        => InputOption::VALUE_NONE,
                 'description' => '',
-                'default' => null,
+                'default'     => null,
             ], $option);
             $this->addOption($name, $option['shortcut'], $option['mode'], $option['description'], $option['default']);
         }
@@ -202,12 +200,26 @@ abstract class Command extends SymfonyCommand
 
     protected function getConfigHelper(): ConfigHelper
     {
-        return $this->getHelper('config');
+        $helper = $this->getHelper('config');
+        $helper->setCommand($this);
+
+        return $helper;
     }
 
     protected function getShellHelper(): ShellHelper
     {
-        return $this->getHelper('shell');
+        $helper = $this->getHelper('shell');
+        $helper->setCommand($this);
+
+        return $helper;
+    }
+
+    public function getQuestionHelper(): QuestionHelper
+    {
+        $helper = $this->getHelper('moo_question');
+        $helper->setCommand($this);
+
+        return $helper;
     }
 
     /**
@@ -217,7 +229,7 @@ abstract class Command extends SymfonyCommand
     {
         try {
             $this->fire();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->stdErrError($e->getMessage());
 
             return 1;

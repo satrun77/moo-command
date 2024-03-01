@@ -10,7 +10,9 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
+use RuntimeException;
 
 /**
  * Proxy.
@@ -23,6 +25,7 @@ class Proxy extends Workspace
      * @var string
      */
     protected $description = 'Build the proxy container if not exists or start the container.';
+
     /**
      * @var string
      */
@@ -31,7 +34,7 @@ class Proxy extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -63,7 +66,7 @@ You can start container by executing the same command.';
     /**
      * Start the proxy container in the workspace.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function startProxyContainer(string $proxy): void
     {
@@ -76,7 +79,7 @@ You can start container by executing the same command.';
         // Start docker proxy container
         $command = $this->getShellHelper()->execRealTime('./start');
         if (!$command) {
-            throw new \RuntimeException("Can't start docker proxy container");
+            throw new RuntimeException("Can't start docker proxy container");
         }
 
         // Debug and success messages

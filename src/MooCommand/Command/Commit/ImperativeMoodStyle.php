@@ -11,6 +11,7 @@
 
 namespace MooCommand\Command\Commit;
 
+use InvalidArgumentException;
 use MooCommand\Command\Commit;
 
 /**
@@ -25,8 +26,8 @@ class ImperativeMoodStyle implements CommitStyleInterface
      */
     protected $shortcutMessages = [
         Commit::SHORTCUT_DEPENDENCIES => 'Update Composer dependencies',
-        Commit::SHORTCUT_GITIGNORE => 'Update .gitignore',
-        Commit::SHORTCUT_CSFIXES => 'Apply CS fixes',
+        Commit::SHORTCUT_GITIGNORE    => 'Update .gitignore',
+        Commit::SHORTCUT_CSFIXES      => 'Apply CS fixes',
     ];
 
     /**
@@ -134,8 +135,8 @@ class ImperativeMoodStyle implements CommitStyleInterface
                 } else {
                     $argumentValue = (string) $this->command->argument(mb_strtolower($argument));
                 }
-                $argumentValue = $argument === 'Issue'? strtoupper($argumentValue) . ': ' : trim($argumentValue);
-                $format = trim(str_replace('{' . $argument . '}', $argumentValue, $format));
+                $argumentValue = $argument === 'Issue' ? mb_strtoupper($argumentValue) . ': ' : trim($argumentValue);
+                $format        = trim(str_replace('{' . $argument . '}', $argumentValue, $format));
             }
         } else {
             $format = sprintf("%s\n\n%s", trim($message), $details);
@@ -166,7 +167,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
     public function interactInputIssue(): string
     {
         $issueNumber = $this->command->findTicketFromBranch();
-        $question = 'Enter your issue number: ';
+        $question    = 'Enter your issue number: ';
         if (!empty($issueNumber)) {
             $question .= '(default: ' . $issueNumber . ') ';
         }
@@ -184,6 +185,7 @@ class ImperativeMoodStyle implements CommitStyleInterface
         foreach ($this->types as $type) {
             if (0 === mb_stripos($value, $type . ' ')) {
                 $imperativeMood = true;
+
                 break;
             }
         }
@@ -195,7 +197,8 @@ class ImperativeMoodStyle implements CommitStyleInterface
                 'If applied, this commit will <fg=green;bg=red>' . $value . '</fg=green;bg=red>',
             ]);
             $this->command->getOutputStyle()->note('If you think you are correct, then ask the developer to fix it.');
-            throw new \InvalidArgumentException('Please try again');
+
+            throw new InvalidArgumentException('Please try again');
         }
 
         return ucfirst($value);

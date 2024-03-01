@@ -10,7 +10,9 @@
 
 namespace MooCommand\Command;
 
+use Exception;
 use MooCommand\Console\Command;
+use SimpleXMLElement;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,20 +28,23 @@ class CodeQuality extends Command
      * @var bool
      */
     protected $runRoot = false;
+
     /**
      * @var string
      */
     protected $description = 'Check source code using tool such as, Mess Detector, Copy/Paste Detector, PHP Parallel Lint, & Security Advisories.';
+
     /**
      * @var string
      */
     protected $signature = 'qcode';
+
     /**
      * @var array
      */
     protected $arguments = [
         'paths' => [
-            'mode' => InputArgument::IS_ARRAY,
+            'mode'        => InputArgument::IS_ARRAY,
             'description' => 'List of relative paths.',
         ],
     ];
@@ -49,46 +54,46 @@ class CodeQuality extends Command
      */
     protected $options = [
         'mess' => [
-            'shortcut' => 'm',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'm',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'Mess Detector Analyses',
-            'default' => null,
+            'default'     => null,
         ],
         'copypaste' => [
-            'shortcut' => 'c',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'c',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'Copy/Paste Detector Analyses',
-            'default' => null,
+            'default'     => null,
         ],
         'lint' => [
-            'shortcut' => 'l',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'l',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'PHP Parallel Lint Analyses',
-            'default' => null,
+            'default'     => null,
         ],
         'security' => [
-            'shortcut' => 's',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 's',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'Security Advisories Checker Analyses',
-            'default' => null,
+            'default'     => null,
         ],
         'phpstan' => [
-            'shortcut' => 'p',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'p',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'PHP Static Analysis Tool',
-            'default' => null,
+            'default'     => null,
         ],
         'dephpend' => [
-            'shortcut' => 'd',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'd',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'dePHPend Tool',
-            'default' => null,
+            'default'     => null,
         ],
         'phpinsights' => [
-            'shortcut' => 'i',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'i',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'PHP Insights Analysis Tool',
-            'default' => null,
+            'default'     => null,
         ],
     ];
 
@@ -98,38 +103,38 @@ class CodeQuality extends Command
     protected $analyses = [
         'mess' => [
             'callback' => 'analyseMessDetector',
-            'title' => 'Mess Detector',
+            'title'    => 'Mess Detector',
         ],
         'copypaste' => [
             'callback' => 'analyseCopyPasteDetector',
-            'title' => 'Copy/Paste Detector',
+            'title'    => 'Copy/Paste Detector',
         ],
         'lint' => [
             'callback' => 'analyseLintChecker',
-            'title' => 'PHP Parallel Lint',
+            'title'    => 'PHP Parallel Lint',
         ],
         'security' => [
             'callback' => 'analyseSecurityChecker',
-            'title' => 'Security Advisories Checker',
+            'title'    => 'Security Advisories Checker',
         ],
         'phpstan' => [
             'callback' => 'analyseStaticCodeChecker',
-            'title' => 'PHP Static Analysis Tool',
+            'title'    => 'PHP Static Analysis Tool',
         ],
         'dephpend' => [
             'callback' => 'analyseDephpendChecker',
-            'title' => 'dePHPend Tool',
+            'title'    => 'dePHPend Tool',
         ],
         'phpinsights' => [
             'callback' => 'analysePhpInsightsChecker',
-            'title' => 'PHP Insights Analysis Tool',
+            'title'    => 'PHP Insights Analysis Tool',
         ],
     ];
 
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -188,7 +193,7 @@ class CodeQuality extends Command
             extract($analyse, EXTR_OVERWRITE);
 
             // Is it composer.lock file
-            $isComposerLock = mb_strpos($path, 'composer.lock');
+            $isComposerLock  = mb_strpos($path, 'composer.lock');
             $hasComposerLock = file_exists(rtrim($path, '/') . '/composer.lock');
 
             // Skip analyseSecurityChecker if path is not for composer.lock
@@ -240,8 +245,8 @@ class CodeQuality extends Command
         );
 
         try {
-            $xml = new \SimpleXMLElement((string)$phpmd->getOutput());
-        } catch (\Exception $e) {
+            $xml = new SimpleXMLElement((string) $phpmd->getOutput());
+        } catch (Exception $e) {
             $this->getOutputStyle()->error($e->getMessage());
 
             return;
@@ -249,10 +254,10 @@ class CodeQuality extends Command
 
         $rows = [];
         foreach ($xml->file as $file) {
-            $filePath = (string)$file->attributes()['name'];
-            $beginLine = (string)$file->violation->attributes()['beginline'];
-            $endLine = (string)$file->violation->attributes()['endline'];
-            $message = trim((string)$file->violation);
+            $filePath  = (string) $file->attributes()['name'];
+            $beginLine = (string) $file->violation->attributes()['beginline'];
+            $endLine   = (string) $file->violation->attributes()['endline'];
+            $message   = trim((string) $file->violation);
 
             $rows[] = [$beginLine, $endLine, $filePath, $message];
         }
@@ -338,10 +343,10 @@ class CodeQuality extends Command
 
         // Collection of commands based on each code base - default collection and override defined in .moo.yml
         $commands = array_merge([
-            'default' => '{site_root}vendor/bin/phpstan analyse {path} --level 1 --memory-limit=5000M --ansi',
-            'laravel' => 'php artisan code:analyse --paths="{path}"',
+            'default'      => '{site_root}vendor/bin/phpstan analyse {path} --level 1 --memory-limit=5000M --ansi',
+            'laravel'      => 'php artisan code:analyse --paths="{path}"',
             'silverstripe' => '{site_root}vendor/bin/phpstan analyse {path} -c {site_root}phpstan.neon -a {site_root}vendor/symbiote/silverstripe-phpstan/bootstrap.php --level 1 --memory-limit=5000M --ansi',
-        ], (array)$this->getConfigHelper()->getConfig('qcode.phpstan'));
+        ], (array) $this->getConfigHelper()->getConfig('qcode.phpstan'));
 
         // Check if we have a command to execute based on code base
         if (empty($commands[$codeBase])) {
@@ -352,7 +357,7 @@ class CodeQuality extends Command
 
         // Execute analyse command
         $this->getShellHelper()->execRealTime(strtr($commands[$codeBase], [
-            '{path}' => $path,
+            '{path}'      => $path,
             '{site_root}' => $siteRootPath,
         ]));
     }
@@ -440,7 +445,7 @@ class CodeQuality extends Command
     }
 
     /**
-     * Install dePHPend from phar file
+     * Install dePHPend from phar file.
      */
     protected function installDephpendDetector(): void
     {
@@ -449,7 +454,7 @@ class CodeQuality extends Command
     }
 
     /**
-     * Install PHP Insights using composer global
+     * Install PHP Insights using composer global.
      */
     protected function installPhpInsightsDetector(): void
     {
@@ -502,7 +507,7 @@ class CodeQuality extends Command
         }
 
         // Install command globally
-        $globally = $this->getShellHelper()->exec('sudo mv %s /usr/local/bin/%s', $name, $name);
+        $globally = $this->getShellHelper()->exec('sudo mv %s /Users/mohamed/bin/%s', $name, $name);
         if (!$globally->isSuccessful()) {
             $this->getOutputStyle()->error('Unable to install ' . $name . ' globally');
         }

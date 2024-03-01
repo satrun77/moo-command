@@ -11,6 +11,7 @@
 
 namespace MooCommand\Console\Helper;
 
+use Exception;
 use MooCommand\Console\Command;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\HelperInterface;
@@ -22,15 +23,17 @@ use Symfony\Component\Process\Process;
  */
 class ShellHelper extends Helper
 {
+    use CommandTrait;
+
     /**
      * Execute a command from the current application.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function execApplicationCommand(string $name, array $args = []): int
     {
         $command = $this->getCommand()->getApplication()->find($name);
-        $input = new ArrayInput($args);
+        $input   = new ArrayInput($args);
 
         return $command->run($input, $this->getCommand()->getOutput());
     }
@@ -75,7 +78,7 @@ class ShellHelper extends Helper
     public function execRealTime(...$params): bool
     {
         $command = $this->sprintf(...$params);
-        $return = 0;
+        $return  = 0;
         $this->getCommand()->debug('Command executed: ' . $command);
 
         $this->getCommand()->getOutputStyle()->block('Start process...', null, 'bg=cyan;fg=black');
@@ -114,14 +117,9 @@ class ShellHelper extends Helper
      */
     protected function getShellHelper(): HelperInterface
     {
-        return $this->getHelperSet()->get('shell');
-    }
+        $helper = $this->getHelperSet()->get('shell');
+        $helper->setCommand($this->getCommand());
 
-    /**
-     * Get instance of the current command line class.
-     */
-    protected function getCommand(): Command
-    {
-        return $this->getHelperSet()->getCommand();
+        return $helper;
     }
 }

@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 use MooCommand\Console\Helper\ShellHelper;
 use MooCommand\Console\StyledOutput;
@@ -26,6 +27,7 @@ class Cleanup extends Workspace
      * @var string
      */
     protected $description = 'Execute specific commands to free up unwanted space such as, removing old containers, or dangling images.';
+
     /**
      * @var string
      */
@@ -36,10 +38,10 @@ class Cleanup extends Workspace
      */
     protected $options = [
         'network' => [
-            'shortcut' => 't',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 't',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'Option to remove stale networks.',
-            'default' => null,
+            'default'     => null,
         ],
     ];
 
@@ -51,40 +53,40 @@ class Cleanup extends Workspace
     protected $commands = [
         // Delete old containers that is weeks ago
         [
-            'title' => 'Delete old containers that is weeks ago',
+            'title'   => 'Delete old containers that is weeks ago',
             'command' => "docker ps -a | grep 'weeks ago' | awk '{print \$1}' | xargs docker rm",
-            'error' => 'Unable to delete old containers.',
+            'error'   => 'Unable to delete old containers.',
         ],
         // Delete old containers
         [
-            'title' => 'Delete old containers',
+            'title'   => 'Delete old containers',
             'command' => 'docker rm `docker ps --no-trunc -aq`',
-            'error' => 'Unable to delete old containers.',
+            'error'   => 'Unable to delete old containers.',
         ],
         // Delete dangling images
         [
-            'title' => 'Delete dangling images',
+            'title'   => 'Delete dangling images',
             'command' => 'docker rmi $(docker images -q -f dangling=true)',
-            'error' => 'Unable to delete dangling images.',
+            'error'   => 'Unable to delete dangling images.',
         ],
         // Delete dangling volumes
         [
-            'title' => 'Delete dangling volumes',
+            'title'   => 'Delete dangling volumes',
             'command' => 'docker volume rm $(docker volume ls -q -f dangling=true)',
-            'error' => 'Unable to delete dangling volumes.',
+            'error'   => 'Unable to delete dangling volumes.',
         ],
         // Delete stale networks
         [
-            'title' => 'Delete stale networks',
+            'title'   => 'Delete stale networks',
             'command' => 'removeStaleNetworks',
-            'option' => 'network',
+            'option'  => 'network',
         ],
     ];
 
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -93,7 +95,7 @@ class Cleanup extends Workspace
         chdir($workspace);
 
         // Shell & output helpers
-        $shell = $this->getShellHelper();
+        $shell  = $this->getShellHelper();
         $output = $this->getOutputStyle();
 
         // Execute clean up commands
@@ -139,7 +141,7 @@ class Cleanup extends Workspace
 
         // Execute command & display error if not successful
         $status = $shell->exec($shellCommand);
-        $error = $this->getCommandValue('error', $command);
+        $error  = $this->getCommandValue('error', $command);
         if (!$status->isSuccessful() && !empty($error)) {
             $output->error($error);
         }
@@ -156,7 +158,7 @@ class Cleanup extends Workspace
         }
 
         $skipNetworks = ['host', 'bridge', 'none', 'proxy_default'];
-        $networks = explode("\n", $networkCommand->getOutput());
+        $networks     = explode("\n", $networkCommand->getOutput());
         foreach ($networks as $network) {
             // Skip empty lines
             if (empty($network)) {

@@ -12,6 +12,8 @@
 namespace MooCommand\Console\Helper;
 
 use MooCommand\Console\Command;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SplFileInfo;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\HelperInterface;
@@ -22,10 +24,9 @@ use Symfony\Component\Yaml\Parser;
  */
 class ConfigHelper extends Helper
 {
-    /**
-     * @var array
-     */
-    protected $config;
+    use CommandTrait;
+
+    protected ?array $config = null;
 
     /**
      * Get the path to workspace. Defined in .moo.yml file.
@@ -41,7 +42,7 @@ class ConfigHelper extends Helper
     public function getCurrentSiteName(): string
     {
         // Current path & convert into an array
-        $path = realpath(trim($this->getShellHelper()->exec('pwd')->getOutput()));
+        $path     = realpath(trim($this->getShellHelper()->exec('pwd')->getOutput()));
         $segments = explode('/', $path);
         // Workspace path without trailing "/"
         $workspace = trim($this->getWorkspace(), '/');
@@ -50,7 +51,7 @@ class ConfigHelper extends Helper
         // then the previous item is the site name
         $siteName = end($segments);
         do {
-            $path = trim(dirname($path), '/');
+            $path         = trim(dirname($path), '/');
             $pathNotFound = $workspace === $path;
         } while (!$pathNotFound && $siteName = prev($segments));
 
@@ -81,21 +82,21 @@ class ConfigHelper extends Helper
         $directory = __APP_DIR__ . '/resources/' . $source;
         // Collection of dot files that should be converted to correct name
         $dotFiles = [
-            'gitkeep' => '.gitkeep',
-            'site/env' => 'site/.env',
+            'gitkeep'      => '.gitkeep',
+            'site/env'     => 'site/.env',
             'dockerignore' => '.dockerignore',
         ];
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
         );
 
         foreach ($iterator as $file) {
             /** @var SplFileInfo $file */
             $relativePath = str_replace($directory, '', $file->getPath());
-            $fileName = strtr($iterator->getSubPathName(), $dotFiles);
-            $filePath = $destination . DIRECTORY_SEPARATOR . $fileName;
+            $fileName     = strtr($iterator->getSubPathName(), $dotFiles);
+            $filePath     = $destination . DIRECTORY_SEPARATOR . $fileName;
 
             // Ignore MAC .DS_Store
             if ($file->getFilename() === '.DS_Store') {
@@ -141,7 +142,7 @@ class ConfigHelper extends Helper
     /**
      * Get a value from the .moo.yml file.
      *
-     * @return array|mixed|null
+     * @return null|array|mixed
      */
     public function getConfig(string $name)
     {
@@ -178,8 +179,8 @@ class ConfigHelper extends Helper
      */
     protected function getUserConfigFilePath(): string
     {
-        $username = $this->getShellHelper()->exec('whoami');
-        $path = '/Users/' . trim($username->getOutput()) . '/.moo.yml';
+        $username = $this->getShellHelper()->exec('eval echo ~$USER');
+        $path     = trim($username->getOutput()) . '/.moo.yml';
         $this->getCommand()->debug('User config: ' . $path);
 
         return $path;
@@ -240,14 +241,9 @@ class ConfigHelper extends Helper
      */
     protected function getShellHelper(): HelperInterface
     {
-        return $this->getHelperSet()->get('shell');
-    }
+        $helper = $this->getHelperSet()->get('shell');
+        $helper->setCommand($this->getCommand());
 
-    /**
-     * Get instance of the current command line class.
-     */
-    protected function getCommand(): Command
-    {
-        return $this->getHelperSet()->getCommand();
+        return $helper;
     }
 }

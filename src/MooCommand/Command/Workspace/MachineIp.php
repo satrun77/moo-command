@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 
 /**
@@ -23,6 +24,7 @@ class MachineIp extends Workspace
      * @var string
      */
     protected $description = 'Display the docker machine IP address.';
+
     /**
      * @var string
      */
@@ -31,7 +33,7 @@ class MachineIp extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {

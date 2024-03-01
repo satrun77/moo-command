@@ -10,7 +10,12 @@
 
 namespace MooCommand\Command;
 
+use DirectoryIterator;
+use DomainException;
+use Exception;
+use InvalidArgumentException;
 use MooCommand\Console\Command;
+use SplFileObject;
 
 /**
  * Workspace.
@@ -24,24 +29,27 @@ abstract class Workspace extends Command
      *
      * @var string
      */
-    const PHP_56 = '5.6';
-    const PHP_71 = '7.1';
-    const PHP_72 = '7.2';
-    const PHP_73 = '7.3';
-    const PHP_74 = '7.4';
+    public const PHP_56 = '5.6';
+    public const PHP_71 = '7.1';
+    public const PHP_72 = '7.2';
+    public const PHP_73 = '7.3';
+    public const PHP_74 = '7.4';
 
     /**
      * @var bool
      */
     protected $runRoot = false;
+
     /**
      * @var string
      */
     protected $description = 'Manage local workspace with docker containers.';
+
     /**
      * @var string
      */
     protected $signature = 'ws:';
+
     /**
      * @var string
      */
@@ -66,7 +74,7 @@ abstract class Workspace extends Command
      * @var array
      */
     protected $templates = [
-        'ss' => 'SilverStripe',
+        'ss'      => 'SilverStripe',
         'laravel' => 'Laravel Framework',
     ];
 
@@ -144,14 +152,14 @@ abstract class Workspace extends Command
     protected function getWebEnvData(string $service = 'VIRTUAL_PORT'): array
     {
         $workspace = $this->getConfigHelper()->getWorkspace();
-        $ports = [];
+        $ports     = [];
 
         try {
-            $iterator = new \DirectoryIterator($workspace);
+            $iterator = new DirectoryIterator($workspace);
             foreach ($iterator as $file) {
                 $env = $file->getPathname() . '/env/web.env';
                 if ($file->isDir() && file_exists($env)) {
-                    $envFile = new \SplFileObject($env, 'r');
+                    $envFile = new SplFileObject($env, 'r');
 
                     foreach ($envFile as $line) {
                         if (empty($line)) {
@@ -168,7 +176,7 @@ abstract class Workspace extends Command
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->debug($e->getMessage());
         }
 
@@ -184,7 +192,7 @@ abstract class Workspace extends Command
 
         try {
             if (file_exists($file)) {
-                $envFile = new \SplFileObject($file, 'r');
+                $envFile = new SplFileObject($file, 'r');
 
                 foreach ($envFile as $line) {
                     if (empty($line)) {
@@ -197,7 +205,7 @@ abstract class Workspace extends Command
                     }
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->debug($e->getMessage());
         }
 
@@ -215,13 +223,13 @@ abstract class Workspace extends Command
     /**
      * Validate whether a parameter is empty.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function argumentMustNotBeEmpty(string $name): bool
     {
         $param = $this->argument($name);
         if (empty($param)) {
-            throw new \InvalidArgumentException('The site name cannot be empty.');
+            throw new InvalidArgumentException('The site name cannot be empty.');
         }
 
         return true;
@@ -230,13 +238,13 @@ abstract class Workspace extends Command
     /**
      * Validate whether a parameter is equal to 'proxy'.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function siteNameMustNotEqualToProxy(string $name): bool
     {
         $param = $this->argument($name);
         if ('proxy' === $param) {
-            throw new \Exception("The site name cannot be empty or named 'proxy'.");
+            throw new Exception("The site name cannot be empty or named 'proxy'.");
         }
 
         return true;
@@ -245,13 +253,13 @@ abstract class Workspace extends Command
     /**
      * Validate whether a site does not exists.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function siteDirectoryMustExists(string $name): bool
     {
         $siteRoot = $this->getConfigHelper()->getSiteRoot($name);
         if (is_null($siteRoot)) {
-            throw new \InvalidArgumentException(sprintf("Unable to find the site with the name '%s'", $this->argument($name)));
+            throw new InvalidArgumentException(sprintf("Unable to find the site with the name '%s'", $this->argument($name)));
         }
 
         return true;
@@ -260,13 +268,13 @@ abstract class Workspace extends Command
     /**
      * Validate whether a site exists.
      *
-     * @throws \Exception siteDirectoryMustExists
+     * @throws Exception siteDirectoryMustExists
      */
     protected function siteDirectoryMustNotExists(string $name): bool
     {
         $siteRoot = $this->getConfigHelper()->getSiteRoot($name);
         if (is_dir($siteRoot)) {
-            throw new \InvalidArgumentException(sprintf("There is an existing site with the same name '%s'", $this->argument($name)));
+            throw new InvalidArgumentException(sprintf("There is an existing site with the same name '%s'", $this->argument($name)));
         }
 
         return true;
@@ -290,7 +298,7 @@ abstract class Workspace extends Command
     /**
      * @param array|string $args
      *
-     * @throws \Exception
+     * @throws Exception
      *
      * @return $this
      */
@@ -318,7 +326,7 @@ abstract class Workspace extends Command
         // Execute command inside the docker site
         $status = $this->getShellHelper()->execRealTime('docker exec %s %s %s', $containerName, $command, $args);
         if (!$status && !empty($error)) {
-            throw new \DomainException($error);
+            throw new DomainException($error);
         }
 
         // Success message

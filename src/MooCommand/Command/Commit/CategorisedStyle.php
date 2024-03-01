@@ -11,6 +11,7 @@
 
 namespace MooCommand\Command\Commit;
 
+use InvalidArgumentException;
 use MooCommand\Command\Commit;
 
 /**
@@ -25,8 +26,8 @@ class CategorisedStyle implements CommitStyleInterface
      */
     protected $shortcutMessages = [
         Commit::SHORTCUT_DEPENDENCIES => 'Misc: update Composer dependencies',
-        Commit::SHORTCUT_GITIGNORE => 'Misc: update .gitignore',
-        Commit::SHORTCUT_CSFIXES => 'Misc: apply CS fixes',
+        Commit::SHORTCUT_GITIGNORE    => 'Misc: update .gitignore',
+        Commit::SHORTCUT_CSFIXES      => 'Misc: apply CS fixes',
     ];
 
     /**
@@ -35,11 +36,11 @@ class CategorisedStyle implements CommitStyleInterface
      * @var array
      */
     protected static $DEFAULT_TYPES = [
-        'Change' => 'Implemented a change to source code.',
-        'Misc' => 'Generic change.',
-        'Bug' => 'Fixed a bug.',
-        'Update' => 'Update site core code or installed/update modules',
-        'Build' => 'build CSS & Javascript',
+        'Change'  => 'Implemented a change to source code.',
+        'Misc'    => 'Generic change.',
+        'Bug'     => 'Fixed a bug.',
+        'Update'  => 'Update site core code or installed/update modules',
+        'Build'   => 'build CSS & Javascript',
         'Feature' => 'Implemented a new feature.',
     ];
 
@@ -134,7 +135,7 @@ class CategorisedStyle implements CommitStyleInterface
     public function getCommitCommand(string $message, string $details): array
     {
         // Commit message details
-        $type = explode(':', $this->command->argument('type'))[0];
+        $type  = explode(':', $this->command->argument('type'))[0];
         $issue = $this->command->argument('issue');
 
         return [
@@ -195,15 +196,15 @@ class CategorisedStyle implements CommitStyleInterface
      */
     public function validateIssueNumber(?string $value): string
     {
-        $value = mb_strtoupper($value);
+        $value    = mb_strtoupper($value);
         $segments = explode('-', $value);
 
         if (empty($segments[0])) {
-            throw new \InvalidArgumentException('Project key is missing from your issue no.');
+            throw new InvalidArgumentException('Project key is missing from your issue no.');
         }
 
         if (empty($segments[1])) {
-            throw new \InvalidArgumentException('Issue number is in incorrect format.');
+            throw new InvalidArgumentException('Issue number is in incorrect format.');
         }
 
         return $value;

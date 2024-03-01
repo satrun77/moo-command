@@ -13,7 +13,7 @@ if (PHP_SAPI !== 'cli') {
 }
 
 if (!PHP_VERSION_ID >= 70100) {
-    die("PHP version 7.1 or above is required for the command line tool.\n");
+    exit("PHP version 7.1 or above is required for the command line tool.\n");
 }
 
 define('__APP_DIR__', __DIR__);

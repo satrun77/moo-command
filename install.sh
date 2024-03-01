@@ -5,7 +5,7 @@ if hash pharcc 2>/dev/null; then
 else
     wget https://github.com/cbednarski/pharcc/releases/download/v0.2.4/pharcc.phar
     chmod +x pharcc.phar
-    sudo mv pharcc.phar /usr/local/bin/pharcc
+    sudo mv pharcc.phar ~/bin/pharcc
 fi
 
-pharcc build && sudo mv moo.phar /usr/local/bin/moo
+pharcc build && sudo mv moo.phar ~/bin/moo

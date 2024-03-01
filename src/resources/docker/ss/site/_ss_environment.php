@@ -25,7 +25,7 @@ define('SOLR_REMOTEPATH', '/solr/');
 define('SOLR_USER', '');
 define('SOLR_INDEXSTORE_PATH', '/var/www/solr');
 
-//define('WKHTMLTOPDF_BINARY', '/usr/local/bin/wkhtmltopdf');
+// define('WKHTMLTOPDF_BINARY', '/usr/local/bin/wkhtmltopdf');
 
 date_default_timezone_set('Pacific/Auckland');
 

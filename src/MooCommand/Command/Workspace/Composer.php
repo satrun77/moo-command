@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -24,29 +25,31 @@ class Composer extends Workspace
      * @var string
      */
     protected $description = 'Execute PHP composer command inside the composer container.';
+
     /**
      * @var string
      */
     protected $childSignature = 'composer';
+
     /**
      * @var array
      */
     protected $arguments = [
         'name' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'argument' => [
-            'mode' => InputArgument::OPTIONAL,
+            'mode'        => InputArgument::OPTIONAL,
             'description' => 'Argument to pass to composer command',
-            'default' => 'install',
+            'default'     => 'install',
         ],
     ];
 
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {

@@ -10,7 +10,9 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -24,16 +26,18 @@ class Build extends Workspace
      * @var string
      */
     protected $description = 'Build or rebuild services for a site within the workspace. A wrapper to docker-compose build command.';
+
     /**
      * @var string
      */
     protected $childSignature = 'build';
+
     /**
      * @var array
      */
     protected $arguments = [
         'name' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
     ];
@@ -41,7 +45,7 @@ class Build extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -50,7 +54,7 @@ class Build extends Workspace
         // Start the container
         $start = $this->getShellHelper()->exec('./start build');
         if (!$start->isSuccessful()) {
-            throw new \RuntimeException('Unable to build the site container.');
+            throw new RuntimeException('Unable to build the site container.');
         }
 
         // Display success message

@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -24,20 +25,22 @@ class Ssh extends Workspace
      * @var string
      */
     protected $description = 'SSH into a container for a site within the workspace.';
+
     /**
      * @var string
      */
     protected $childSignature = 'ssh';
+
     /**
      * @var array
      */
     protected $arguments = [
         'name' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'container' => [
-            'mode' => InputArgument::OPTIONAL,
+            'mode'        => InputArgument::OPTIONAL,
             'description' => 'Name of the container to ssh into',
         ],
     ];
@@ -45,13 +48,13 @@ class Ssh extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
         $this->changeToSiteDirectory();
 
-        $siteName = str_replace('.', '', $this->argument('name'));
+        $siteName  = str_replace('.', '', $this->argument('name'));
         $container = $this->argument('container');
 
         $containerName = $container;

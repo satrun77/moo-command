@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -25,34 +26,38 @@ class Frontend extends Workspace
      *
      * @var string
      */
-    const CMD_INSTALL = 'install';
+    public const CMD_INSTALL = 'install';
+
     /**
      * @var string
      */
-    const CMD_BUILD = 'build';
+    public const CMD_BUILD = 'build';
+
     /**
      * @var string
      */
-    const CMD_WATCH = 'watch';
+    public const CMD_WATCH = 'watch';
 
     /**
      * @var string
      */
     protected $description = 'Execute a frontend commands to build or watch assets.';
+
     /**
      * @var string
      */
     protected $childSignature = 'fe';
+
     /**
      * @var array
      */
     protected $arguments = [
         'name' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'execute' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Command to execute inside the container',
         ],
     ];
@@ -60,7 +65,7 @@ class Frontend extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -86,8 +91,8 @@ class Frontend extends Workspace
         // Collection of acceptable commands
         $options = [
             static::CMD_INSTALL => 'install',
-            static::CMD_BUILD => 'run dev',
-            static::CMD_WATCH => 'run watch',
+            static::CMD_BUILD   => 'run dev',
+            static::CMD_WATCH   => 'run watch',
         ];
         // Check if command option value or fallback to build
         if (!array_key_exists($command, $options)) {

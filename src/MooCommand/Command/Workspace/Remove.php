@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -24,16 +25,18 @@ class Remove extends Workspace
      * @var string
      */
     protected $description = 'Remove stopped containers for a site within the workspace. A wrapper for docker-compose rm.';
+
     /**
      * @var string
      */
     protected $childSignature = 'rm';
+
     /**
      * @var array
      */
     protected $arguments = [
         'name' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
     ];
@@ -41,7 +44,7 @@ class Remove extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {

@@ -10,7 +10,11 @@
 
 namespace MooCommand\Command\Workspace;
 
+use DirectoryIterator;
+use Exception;
 use MooCommand\Command\Workspace;
+use SplFileInfo;
+use SplFileObject;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
@@ -32,15 +36,17 @@ class ListSites extends Workspace
      *
      * @var string
      */
-    const STATUS_ACTIVE = '✔';
+    public const STATUS_ACTIVE = '✔';
+
     /**
      * @var string
      */
-    const STATUS_INACTIVE = '✘';
+    public const STATUS_INACTIVE = '✘';
+
     /**
      * @var string
      */
-    const STATUS_NA = '●';
+    public const STATUS_NA = '●';
 
     /**
      * Collection of color for each status.
@@ -48,8 +54,8 @@ class ListSites extends Workspace
      * @var array
      */
     protected static $statusTag = [
-        self::STATUS_ACTIVE => ['info', 'info'],
-        self::STATUS_NA => ['fg=white', ''],
+        self::STATUS_ACTIVE   => ['info', 'info'],
+        self::STATUS_NA       => ['fg=white', ''],
         self::STATUS_INACTIVE => ['fg=red', ''],
     ];
 
@@ -60,7 +66,7 @@ class ListSites extends Workspace
      */
     protected $arguments = [
         'container' => [
-            'mode' => InputArgument::OPTIONAL,
+            'mode'        => InputArgument::OPTIONAL,
             'description' => 'Name of the container to show its status',
         ],
     ];
@@ -70,10 +76,10 @@ class ListSites extends Workspace
      */
     protected $options = [
         'all' => [
-            'shortcut' => 'a',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'a',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'List all sites',
-            'default' => null,
+            'default'     => null,
         ],
     ];
 
@@ -81,6 +87,7 @@ class ListSites extends Workspace
      * @var string
      */
     protected $description = 'Display list of available sites and their statuses.';
+
     /**
      * @var string
      */
@@ -92,18 +99,18 @@ class ListSites extends Workspace
      * @var array
      */
     protected static $cache = [
-        'ports' => [],
-        'machineIp' => null,
+        'ports'            => [],
+        'machineIp'        => null,
         'activeContainers' => '',
         'uniqueContainers' => [],
-        'ymlParser' => null,
-        'tableOutput' => null,
+        'ymlParser'        => null,
+        'tableOutput'      => null,
     ];
 
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -116,8 +123,8 @@ class ListSites extends Workspace
         $this->outputTitle();
 
         try {
-            $iterator = new \DirectoryIterator($workspace);
-            $rows = [];
+            $iterator = new DirectoryIterator($workspace);
+            $rows     = [];
             foreach ($iterator as $file) {
                 // Get data from web.env file about port & host
                 if ($file->isDir() && ($row = $this->containerData($file))) {
@@ -140,7 +147,7 @@ class ListSites extends Workspace
                 // Output site details
                 $this->outputSite($row);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->debug($e->getMessage());
         }
     }
@@ -167,11 +174,12 @@ class ListSites extends Workspace
             // If the container is not part of the site
             if (!in_array($container, $this->containers[$key], true)) {
                 $row[$container] = static::STATUS_NA;
+
                 continue;
             }
 
             // Check status of the container
-            $containerName = sprintf('%s_%s_1', str_replace('.', '', $key), $container);
+            $containerName   = sprintf('%s_%s_1', str_replace('.', '', $key), $container);
             $row[$container] = false !== mb_strpos($this->activeContainers(), $containerName) ? static::STATUS_ACTIVE : static::STATUS_INACTIVE;
         }
 
@@ -194,15 +202,15 @@ class ListSites extends Workspace
     /**
      * Get data for a container.
      */
-    protected function containerData(\SplFileInfo $file): ?array
+    protected function containerData(SplFileInfo $file): ?array
     {
         $env = $file->getPathname() . '/env/web.env';
         if (!file_exists($env)) {
             return null;
         }
 
-        $envFile = new \SplFileObject($env, 'r');
-        $row = ['container' => $file->getFilename()];
+        $envFile = new SplFileObject($env, 'r');
+        $row     = ['container' => $file->getFilename()];
 
         // Extract data from env file
         foreach ($envFile as $line) {
@@ -223,7 +231,7 @@ class ListSites extends Workspace
         // Get containers grouped per site
         // Exclude app, data, & composer from docker YML
         // Add padding on both side for each container to have equal width columns
-        $containers = array_diff(array_keys($services['services']), ['app', 'data', 'composer']);
+        $containers                             = array_diff(array_keys($services['services']), ['app', 'data', 'composer']);
         $this->containers[$file->getFilename()] = $containers;
 
         return $row;
@@ -236,8 +244,8 @@ class ListSites extends Workspace
     {
         // Container name & container filter argument
         $containerFilter = $this->argument('container');
-        $container = !empty($data['container']) ? $data['container'] : '';
-        $showAll = $this->option('all');
+        $container       = !empty($data['container']) ? $data['container'] : '';
+        $showAll         = $this->option('all');
 
         // Filter out output if we have container filter argument
         if (!empty($containerFilter) && mb_strpos($container, $containerFilter) === false) {
@@ -297,8 +305,8 @@ class ListSites extends Workspace
     {
         $cells = [];
         foreach ($data as $name => $value) {
-            $tag = array_key_exists($value, static::$statusTag) ? static::$statusTag[$value] : static::$statusTag[static::STATUS_NA];
-            $cells[$name] = str_pad(sprintf('<%s>%s %s</%s>', $tag[0], $value, $name, $tag[1]), 6, ' ', STR_PAD_RIGHT);
+            $tag          = array_key_exists($value, static::$statusTag) ? static::$statusTag[$value] : static::$statusTag[static::STATUS_NA];
+            $cells[$name] = mb_str_pad(sprintf('<%s>%s %s</%s>', $tag[0], $value, $name, $tag[1]), 6, ' ', STR_PAD_RIGHT);
         }
 
         return $cells;

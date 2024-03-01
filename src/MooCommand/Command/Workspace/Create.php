@@ -10,7 +10,11 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileObject;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -24,16 +28,18 @@ class Create extends Workspace
      * @var string
      */
     protected $description = 'Create a new site. Create all of the files needed for the docker containers.';
+
     /**
      * @var string
      */
     protected $childSignature = 'new';
+
     /**
      * @var array
      */
     protected $arguments = [
         'name' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
     ];
@@ -41,7 +47,7 @@ class Create extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -165,17 +171,17 @@ class Create extends Workspace
 
         // Update other placeholders such as, PHP version to use, values in web.env file, or docker-sync settings
         $this->updatePlaceholders($sitePath, [
-            '{{php}}' => $phpVersion,
-            '{{php_image}}' => $phpImage,
-            '{{host}}' => $this->argument('name'),
-            '{{host_port}}' => max($usedPorts) + 1,
-            '{{solr_port}}' => max($usedSolrPorts) + 1,
-            '{{mysql_port}}' => max($usedMysqlPorts) + 1,
+            '{{php}}'         => $phpVersion,
+            '{{php_image}}'   => $phpImage,
+            '{{host}}'        => $this->argument('name'),
+            '{{host_port}}'   => max($usedPorts)      + 1,
+            '{{solr_port}}'   => max($usedSolrPorts)  + 1,
+            '{{mysql_port}}'  => max($usedMysqlPorts) + 1,
             '{{volume-name}}' => $siteName . '_dockersync_1',
-            '{{root_path}}' => $sitePath,
-            '{{name}}' => $siteName,
-            '{{work_dir}}' => !empty($workDirectory) ? $this->workDirectories[$workDirectory] : current($this->workDirectories),
-            '{{theme_dir}}' => !empty($themeDirectory) ? $themeDirectory : '',
+            '{{root_path}}'   => $sitePath,
+            '{{name}}'        => $siteName,
+            '{{work_dir}}'    => !empty($workDirectory) ? $this->workDirectories[$workDirectory] : current($this->workDirectories),
+            '{{theme_dir}}'   => !empty($themeDirectory) ? $themeDirectory : '',
         ]);
 
         // Custom setup for PHP 7.3
@@ -191,7 +197,7 @@ class Create extends Workspace
      * Final steps.
      * Display confirmation message and option to start the new site.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function finaliseBuild(): void
     {
@@ -232,9 +238,9 @@ class Create extends Workspace
     protected function updatePlaceholders(string $directory, array $placeholders = []): void
     {
         // Get iterator of all files within the site containers structure
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST
         );
 
         // Update the placeholder within each file in the structure
@@ -251,7 +257,7 @@ class Create extends Workspace
     protected function updateFileContent(string $filePath, array $changes): void
     {
         // Get instance of SPL file
-        $envFile = new \SplFileObject($filePath, 'r');
+        $envFile = new SplFileObject($filePath, 'r');
         // Get the file size
         $size = $envFile->getSize();
 
@@ -262,7 +268,7 @@ class Create extends Workspace
             $contents = strtr($contents, $changes);
 
             // Write new content of file replacing existing data
-            $envFile = new \SplFileObject($filePath, 'w+');
+            $envFile = new SplFileObject($filePath, 'w+');
             $envFile->fwrite($contents);
         }
 

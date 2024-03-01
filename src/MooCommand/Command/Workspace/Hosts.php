@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 
 /**
@@ -23,6 +24,7 @@ class Hosts extends Workspace
      * @var string
      */
     protected $description = 'Update the host file in user machine (/etc/hosts) with the docker IP address and the host names setup for all of the sites in workspace.';
+
     /**
      * @var string
      */
@@ -31,12 +33,12 @@ class Hosts extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
-        $sites = str_replace(',', ' ', implode(' ', $this->getWebEnvData('VIRTUAL_HOST')));
-        $ip = $this->getMachineIp();
+        $sites   = str_replace(',', ' ', implode(' ', $this->getWebEnvData('VIRTUAL_HOST')));
+        $ip      = $this->getMachineIp();
         $domains = $ip . '    ' . $sites . ' # Moo workspace';
 
         $this->getShellHelper()->exec("sudo sed -i.bk '/# Moo workspace/d' /etc/hosts");

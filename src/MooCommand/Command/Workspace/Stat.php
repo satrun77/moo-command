@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -24,16 +25,18 @@ class Stat extends Workspace
      * @var string
      */
     protected $description = 'Display a live stream of container(s) resource usage statistics.';
+
     /**
      * @var string
      */
     protected $childSignature = 'stat';
+
     /**
      * @var array
      */
     protected $arguments = [
         'filter' => [
-            'mode' => InputArgument::OPTIONAL,
+            'mode'        => InputArgument::OPTIONAL,
             'description' => 'Filter the output by keyword',
         ],
     ];
@@ -41,7 +44,7 @@ class Stat extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {

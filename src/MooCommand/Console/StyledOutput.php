@@ -29,8 +29,8 @@ class StyledOutput extends SymfonyStyle
      */
     protected $customStyles = [
         'success' => ['default', 'green', ['bold']],
-        'debug' => ['yellow', 'black', ['bold']],
-        'info2' => ['cyan', 'default'],
+        'debug'   => ['yellow', 'black', ['bold']],
+        'info2'   => ['cyan', 'default'],
         'warning' => ['black', 'yellow'],
     ];
 
@@ -45,7 +45,7 @@ class StyledOutput extends SymfonyStyle
     }
 
     /**
-     * @param string|array $string
+     * @param array|string $string
      */
     public function success($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -53,7 +53,7 @@ class StyledOutput extends SymfonyStyle
     }
 
     /**
-     * @param string|array $string
+     * @param array|string $string
      */
     public function debug($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -75,7 +75,7 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as information output.
      *
-     * @param string|array $string
+     * @param array|string $string
      */
     public function info($string): void
     {
@@ -85,7 +85,7 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as comment output.
      *
-     * @param string|array $string
+     * @param array|string $string
      */
     public function comment($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -95,7 +95,7 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as question output.
      *
-     * @param string|array $string
+     * @param array|string $string
      */
     public function question($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -105,7 +105,7 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as error output.
      *
-     * @param string|array $string
+     * @param array|string $string
      */
     public function error($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -115,7 +115,7 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as warning output.
      *
-     * @param string|array $string
+     * @param array|string $string
      */
     public function warning($string, int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
     {
@@ -127,7 +127,7 @@ class StyledOutput extends SymfonyStyle
      */
     public function separator(string $character = '_', string $style = '')
     {
-        $text = str_pad('', $this->outputMinWidth, $character);
+        $text = mb_str_pad('', $this->outputMinWidth, $character);
 
         if ($style !== '') {
             $text = "<{$style}>" . $text . "</{$style}>";
@@ -139,7 +139,7 @@ class StyledOutput extends SymfonyStyle
     /**
      * Write a string as standard output.
      *
-     * @param string|array $string
+     * @param array|string $string
      * @param string       $style
      */
     public function line($string, string $style = null, string $label = '', int $verbosity = Output\OutputInterface::OUTPUT_NORMAL): void
@@ -173,13 +173,13 @@ class StyledOutput extends SymfonyStyle
      */
     public function formatLine(string $string, ?string $style = null, string $label = ''): string
     {
-        $label = str_pad((!empty($label) ? $label . ':' : $label), 10);
+        $label = mb_str_pad(!empty($label) ? $label . ':' : $label, 10);
 
         // side padding
         $padding = 1;
-        $width = $this->outputMinWidth - (mb_strlen($label) + ($padding * 2));
+        $width   = $this->outputMinWidth - (mb_strlen($label) + ($padding * 2));
         // Format output
-        $string = " {$label}" . str_pad($string, $width) . ' ';
+        $string = " {$label}" . mb_str_pad($string, $width) . ' ';
 
         if ($style) {
             return "<{$style}>" . $string . "</{$style}>";
@@ -231,7 +231,7 @@ class StyledOutput extends SymfonyStyle
     private function getTerminalWidth(): int
     {
         $application = new Terminal();
-        $width = $application->getWidth();
+        $width       = $application->getWidth();
 
         return $width ?: self::MAX_LINE_LENGTH;
     }

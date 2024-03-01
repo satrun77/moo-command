@@ -10,6 +10,9 @@
 
 namespace MooCommand\Command;
 
+use DomainException;
+use Exception;
+use InvalidArgumentException;
 use MooCommand\Command\Commit\CommitStyleInterface;
 use MooCommand\Console\Command;
 use Symfony\Component\Console\Application;
@@ -29,24 +32,28 @@ class Commit extends Command
     /**
      * @var string
      */
-    const SHORTCUT_DEPENDENCIES = 'dependencies';
+    public const SHORTCUT_DEPENDENCIES = 'dependencies';
+
     /**
      * @var string
      */
-    const SHORTCUT_GITIGNORE = 'gitignore';
+    public const SHORTCUT_GITIGNORE = 'gitignore';
+
     /**
      * @var string
      */
-    const SHORTCUT_CSFIXES = 'csfixes';
+    public const SHORTCUT_CSFIXES = 'csfixes';
 
     /**
      * @var bool
      */
     protected $runRoot = false;
+
     /**
      * @var string
      */
     protected $description = 'Git Commit wrapper to standardise the commit messages ( %s ).';
+
     /**
      * @var string
      */
@@ -64,28 +71,28 @@ class Commit extends Command
      */
     protected $options = [
         'oneline' => [
-            'shortcut' => 'o',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'o',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'Option to skip asking for the optional details.',
-            'default' => null,
+            'default'     => null,
         ],
         self::SHORTCUT_DEPENDENCIES => [
-            'shortcut' => 'd',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'd',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'Shortcut commit changes with default message about updating composer.json & composer.lock',
-            'default' => null,
+            'default'     => null,
         ],
         self::SHORTCUT_GITIGNORE => [
-            'shortcut' => 'i',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'i',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'Shortcut commit changes with default message about updating .gitignore',
-            'default' => null,
+            'default'     => null,
         ],
         self::SHORTCUT_CSFIXES => [
-            'shortcut' => 'c',
-            'mode' => InputOption::VALUE_NONE,
+            'shortcut'    => 'c',
+            'mode'        => InputOption::VALUE_NONE,
             'description' => 'Shortcut commit changes with default message about CS fixes',
-            'default' => null,
+            'default'     => null,
         ],
     ];
 
@@ -97,16 +104,15 @@ class Commit extends Command
     /**
      * Commit constructor.
      *
-     * @param string|null $name
+     * @param null|string $name
      */
-    public function __construct($name, Application $application)
+    public function __construct(?string $name, Application $application)
     {
         $this->setHelperSet($application->getHelperSet());
-        $this->getHelperSet()->setCommand($this);
 
         // Merge style configurations with commit default
         $this->description = sprintf($this->description, $this->getStyle()->getDisplayName());
-        $this->options = array_merge($this->getStyle()->getOptions(), $this->options);
+        $this->options     = array_merge($this->getStyle()->getOptions(), $this->options);
 
         parent::__construct($name);
     }
@@ -138,7 +144,7 @@ class Commit extends Command
             foreach ($this->getValidators() as $name => $validator) {
                 if (0 === mb_strpos($name, $type . '.')) {
                     $method = 'validate' . str_replace('.', '', $name);
-                    $value = $validator->{$method}($value);
+                    $value  = $validator->{$method}($value);
                 }
             }
 
@@ -161,7 +167,7 @@ class Commit extends Command
         $branchName = $branchName[1] ?? $branchName[0];
 
         // If - can't be found in branch name skip
-        if (strpos($branchName, '-') === false) {
+        if (mb_strpos($branchName, '-') === false) {
             return null;
         }
 
@@ -200,7 +206,7 @@ class Commit extends Command
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $shortcutOption = $this->hasShortcutOption();
-        $arguments = $this->getStyle()->getArguments();
+        $arguments      = $this->getStyle()->getArguments();
         foreach ($arguments as $argument) {
             // If we are editing a message and we have a shortcut enabled, then skip interaction and display message
             // else interaction enabled if shortcut is disabled or editing details
@@ -213,7 +219,7 @@ class Commit extends Command
                 $method = 'interactInput' . $argument;
                 $this->callStyleOptionalAction('beforeInput' . $argument);
                 $caller = method_exists($this->getStyle(), $method) ? $this->getStyle() : $this;
-                $value = $caller->{$method}();
+                $value  = $caller->{$method}();
             }
 
             // Set argument value if we have one
@@ -226,7 +232,7 @@ class Commit extends Command
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -237,7 +243,7 @@ class Commit extends Command
         $details = wordwrap($this->argument('details'), 70);
 
         // Execute git commit
-        $commit = $this->getStyle()->getCommitCommand($message, $details);
+        $commit  = $this->getStyle()->getCommitCommand($message, $details);
         $command = $this->getShellHelper()->exec(...$commit);
         if (!$command->isSuccessful()) {
             $this->getOutputStyle()->error('Failed to commit!');
@@ -259,7 +265,12 @@ class Commit extends Command
     protected function getStyle(): CommitStyleInterface
     {
         if (is_null($this->style)) {
-            $class = __NAMESPACE__ . '\\Commit\\' . $this->getConfigHelper()->getConfig('commit.style');
+            $class       = __NAMESPACE__ . '\\Commit\\' . $this->getConfigHelper()->getConfig('commit.style');
+
+            if (!class_exists($class)) {
+                throw new DomainException('Unable to find the class ' . $class);
+            }
+
             $this->style = new $class($this);
         }
 
@@ -310,14 +321,14 @@ class Commit extends Command
     /**
      * Display all of the staged files and ask the user to confirm.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function confirmStagedFiles(): Process
     {
         // Get list of staged files
         $command = $this->getShellHelper()->exec('git diff --name-only --cached');
         if (empty($command->getOutput())) {
-            throw new \DomainException('There are no files to commit.');
+            throw new DomainException('There are no files to commit.');
         }
 
         // Ask the user if these are the correct changes to commit
@@ -376,7 +387,7 @@ class Commit extends Command
     /**
      * Validate the message length. It must not be more than 60 chars.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function validateMessageLength(string $value): string
     {
@@ -385,12 +396,13 @@ class Commit extends Command
             $validLength = mb_substr($value, 0, 60);
             $extraLength = mb_substr($value, 60);
             $this->getOutputStyle()->warning($validLength . '<fg=red>' . $extraLength . '</>');
-            throw new \InvalidArgumentException('Commit message must not be more than 60 characters.');
+
+            throw new InvalidArgumentException('Commit message must not be more than 60 characters.');
         }
 
         // Must not be empty
         if (empty($value)) {
-            throw new \InvalidArgumentException('Commit message must not be empty.');
+            throw new InvalidArgumentException('Commit message must not be empty.');
         }
 
         return $value;

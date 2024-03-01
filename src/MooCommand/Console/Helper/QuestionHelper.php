@@ -23,8 +23,10 @@ use Symfony\Component\Console\Question\Question;
  */
 class QuestionHelper extends Helper
 {
+    use CommandTrait;
+
     /**
-     * @param string|array $question
+     * @param array|string $question
      *
      * @return mixed
      */
@@ -33,7 +35,7 @@ class QuestionHelper extends Helper
         $command = $this->getCommand();
         $command->getOutputStyle()->question($question);
         $yesNoString = $command->getOutputStyle()->formatLine('[yes/no]', 'fg=green');
-        $question = new ConfirmationQuestion($yesNoString . "\n> ", (bool) $default);
+        $question    = new ConfirmationQuestion($yesNoString . "\n> ", (bool) $default);
 
         return $this->getHelper()->ask($command->getInput(), $command->getOutput(), $question);
     }
@@ -118,13 +120,5 @@ class QuestionHelper extends Helper
     protected function getHelper(): BaseQuestionHelper
     {
         return $this->getHelperSet()->get('question');
-    }
-
-    /**
-     * Get instance of the current command line class.
-     */
-    protected function getCommand(): Command
-    {
-        return $this->getHelperSet()->getCommand();
     }
 }

@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command;
 
+use Exception;
 use MooCommand\Console\Command;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,51 +29,55 @@ class CsFixer extends Command
      * @var bool
      */
     protected $runRoot = false;
+
     /**
      * @var string
      */
     protected $description = 'Execute php-cs-fixer on selected paths.';
+
     /**
      * @var string
      */
     protected $signature = 'csfixer';
+
     /**
      * @var array
      */
     protected $arguments = [
         'paths' => [
-            'mode' => InputArgument::IS_ARRAY,
+            'mode'        => InputArgument::IS_ARRAY,
             'description' => 'List of relative paths.',
         ],
     ];
+
     /**
      * @var array
      */
     protected $options = [
         'dry' => [
-            'mode' => InputOption::VALUE_OPTIONAL,
+            'mode'        => InputOption::VALUE_OPTIONAL,
             'description' => 'Displays the files that need to be fixed but without modifying them.',
-            'default' => false,
-            'shortcut' => 'd',
+            'default'     => false,
+            'shortcut'    => 'd',
         ],
         'risky' => [
-            'mode' => InputOption::VALUE_OPTIONAL,
+            'mode'        => InputOption::VALUE_OPTIONAL,
             'description' => 'Allows you to set whether risky rules may run.',
-            'default' => false,
-            'shortcut' => 'r',
+            'default'     => false,
+            'shortcut'    => 'r',
         ],
         'update' => [
-            'mode' => InputOption::VALUE_OPTIONAL,
+            'mode'        => InputOption::VALUE_OPTIONAL,
             'description' => 'Update php-cs-fixer',
-            'default' => false,
-            'shortcut' => 'u',
+            'default'     => false,
+            'shortcut'    => 'u',
         ],
     ];
 
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -106,14 +111,18 @@ class CsFixer extends Command
 
             // Define php-cs-fixer options
             $verbose = $this->option('verbose') !== false ? '--verbose' : '';
-            $risky = $this->option('risky') !== false ? '--allow-risky=yes' : '';
-            $dryrun = $this->option('dry') !== false ? '--dry-run' : '';
+            $risky   = $this->option('risky')   !== false ? '--allow-risky=yes' : '';
+            $dryrun  = $this->option('dry')     !== false ? '--dry-run' : '';
 
             // Execute and display progress
             if (file_exists($path)) {
                 $this->getShellHelper()->execRealTime(
                     "php-cs-fixer fix %s --rules='%s' %s %s %s",
-                    $path, $this->getFixes(), $verbose, $dryrun, $risky
+                    $path,
+                    $this->getFixes(),
+                    $verbose,
+                    $dryrun,
+                    $risky
                 );
             }
         }

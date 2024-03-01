@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -24,20 +25,22 @@ class Log extends Workspace
      * @var string
      */
     protected $description = 'View output from container or containers. A wrapper for docker-compose logs.';
+
     /**
      * @var string
      */
     protected $childSignature = 'log';
+
     /**
      * @var array
      */
     protected $arguments = [
         'name' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'container' => [
-            'mode' => InputArgument::OPTIONAL,
+            'mode'        => InputArgument::OPTIONAL,
             'description' => 'Name of the container to show its logs',
         ],
     ];
@@ -45,7 +48,7 @@ class Log extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {

@@ -10,6 +10,7 @@
 
 namespace MooCommand\Command\Workspace;
 
+use Exception;
 use MooCommand\Command\Workspace;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -24,20 +25,22 @@ class Cp extends Workspace
      * @var string
      */
     protected $description = 'Copy a file from host machine to a docker container or download from a docker container. A wrapper to docker cp command.';
+
     /**
      * @var string
      */
     protected $childSignature = 'cp';
+
     /**
      * @var array
      */
     protected $arguments = [
         'name' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the directory containing the docker/site files',
         ],
         'container' => [
-            'mode' => InputArgument::REQUIRED,
+            'mode'        => InputArgument::REQUIRED,
             'description' => 'Name of the container to upload file to or download file from',
         ],
     ];
@@ -45,7 +48,7 @@ class Cp extends Workspace
     /**
      * Main method to execute the command script.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function fire(): void
     {
@@ -54,7 +57,7 @@ class Cp extends Workspace
         $this->siteDirectoryMustExists('name');
         $site = $this->argument('name');
         // Docker prefix can't have "."
-        $site = str_replace('.', '', $site);
+        $site      = str_replace('.', '', $site);
         $container = $this->argument('container');
 
         // Ask to Upload or download?
