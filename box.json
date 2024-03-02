@@ -1,0 +1,7 @@
+{
+    "main": "src/app.php",
+    "output": "moo",
+    "directories": [
+        "src"
+    ]
+}

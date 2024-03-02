@@ -1,11 +1,12 @@
 #!/bin/bash
 
-if hash pharcc 2>/dev/null; then
-    echo "pharcc command found!"
+#https://github.com/box-project/box/blob/main/doc/installation.md#installation
+
+if hash box 2>/dev/null; then
+    echo "box command found!"
 else
-    wget https://github.com/cbednarski/pharcc/releases/download/v0.2.4/pharcc.phar
-    chmod +x pharcc.phar
-    sudo mv pharcc.phar ~/bin/pharcc
+  brew tap box-project/box
+  brew install box
 fi
 
-pharcc build && sudo mv moo.phar ~/bin/moo
+box compile && sudo mv moo ~/bin/moo
